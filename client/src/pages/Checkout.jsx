@@ -1,12 +1,52 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Check, CreditCard, Truck } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  CreditCard,
+  Truck,
+  Upload,
+  FileText,
+  X,
+} from "lucide-react";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
+import api from "../services/api";
+import { toast } from "react-hot-toast";
+
+const districts = [
+  "Ampara",
+  "Anuradhapura",
+  "Badulla",
+  "Batticaloa",
+  "Colombo",
+  "Galle",
+  "Gampaha",
+  "Hambantota",
+  "Jaffna",
+  "Kalutara",
+  "Kandy",
+  "Kegalle",
+  "Kilinochchi",
+  "Kurunegala",
+  "Mannar",
+  "Matale",
+  "Matara",
+  "Monaragala",
+  "Mullaitivu",
+  "Nuwara Eliya",
+  "Polonnaruwa",
+  "Puttalam",
+  "Ratnapura",
+  "Trincomalee",
+  "Vavuniya",
+];
 
 const Checkout = () => {
-  const { cartItems, getTotalPrice } = useCart();
+  const { cartItems, getTotalPrice, clearCart } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const subtotal = getTotalPrice();
   const shipping = subtotal > 5000 ? 0 : 350;
@@ -14,19 +54,135 @@ const Checkout = () => {
 
   const [step, setStep] = useState(1); // 1: Info, 2: Payment
   const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("card"); // 'card', 'cod', 'bank'
+  const [receiptFile, setReceiptFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
-  const handleSubmit = (e) => {
+  const [shippingAddress, setShippingAddress] = useState({
+    firstName: "",
+    lastName: "",
+    address1: "",
+    address2: "",
+    city: "",
+    district: "",
+    postalCode: "",
+    phone: "",
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setShippingAddress((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("File size should be less than 5MB");
+        return;
+      }
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please upload an image file");
+        return;
+      }
+      setReceiptFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const removeFile = () => {
+    setReceiptFile(null);
+    setPreviewUrl(null);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (step === 1) {
+      // Validate address
+      const required = [
+        "firstName",
+        "lastName",
+        "address1",
+        "city",
+        "district",
+        "postalCode",
+        "phone",
+      ];
+      const missing = required.filter((field) => !shippingAddress[field]);
+
+      if (missing.length > 0) {
+        toast.error("Please fill in all required fields");
+        return;
+      }
       setStep(2);
     } else {
+      // Handle Payment & Order Creation
+
+      if (paymentMethod === "bank" && !receiptFile) {
+        toast.error("Please upload your payment receipt");
+        return;
+      }
+
       setLoading(true);
-      // Simulate order processing
-      setTimeout(() => {
+
+      try {
+        let receiptUrl = null;
+
+        // Upload Receipt if Bank Transfer
+        if (paymentMethod === "bank" && receiptFile) {
+          const formData = new FormData();
+          formData.append("receipt", receiptFile);
+
+          const uploadRes = await api.post("/upload/receipt", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+
+          if (uploadRes.data.success) {
+            receiptUrl = uploadRes.data.url;
+          } else {
+            throw new Error("Failed to upload receipt");
+          }
+        }
+
+        // Create Order Object
+        const orderData = {
+          items: cartItems.map((item) => ({
+            book: item.book._id,
+            quantity: item.quantity,
+          })),
+          shippingAddress: {
+            name: `${shippingAddress.firstName} ${shippingAddress.lastName}`,
+            phone: shippingAddress.phone,
+            street: `${shippingAddress.address1}, ${shippingAddress.address2}`,
+            city: shippingAddress.city,
+            province: shippingAddress.district,
+            postalCode: shippingAddress.postalCode,
+            country: "Sri Lanka",
+          },
+          totalAmount: total,
+          notes:
+            paymentMethod === "cod"
+              ? "Cash on Delivery"
+              : paymentMethod === "bank"
+              ? "Bank Transfer"
+              : "Card Payment",
+          receiptImage: receiptUrl,
+        };
+
+        const res = await api.post("/orders", orderData);
+
+        if (res.data.success) {
+          toast.success("Order placed successfully!");
+          clearCart();
+          navigate("/my-orders"); // Redirect to custom orders page
+        }
+      } catch (error) {
+        console.error("Order error:", error);
+        toast.error(error.response?.data?.message || "Failed to place order");
+      } finally {
         setLoading(false);
-        alert("Order placed successfully! (This is a demo)");
-        navigate("/");
-      }, 2000);
+      }
     }
   };
 
@@ -100,49 +256,115 @@ const Checkout = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         First Name
                       </label>
-                      <Input required placeholder="First Name" />
+                      <Input
+                        name="firstName"
+                        value={shippingAddress.firstName}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="First Name"
+                      />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Last Name
                       </label>
-                      <Input required placeholder="Last Name" />
+                      <Input
+                        name="lastName"
+                        value={shippingAddress.lastName}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="Last Name"
+                      />
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Address
-                    </label>
-                    <Input required placeholder="Street Address" />
+                  {/* Sri Lankan Standard Address Format */}
+                  <div className="grid grid-cols-1 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Address Line 1
+                      </label>
+                      <Input
+                        name="address1"
+                        value={shippingAddress.address1}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="House No / Name"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Address Line 2
+                      </label>
+                      <Input
+                        name="address2"
+                        value={shippingAddress.address2}
+                        onChange={handleInputChange}
+                        placeholder="Street / Road"
+                      />
+                    </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         City
                       </label>
-                      <Input required placeholder="City" />
+                      <Input
+                        name="city"
+                        value={shippingAddress.city}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="City"
+                      />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        State/Province
+                        District
                       </label>
-                      <Input required placeholder="State" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Zip Code
-                      </label>
-                      <Input required placeholder="Zip Code" />
+                      <select
+                        name="district"
+                        value={shippingAddress.district}
+                        onChange={handleInputChange}
+                        required
+                        className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      >
+                        <option value="">Select District</option>
+                        {districts.map((district) => (
+                          <option key={district} value={district}>
+                            {district}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Phone Number
-                    </label>
-                    <Input required type="tel" placeholder="+94 7X XXX XXXX" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Postal Code
+                      </label>
+                      <Input
+                        name="postalCode"
+                        value={shippingAddress.postalCode}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="Postal Code"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Phone Number
+                      </label>
+                      <Input
+                        name="phone"
+                        value={shippingAddress.phone}
+                        onChange={handleInputChange}
+                        required
+                        type="tel"
+                        placeholder="+94 7X XXX XXXX"
+                      />
+                    </div>
                   </div>
                 </div>
               )}
@@ -154,36 +376,84 @@ const Checkout = () => {
                   </h2>
 
                   <div className="space-y-4">
-                    <div className="border border-primary-200 bg-primary-50 rounded-lg p-4 flex items-center">
+                    {/* Card Option */}
+                    <div
+                      onClick={() => setPaymentMethod("card")}
+                      className={`border rounded-lg p-4 flex items-center cursor-pointer transition-all ${
+                        paymentMethod === "card"
+                          ? "border-primary-500 bg-primary-50 ring-1 ring-primary-500"
+                          : "border-gray-200 hover:border-primary-200"
+                      }`}
+                    >
                       <input
                         type="radio"
                         name="payment"
                         id="card"
+                        checked={paymentMethod === "card"}
+                        onChange={() => setPaymentMethod("card")}
                         className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
-                        defaultChecked
                       />
                       <label
                         htmlFor="card"
-                        className="ml-3 flex items-center flex-1"
+                        className="ml-3 flex items-center flex-1 cursor-pointer"
                       >
-                        <CreditCard className="w-5 h-5 text-primary-600 mr-2" />
+                        <CreditCard className="w-5 h-5 text-gray-600 mr-2" />
                         <span className="font-medium text-gray-900">
                           Credit / Debit Card
                         </span>
                       </label>
                     </div>
-                    <div className="border border-gray-200 rounded-lg p-4 flex items-center">
+
+                    {/* Bank Transfer Option */}
+                    <div
+                      onClick={() => setPaymentMethod("bank")}
+                      className={`border rounded-lg p-4 flex items-center cursor-pointer transition-all ${
+                        paymentMethod === "bank"
+                          ? "border-primary-500 bg-primary-50 ring-1 ring-primary-500"
+                          : "border-gray-200 hover:border-primary-200"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="payment"
+                        id="bank"
+                        checked={paymentMethod === "bank"}
+                        onChange={() => setPaymentMethod("bank")}
+                        className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
+                      />
+                      <label
+                        htmlFor="bank"
+                        className="ml-3 flex items-center flex-1 cursor-pointer"
+                      >
+                        <FileText className="w-5 h-5 text-gray-600 mr-2" />
+                        <span className="font-medium text-gray-900">
+                          Bank Transfer
+                        </span>
+                      </label>
+                    </div>
+
+                    {/* COD Option */}
+                    <div
+                      onClick={() => setPaymentMethod("cod")}
+                      className={`border rounded-lg p-4 flex items-center cursor-pointer transition-all ${
+                        paymentMethod === "cod"
+                          ? "border-primary-500 bg-primary-50 ring-1 ring-primary-500"
+                          : "border-gray-200 hover:border-primary-200"
+                      }`}
+                    >
                       <input
                         type="radio"
                         name="payment"
                         id="cod"
+                        checked={paymentMethod === "cod"}
+                        onChange={() => setPaymentMethod("cod")}
                         className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
                       />
                       <label
                         htmlFor="cod"
-                        className="ml-3 flex items-center flex-1"
+                        className="ml-3 flex items-center flex-1 cursor-pointer"
                       >
-                        <Truck className="w-5 h-5 text-gray-500 mr-2" />
+                        <Truck className="w-5 h-5 text-gray-600 mr-2" />
                         <span className="font-medium text-gray-900">
                           Cash on Delivery
                         </span>
@@ -191,28 +461,115 @@ const Checkout = () => {
                     </div>
                   </div>
 
-                  <div className="mt-6 space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Card Number
-                      </label>
-                      <Input placeholder="0000 0000 0000 0000" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-6">
+                  {paymentMethod === "card" && (
+                    <div className="mt-6 space-y-4 bg-gray-50 p-6 rounded-xl border border-gray-200">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Expiry Date
+                          Card Number
                         </label>
-                        <Input placeholder="MM/YY" />
+                        <Input placeholder="0000 0000 0000 0000" />
                       </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          CVC
-                        </label>
-                        <Input placeholder="123" />
+                      <div className="grid grid-cols-2 gap-6">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Expiry Date
+                          </label>
+                          <Input placeholder="MM/YY" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            CVC
+                          </label>
+                          <Input placeholder="123" />
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
+
+                  {paymentMethod === "bank" && (
+                    <div className="mt-6 space-y-6">
+                      <div className="bg-blue-50 p-6 rounded-xl border border-blue-100">
+                        <h3 className="font-bold text-blue-900 mb-4">
+                          Bank Details
+                        </h3>
+                        <div className="space-y-2 text-sm text-blue-800">
+                          <p>
+                            <span className="font-semibold w-32 inline-block">
+                              Bank:
+                            </span>{" "}
+                            Commercial Bank
+                          </p>
+                          <p>
+                            <span className="font-semibold w-32 inline-block">
+                              Branch:
+                            </span>{" "}
+                            Colombo Main
+                          </p>
+                          <p>
+                            <span className="font-semibold w-32 inline-block">
+                              Account Name:
+                            </span>{" "}
+                            Methsara Publications
+                          </p>
+                          <p>
+                            <span className="font-semibold w-32 inline-block">
+                              Account No:
+                            </span>{" "}
+                            8000 1234 5678
+                          </p>
+                        </div>
+                        <p className="mt-4 text-xs text-blue-600">
+                          Please transfer the total amount of{" "}
+                          <strong>LKR {total.toLocaleString()}</strong> and
+                          upload the receipt below.
+                        </p>
+                      </div>
+
+                      <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 hover:bg-gray-50 transition-colors text-center">
+                        {!previewUrl ? (
+                          <>
+                            <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                            <h4 className="font-medium text-gray-900 mb-1">
+                              Upload Receipt
+                            </h4>
+                            <p className="text-sm text-gray-500 mb-4">
+                              PNG, JPG up to 5MB
+                            </p>
+                            <label className="inline-flex">
+                              <span className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg cursor-pointer text-sm font-medium shadow-sm">
+                                Select File
+                              </span>
+                              <input
+                                type="file"
+                                className="hidden"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                              />
+                            </label>
+                          </>
+                        ) : (
+                          <div className="relative inline-block">
+                            <img
+                              src={previewUrl}
+                              alt="Receipt preview"
+                              className="max-h-64 rounded-lg shadow-md"
+                            />
+                            <button
+                              type="button"
+                              onClick={removeFile}
+                              className="absolute -top-3 -right-3 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-600"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                            <p className="mt-2 text-sm text-green-600 font-medium flex items-center justify-center">
+                              <Check className="w-4 h-4 mr-1" />
+                              Receipt Selected
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -262,7 +619,7 @@ const Checkout = () => {
                   <li key={item.book._id || item.book.id} className="py-4 flex">
                     <div className="flex-shrink-0 w-16 h-20 bg-gray-100 rounded-md overflow-hidden border border-gray-200">
                       <img
-                        src={item.book.coverImage}
+                        src={item.book.image}
                         alt={item.book.title}
                         className="w-full h-full object-cover"
                       />

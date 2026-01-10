@@ -3,6 +3,7 @@ import {
   login as loginService,
   register as registerService,
   logout as logoutService,
+  googleLogin as googleLoginService,
 } from "../services/authService";
 
 const AuthContext = createContext();
@@ -40,6 +41,12 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
+  const googleLogin = async (token) => {
+    const data = await googleLoginService(token);
+    setUser(data.user);
+    return data;
+  };
+
   const logout = () => {
     logoutService();
     setUser(null);
@@ -51,6 +58,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     login,
+    googleLogin,
     register,
     logout,
     isAdmin,

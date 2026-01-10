@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, LogIn, ArrowRight, Loader2 } from "lucide-react";
+import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../context/AuthContext";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
@@ -13,7 +14,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const { login } = useAuth();
+  const { login, googleLogin } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -160,6 +161,41 @@ const Login = () => {
               )}
             </button>
           </form>
+
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-center w-full">
+              <GoogleLogin
+                onSuccess={async (credentialResponse) => {
+                  try {
+                    await googleLogin(credentialResponse.credential);
+                    navigate("/");
+                  } catch (err) {
+                    setError(
+                      err.response?.data?.message || "Google Login Failed"
+                    );
+                  }
+                }}
+                onError={() => {
+                  setError("Login Failed");
+                }}
+                useOneTap
+                theme="filled_blue"
+                shape="pill"
+                width="100%"
+              />
+            </div>
+          </div>
 
           <div className="space-y-4">
             <div className="relative">

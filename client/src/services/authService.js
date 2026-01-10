@@ -20,6 +20,16 @@ export const login = async (credentials) => {
   return response.data;
 };
 
+// Google Login
+export const googleLogin = async (token) => {
+  const response = await api.post("/auth/google", { token });
+  if (response.data.token) {
+    localStorage.setItem("token", response.data.token);
+    localStorage.setItem("user", JSON.stringify(response.data.user));
+  }
+  return response.data;
+};
+
 // Logout user
 export const logout = () => {
   localStorage.removeItem("token");

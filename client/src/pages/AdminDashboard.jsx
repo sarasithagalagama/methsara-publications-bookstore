@@ -247,6 +247,7 @@ const AdminDashboard = () => {
       discountPercentage: "",
       saleStartDate: "",
       saleEndDate: "",
+      displayOrder: 999,
     });
     setIsModalOpen(true);
   };
@@ -274,6 +275,7 @@ const AdminDashboard = () => {
       discountPercentage: book.discountPercentage || "",
       saleStartDate: book.saleStartDate ? book.saleStartDate.split("T")[0] : "",
       saleEndDate: book.saleEndDate ? book.saleEndDate.split("T")[0] : "",
+      displayOrder: book.displayOrder || 999,
     });
     setIsModalOpen(true);
   };
@@ -619,20 +621,20 @@ const AdminDashboard = () => {
                     className="px-4 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
                   >
                     <option value="">All Grades</option>
+                    <option value="A/L">A/L</option>
                     <option value="Grade 6">Grade 6</option>
                     <option value="Grade 7">Grade 7</option>
                     <option value="Grade 8">Grade 8</option>
                     <option value="Grade 9">Grade 9</option>
                     <option value="Grade 10">Grade 10</option>
                     <option value="Grade 11">Grade 11</option>
-                    <option value="A/L">A/L</option>
                   </select>
 
                   <div className="relative flex-1 sm:w-64">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <input
                       type="text"
-                      placeholder="Search products..."
+                      placeholder="Search by title, author, or ISBN..."
                       className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       value={filters.search}
                       onChange={(e) =>
@@ -888,58 +890,169 @@ const AdminDashboard = () => {
 
           {activeTab === "orders" && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-900">Orders</h2>
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Orders Management
+                </h2>
+                <div className="text-sm text-gray-500">
+                  Total Orders:{" "}
+                  <span className="font-bold text-gray-900">
+                    {orders.length}
+                  </span>
+                </div>
+              </div>
+
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Order ID
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Customer
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {orders.map((order) => (
-                      <tr key={order._id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-600">
-                          #{order._id.slice(-6).toUpperCase()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {order.customerName || "Customer"}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-2 py-1 text-xs rounded-full bg-gray-100">
-                            {order.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          <select
-                            className="text-xs border-gray-300 rounded-md"
-                            value={order.status}
-                            onChange={(e) =>
-                              handleOrderStatus(order._id, e.target.value)
-                            }
-                          >
-                            <option value="pending">Pending</option>
-                            <option value="processing">Processing</option>
-                            <option value="shipped">Shipped</option>
-                            <option value="delivered">Delivered</option>
-                            <option value="cancelled">Cancelled</option>
-                          </select>
-                        </td>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                          Order ID
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                          Customer
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                          Items
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                          Total
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                          Date
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                          Status
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                          Receipt
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                          Actions
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {orders.length === 0 ? (
+                        <tr>
+                          <td colSpan="7" className="px-6 py-12 text-center">
+                            <ShoppingBag className="mx-auto h-12 w-12 text-gray-300 mb-3" />
+                            <p className="text-base font-medium text-gray-900">
+                              No orders yet
+                            </p>
+                            <p className="text-sm text-gray-500 mt-1">
+                              Orders will appear here when customers make
+                              purchases.
+                            </p>
+                          </td>
+                        </tr>
+                      ) : (
+                        orders.map((order) => (
+                          <tr
+                            key={order._id}
+                            className="hover:bg-gray-50 transition-colors"
+                          >
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm font-bold text-primary-600">
+                                #{order._id.slice(-8).toUpperCase()}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="text-sm font-medium text-gray-900">
+                                {order.customerName || "N/A"}
+                              </div>
+                              {order.email && (
+                                <div className="text-xs text-gray-500">
+                                  {order.email}
+                                </div>
+                              )}
+                              {order.phone && (
+                                <div className="text-xs text-gray-500">
+                                  {order.phone}
+                                </div>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-900">
+                                {order.items?.length || 0} item(s)
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm font-bold text-gray-900">
+                                Rs. {order.total?.toLocaleString() || "0"}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-900">
+                                {order.createdAt
+                                  ? new Date(
+                                      order.createdAt
+                                    ).toLocaleDateString()
+                                  : "N/A"}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                {order.createdAt
+                                  ? new Date(
+                                      order.createdAt
+                                    ).toLocaleTimeString()
+                                  : ""}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span
+                                className={`px-3 py-1 inline-flex text-xs font-semibold rounded-full ${
+                                  order.status === "delivered"
+                                    ? "bg-green-100 text-green-800"
+                                    : order.status === "shipped"
+                                    ? "bg-blue-100 text-blue-800"
+                                    : order.status === "processing"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : order.status === "cancelled"
+                                    ? "bg-red-100 text-red-800"
+                                    : "bg-gray-100 text-gray-800"
+                                }`}
+                              >
+                                {order.status || "pending"}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {order.receiptImage ? (
+                                <a
+                                  href={order.receiptImage}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-xs text-primary-600 hover:text-primary-800 font-semibold underline inline-flex items-center"
+                                >
+                                  View
+                                </a>
+                              ) : (
+                                <span className="text-xs text-gray-400">
+                                  N/A
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <select
+                                className="text-sm border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 px-3 py-1.5"
+                                value={order.status}
+                                onChange={(e) =>
+                                  handleOrderStatus(order._id, e.target.value)
+                                }
+                              >
+                                <option value="pending">Pending</option>
+                                <option value="processing">Processing</option>
+                                <option value="shipped">Shipped</option>
+                                <option value="delivered">Delivered</option>
+                                <option value="cancelled">Cancelled</option>
+                              </select>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}
@@ -1086,6 +1199,20 @@ const AdminDashboard = () => {
                         placeholder="e.g., 100"
                         required
                       />
+                    </div>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <Input
+                        label="Display Order"
+                        name="displayOrder"
+                        type="number"
+                        value={formData.displayOrder}
+                        onChange={handleInputChange}
+                        placeholder="e.g., 1 (lower numbers appear first)"
+                      />
+                      <p className="text-xs text-blue-700 mt-1">
+                        💡 Set the display order for this book. Lower numbers
+                        (1, 2, 3...) appear first in the shop. Default is 999.
+                      </p>
                     </div>
                   </div>
                 </div>

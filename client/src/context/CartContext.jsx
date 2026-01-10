@@ -11,15 +11,15 @@ export const useCart = () => {
 };
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
-
-  // Load cart from localStorage on mount
-  useEffect(() => {
-    const storedCart = localStorage.getItem("cart");
-    if (storedCart) {
-      setCartItems(JSON.parse(storedCart));
+  const [cartItems, setCartItems] = useState(() => {
+    try {
+      const storedCart = localStorage.getItem("cart");
+      return storedCart ? JSON.parse(storedCart) : [];
+    } catch (error) {
+      console.error("Failed to load cart from localStorage:", error);
+      return [];
     }
-  }, []);
+  });
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
@@ -28,12 +28,15 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = (book, quantity = 1) => {
     setCartItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.book._id === book._id);
+      const bookId = book._id || book.id;
+      const existingItem = prevItems.find(
+        (item) => (item.book._id || item.book.id) === bookId
+      );
 
       if (existingItem) {
         // Update quantity if item already exists
         return prevItems.map((item) =>
-          item.book._id === book._id
+          (item.book._id || item.book.id) === bookId
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
@@ -46,7 +49,7 @@ export const CartProvider = ({ children }) => {
 
   const removeFromCart = (bookId) => {
     setCartItems((prevItems) =>
-      prevItems.filter((item) => item.book._id !== bookId)
+      prevItems.filter((item) => (item.book._id || item.book.id) !== bookId)
     );
   };
 
@@ -58,7 +61,9 @@ export const CartProvider = ({ children }) => {
 
     setCartItems((prevItems) =>
       prevItems.map((item) =>
-        item.book._id === bookId ? { ...item, quantity } : item
+        (item.book._id || item.book.id) === bookId
+          ? { ...item, quantity }
+          : item
       )
     );
   };

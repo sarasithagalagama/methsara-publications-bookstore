@@ -14,12 +14,14 @@ import {
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { useCart } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
 import axios from "axios";
 
 const BookDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const [book, setBook] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("description");
@@ -144,14 +146,12 @@ const BookDetails = () => {
                 {book.category}
               </span>
 
-              <h1 className="font-bold text-3xl md:text-4xl text-secondary-900 leading-tight mb-2">
-                {book.title}
+              <h1 className="font-bold text-3xl md:text-4xl text-secondary-900 leading-tight mb-2 font-sinhala">
+                {book.titleSinhala || book.title}
               </h1>
-              {book.titleSinhala && (
-                <h2 className="text-xl text-secondary-500 font-medium mb-4 font-sinhala">
-                  {book.titleSinhala}
-                </h2>
-              )}
+              <h2 className="text-xl text-secondary-500 font-medium mb-4">
+                {book.title}
+              </h2>
 
               <div className="flex flex-col gap-1 text-sm text-secondary-600 font-sinhala mb-6 border-l-4 border-primary-200 pl-4 py-1">
                 <p>
@@ -172,6 +172,22 @@ const BookDetails = () => {
                   </span>
                   {book.subject}
                 </p>
+                {book.isbn && (
+                  <p>
+                    <span className="font-bold text-secondary-900 uppercase text-xs tracking-wider mr-2 font-sans">
+                      ISBN:
+                    </span>
+                    <span className="font-sans">{book.isbn}</span>
+                  </p>
+                )}
+                {book.pageCount && (
+                  <p>
+                    <span className="font-bold text-secondary-900 uppercase text-xs tracking-wider mr-2 font-sans">
+                      Pages:
+                    </span>
+                    <span className="font-sans">{book.pageCount}</span>
+                  </p>
+                )}
               </div>
 
               <div className="flex items-end gap-3 mb-8">
@@ -270,8 +286,25 @@ const BookDetails = () => {
                     <ShoppingCart className="w-5 h-5 mr-2" />
                     Add to Cart
                   </Button>
-                  <button className="h-12 w-12 rounded-full border border-secondary-200 flex items-center justify-center text-secondary-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-all">
-                    <Heart className="w-5 h-5" />
+                  <button
+                    onClick={() => {
+                      if (isInWishlist(book._id)) {
+                        removeFromWishlist(book._id);
+                      } else {
+                        addToWishlist(book);
+                      }
+                    }}
+                    className={`h-12 w-12 rounded-full border flex items-center justify-center transition-all ${
+                      isInWishlist(book._id)
+                        ? "text-red-500 border-red-200 bg-red-50 hover:bg-red-100"
+                        : "border-secondary-200 text-secondary-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50"
+                    }`}
+                  >
+                    <Heart
+                      className={`w-5 h-5 ${
+                        isInWishlist(book._id) ? "fill-current" : ""
+                      }`}
+                    />
                   </button>
                 </div>
               </div>

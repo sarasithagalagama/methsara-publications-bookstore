@@ -19,13 +19,18 @@
       "dest": "/api/index.js"
     },
     {
+      "handle": "filesystem"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/client/$1"
+      "dest": "/index.html"
     }
   ],
   "env": {
-    "MONGODB_URI": "@mongodb_uri",
-    "JWT_SECRET": "@jwt_secret",
-    "BLOB_READ_WRITE_TOKEN": "@blob_token"
+    "MONGODB_URI": "Set in Vercel Dashboard",
+    "JWT_SECRET": "Set in Vercel Dashboard",
+    "BLOB_READ_WRITE_TOKEN": "Set in Vercel Dashboard",
+    "GOOGLE_CLIENT_ID": "Set in Vercel Dashboard",
+    "CLIENT_URL": "Your Vercel URL"
   }
 }

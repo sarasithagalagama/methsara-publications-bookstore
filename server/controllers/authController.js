@@ -1,5 +1,7 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const { OAuth2Client } = require("google-auth-library");
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Generate JWT Token
 const generateToken = (id) => {
@@ -129,5 +131,66 @@ exports.getMe = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  }
+};
+
+// @desc    Google Login
+// @route   POST /api/auth/google
+// @access  Public
+exports.googleLogin = async (req, res, next) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        message: "No token provided",
+      });
+    }
+
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const { name, email, sub } = ticket.getPayload();
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create user if not exists
+      const randomPassword =
+        Math.random().toString(36).slice(-8) +
+        Math.random().toString(36).slice(-8) +
+        "Aa1!";
+
+      user = await User.create({
+        name,
+        email,
+        password: randomPassword,
+      });
+    }
+
+    // Generate token
+    const jwtToken = generateToken(user._id);
+
+    res.status(200).json({
+      success: true,
+      token: jwtToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        phone: user.phone,
+        address: user.address,
+      },
+    });
+  } catch (error) {
+    console.error("Google Login Error:", error);
+    res.status(401).json({
+      success: false,
+      message: "Invalid Google Token",
+    });
   }
 };

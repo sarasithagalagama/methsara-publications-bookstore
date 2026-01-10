@@ -10,17 +10,24 @@ import {
   X,
   Search,
   Phone,
+  Heart,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
 import { Button } from "./ui/Button";
 
 const Navbar = () => {
   const { user, logout, isAdmin, isAuthenticated } = useAuth();
   const { getTotalItems } = useCart();
+  const { getWishlistCount } = useWishlist();
   const navigate = useNavigate();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showSearchModal, setShowSearchModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -36,6 +43,41 @@ const Navbar = () => {
     navigate("/");
     setShowUserMenu(false);
   };
+
+  // Search handler with debounce
+  const handleSearch = async (query) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    setSearchLoading(true);
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/books?search=${encodeURIComponent(
+          query
+        )}&limit=5`
+      );
+      const data = await response.json();
+      setSearchResults(data.books || []);
+    } catch (error) {
+      console.error("Search error:", error);
+      setSearchResults([]);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery) {
+        handleSearch(searchQuery);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   return (
     <div className="flex flex-col w-full z-50 sticky top-0">
@@ -80,6 +122,7 @@ const Navbar = () => {
                 { name: "Home", path: "/" },
                 { name: "Books", path: "/shop" },
                 { name: "About Us", path: "/about" },
+                { name: "Contact", path: "/contact" },
               ].map((item) => (
                 <Link
                   key={item.name}
@@ -94,9 +137,25 @@ const Navbar = () => {
 
             {/* Right Side Icons */}
             <div className="flex items-center space-x-2 lg:space-x-4">
-              <button className="hidden md:flex p-2.5 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-all">
+              <button
+                onClick={() => setShowSearchModal(true)}
+                className="hidden md:flex p-2.5 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-all"
+              >
                 <Search className="h-5 w-5" />
               </button>
+
+              {/* Wishlist Icon */}
+              <Link
+                to="/wishlist"
+                className="hidden md:flex p-2.5 text-gray-600 hover:text-red-500 hover:bg-red-50 rounded-full transition-all group relative"
+              >
+                <Heart className="h-5 w-5" />
+                {getWishlistCount() > 0 && (
+                  <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center font-bold shadow-sm ring-2 ring-white">
+                    {getWishlistCount()}
+                  </span>
+                )}
+              </Link>
 
               <Link
                 to="/cart"
@@ -231,6 +290,13 @@ const Navbar = () => {
               >
                 About
               </Link>
+              <Link
+                to="/contact"
+                className="block text-lg font-medium text-gray-900 py-2 border-b border-gray-50"
+                onClick={() => setShowMobileMenu(false)}
+              >
+                Contact
+              </Link>
 
               {isAuthenticated ? (
                 <>
@@ -294,6 +360,113 @@ const Navbar = () => {
           </div>
         )}
       </nav>
+
+      {/* Search Modal */}
+      {showSearchModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-start justify-center pt-20">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 overflow-hidden">
+            {/* Search Input */}
+            <div className="p-6 border-b border-gray-100">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search by title, author, or ISBN..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  autoFocus
+                  className="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                />
+                <button
+                  onClick={() => {
+                    setShowSearchModal(false);
+                    setSearchQuery("");
+                    setSearchResults([]);
+                  }}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Search Results */}
+            <div className="max-h-96 overflow-y-auto">
+              {searchLoading ? (
+                <div className="p-8 text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600 mx-auto"></div>
+                  <p className="text-gray-500 mt-4">Searching...</p>
+                </div>
+              ) : searchResults.length > 0 ? (
+                <div className="p-4 space-y-2">
+                  {searchResults.map((book) => (
+                    <Link
+                      key={book._id}
+                      to={`/books/${book._id}`}
+                      onClick={() => {
+                        setShowSearchModal(false);
+                        setSearchQuery("");
+                        setSearchResults([]);
+                      }}
+                      className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-xl transition-colors"
+                    >
+                      <img
+                        src={book.image}
+                        alt={book.title}
+                        className="w-16 h-20 object-cover rounded-lg"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-gray-900 truncate font-sinhala">
+                          {book.titleSinhala || book.title}
+                        </h3>
+                        <p className="text-sm text-gray-500 truncate">
+                          {book.title}
+                        </p>
+                        <p className="text-sm font-bold text-primary-600 mt-1">
+                          Rs. {book.price.toLocaleString()}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                  {searchResults.length === 5 && (
+                    <Link
+                      to={`/shop?search=${encodeURIComponent(searchQuery)}`}
+                      onClick={() => {
+                        setShowSearchModal(false);
+                        setSearchQuery("");
+                        setSearchResults([]);
+                      }}
+                      className="block text-center py-3 text-primary-600 hover:text-primary-700 font-medium"
+                    >
+                      View all results →
+                    </Link>
+                  )}
+                </div>
+              ) : searchQuery ? (
+                <div className="p-8 text-center">
+                  <p className="text-gray-500">
+                    No books found for "{searchQuery}"
+                  </p>
+                  <Link
+                    to="/shop"
+                    onClick={() => {
+                      setShowSearchModal(false);
+                      setSearchQuery("");
+                    }}
+                    className="text-primary-600 hover:text-primary-700 font-medium mt-2 inline-block"
+                  >
+                    Browse all books →
+                  </Link>
+                </div>
+              ) : (
+                <div className="p-8 text-center text-gray-500">
+                  Start typing to search for books...
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

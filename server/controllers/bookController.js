@@ -26,7 +26,9 @@ exports.getBooks = async (req, res, next) => {
     if (search) {
       query.$or = [
         { title: { $regex: search, $options: "i" } },
+        { titleSinhala: { $regex: search, $options: "i" } },
         { author: { $regex: search, $options: "i" } },
+        { isbn: { $regex: search, $options: "i" } },
         { description: { $regex: search, $options: "i" } },
       ];
     }
@@ -46,7 +48,7 @@ exports.getBooks = async (req, res, next) => {
     } else if (sort === "title") {
       sortOption = { title: 1 };
     } else {
-      sortOption = { createdAt: -1 }; // Default: newest first
+      sortOption = { displayOrder: 1, createdAt: -1 }; // Default: by display order, then newest first
     }
 
     // Pagination

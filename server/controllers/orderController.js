@@ -56,6 +56,7 @@ exports.createOrder = async (req, res, next) => {
       totalAmount,
       shippingAddress,
       notes,
+      receiptImage: req.body.receiptImage,
     });
 
     res.status(201).json({

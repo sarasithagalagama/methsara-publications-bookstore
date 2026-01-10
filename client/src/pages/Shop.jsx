@@ -13,7 +13,8 @@ import {
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { useCart } from "../context/CartContext";
-import { Link } from "react-router-dom";
+import { useWishlist } from "../context/WishlistContext";
+import { Link, useSearchParams } from "react-router-dom";
 import axios from "axios";
 
 const Shop = () => {
@@ -22,12 +23,23 @@ const Shop = () => {
   const [loading, setLoading] = useState(true);
 
   // Filter States
+  const [searchParams] = useSearchParams();
   const [activeCategory, setActiveCategory] = useState("All"); // Acting as 'Grade' filter
   const [activeSubjects, setActiveSubjects] = useState([]);
   const [activePriceRange, setActivePriceRange] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
 
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+
+  // Handle URL search params
+  useEffect(() => {
+    const category = searchParams.get("category");
+    const search = searchParams.get("search");
+
+    if (category) setActiveCategory(category);
+    if (search) setSearchTerm(search);
+  }, [searchParams]);
 
   // Fetch books from API
   useEffect(() => {
@@ -118,34 +130,41 @@ const Shop = () => {
               Grade
             </h3>
             <div className="space-y-3">
-              {["All", ...new Set(allBooks.map((b) => b.grade))].map(
-                (grade, idx) => (
-                  <label
-                    key={idx}
-                    className="flex items-center group cursor-pointer"
+              {[
+                "All",
+                "A/L",
+                "Grade 6",
+                "Grade 7",
+                "Grade 8",
+                "Grade 9",
+                "Grade 10",
+                "Grade 11",
+              ].map((grade, idx) => (
+                <label
+                  key={idx}
+                  className="flex items-center group cursor-pointer"
+                >
+                  <div className="relative flex items-center">
+                    <input
+                      type="radio"
+                      name="grade"
+                      className="peer h-5 w-5 cursor-pointer appearance-none rounded-full border border-secondary-300 transition-all checked:border-primary-500 checked:bg-primary-500 hover:border-primary-400"
+                      checked={activeCategory === grade}
+                      onChange={() => setActiveCategory(grade)}
+                    />
+                    <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full opacity-0 peer-checked:opacity-100"></div>
+                  </div>
+                  <span
+                    className={`ml-3 text-sm transition-colors ${
+                      activeCategory === grade
+                        ? "text-secondary-900 font-medium"
+                        : "text-secondary-500 group-hover:text-secondary-700"
+                    }`}
                   >
-                    <div className="relative flex items-center">
-                      <input
-                        type="radio"
-                        name="grade"
-                        className="peer h-5 w-5 cursor-pointer appearance-none rounded-full border border-secondary-300 transition-all checked:border-primary-500 checked:bg-primary-500 hover:border-primary-400"
-                        checked={activeCategory === grade}
-                        onChange={() => setActiveCategory(grade)}
-                      />
-                      <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full opacity-0 peer-checked:opacity-100"></div>
-                    </div>
-                    <span
-                      className={`ml-3 text-sm transition-colors ${
-                        activeCategory === grade
-                          ? "text-secondary-900 font-medium"
-                          : "text-secondary-500 group-hover:text-secondary-700"
-                      }`}
-                    >
-                      {grade}
-                    </span>
-                  </label>
-                )
-              )}
+                    {grade}
+                  </span>
+                </label>
+              ))}
             </div>
           </div>
 
@@ -282,7 +301,7 @@ const Shop = () => {
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-secondary-900/90 via-secondary-900/40 to-transparent flex flex-col justify-center px-8 md:px-16">
-            <h2 className="text-3xl lg:text-5xl font-sans font-bold italic text-white mb-4 max-w-xl leading-tight">
+            <h2 className="text-3xl lg:text-5xl font-serif font-bold italic text-white mb-4 max-w-xl leading-tight">
               A book is a gift you can open again and again
             </h2>
             <p className="text-white/80 mb-8 font-serif italic text-lg opacity-90">
@@ -339,8 +358,26 @@ const Shop = () => {
                     >
                       <ShoppingCart className="w-5 h-5" />
                     </button>
-                    <button className="w-10 h-10 bg-white text-secondary-900 rounded-full flex items-center justify-center hover:text-red-500 transition-colors shadow-lg">
-                      <Heart className="w-5 h-5" />
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (isInWishlist(book._id)) {
+                          removeFromWishlist(book._id);
+                        } else {
+                          addToWishlist(book);
+                        }
+                      }}
+                      className={`w-10 h-10 bg-white rounded-full flex items-center justify-center transition-colors shadow-lg ${
+                        isInWishlist(book._id)
+                          ? "text-red-500 hover:text-red-600"
+                          : "text-secondary-900 hover:text-red-500"
+                      }`}
+                    >
+                      <Heart
+                        className={`w-5 h-5 ${
+                          isInWishlist(book._id) ? "fill-current" : ""
+                        }`}
+                      />
                     </button>
                   </div>
                 </div>
@@ -364,16 +401,6 @@ const Shop = () => {
                 </div>
               </div>
             ))}
-          </div>
-
-          {/* Load More */}
-          <div className="mt-16 text-center">
-            <Button
-              variant="outline"
-              className="rounded-full px-10 py-6 border-secondary-200 text-secondary-600 hover:bg-secondary-50 hover:border-secondary-300 hover:text-secondary-900 transition-all text-base"
-            >
-              Load More Books
-            </Button>
           </div>
         </div>
       </main>

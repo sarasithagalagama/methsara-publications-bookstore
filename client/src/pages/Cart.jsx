@@ -4,6 +4,7 @@ import {
   Trash2,
   ShoppingBag,
   ArrowRight,
+  ArrowLeft,
   Minus,
   Plus,
   CreditCard,
@@ -56,28 +57,33 @@ const Cart = () => {
                     <div className="flex items-center sm:items-start">
                       <div className="flex-shrink-0 w-24 h-32 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
                         <img
-                          src={item.book.coverImage}
+                          src={item.book.image}
                           alt={item.book.title}
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      <div className="ml-4 flex-1 flex flex-col justify-between sm:ml-6 h-32">
+                      <div className="ml-4 flex-1 flex flex-col justify-between sm:ml-6 min-h-[8rem]">
                         <div className="relative pr-9 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:pr-0">
                           <div>
                             <div className="flex justify-between">
-                              <h3 className="text-lg font-medium text-gray-900">
+                              <h3 className="text-lg font-bold text-gray-900 font-sinhala leading-tight">
                                 <Link
                                   to={`/books/${item.book._id || item.book.id}`}
                                   className="hover:text-primary-600 transition-colors"
                                 >
-                                  {item.book.title}
+                                  {item.book.titleSinhala || item.book.title}
                                 </Link>
                               </h3>
                             </div>
-                            <p className="mt-1 text-sm text-gray-500">
+                            {item.book.titleSinhala && (
+                              <p className="text-sm text-gray-600 mt-1">
+                                {item.book.title}
+                              </p>
+                            )}
+                            <p className="mt-1 text-sm text-gray-500 font-sinhala">
                               {item.book.author}
                             </p>
-                            <p className="mt-1 text-sm font-medium text-primary-600">
+                            <p className="mt-2 text-lg font-bold text-primary-600">
                               LKR {item.book.price?.toLocaleString()}
                             </p>
                           </div>

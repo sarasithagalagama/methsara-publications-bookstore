@@ -110,17 +110,29 @@ const About = () => {
   return (
     <div className="min-h-screen bg-white font-sans">
       {/* Hero Header */}
-      <section className="bg-gradient-to-b from-primary-50 to-white py-20 lg:py-28 border-b border-gray-100 relative overflow-hidden">
+      <section className="relative py-20 lg:py-28 border-b border-gray-100 overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img
+            src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&q=80&w=2000"
+            alt="Library Background"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-secondary-900/60 mix-blend-multiply"></div>
+        </div>
+
         {/* Background blobs */}
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-blue-100 blur-3xl opacity-50"></div>
-        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-purple-100 blur-3xl opacity-50"></div>
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-white/10 blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-white/10 blur-3xl"></div>
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <h1 className="text-4xl lg:text-6xl font-extrabold text-gray-900 mb-6 tracking-tight">
+          <h1 className="text-4xl lg:text-6xl font-extrabold text-white mb-6 tracking-tight">
             About{" "}
-            <span className="text-primary-600">Methsara Publications</span>
+            <span className="text-primary-400 italic">
+              Methsara Publications
+            </span>
           </h1>
-          <p className="text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-xl text-gray-200 leading-relaxed max-w-2xl mx-auto">
             Dedicated to creating high-quality learning materials for school and
             Advanced Level students.
           </p>

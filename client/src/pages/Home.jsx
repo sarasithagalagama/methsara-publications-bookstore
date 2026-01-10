@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import {
   BookOpen,
   Users,
@@ -16,6 +17,30 @@ import {
 import { Button } from "../components/ui/Button";
 
 const Home = () => {
+  const [featuredBooks, setFeaturedBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/books");
+        const allBooks = response.data.books || [];
+
+        // Shuffle array
+        const shuffled = [...allBooks].sort(() => 0.5 - Math.random());
+
+        // Get first 4 items
+        setFeaturedBooks(shuffled.slice(0, 4));
+      } catch (error) {
+        console.error("Error fetching featured books:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBooks();
+  }, []);
+
   const categories = [
     {
       title: "Grade 6–8 Essential Books",
@@ -43,41 +68,6 @@ const Home = () => {
       image:
         "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=80&w=800",
       color: "bg-stone-50",
-    },
-  ];
-
-  const featuredBooks = [
-    {
-      id: 1,
-      title: "Science Part 1 (Grade 10)",
-      price: "LKR 1,250",
-      rating: 4.8,
-      image:
-        "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=600",
-    },
-    {
-      id: 2,
-      title: "Mathematics Part 1 (Grade 9)",
-      price: "LKR 1,100",
-      rating: 4.9,
-      image:
-        "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=600",
-    },
-    {
-      id: 3,
-      title: "A/L Biology - Unit Papers",
-      price: "LKR 1,800",
-      rating: 5.0,
-      image:
-        "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=600",
-    },
-    {
-      id: 4,
-      title: "Civics Q&A (Grade 7)",
-      price: "LKR 950",
-      rating: 4.7,
-      image:
-        "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80&w=600",
     },
   ];
 
@@ -167,29 +157,51 @@ const Home = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {featuredBooks.map((book) => (
-              <div key={book.id} className="group cursor-pointer">
+              <Link
+                to={`/books/${book._id}`}
+                key={book._id}
+                className="group cursor-pointer"
+              >
                 <div className="bg-secondary-50 rounded-[2rem] p-6 mb-4 relative overflow-hidden aspect-[4/5] flex items-center justify-center transition-all duration-300 group-hover:bg-secondary-100">
                   <img
                     src={book.image}
                     alt={book.title}
-                    className="w-40 h-56 object-cover rounded shadow-md group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover rounded shadow-md group-hover:scale-105 transition-transform duration-500"
                   />
+                  {book.isOnSale && (
+                    <div className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wide z-10">
+                      Sale
+                    </div>
+                  )}
                 </div>
-                <h3 className="text-xl font-serif font-bold text-secondary-900 mb-1 leading-tight group-hover:text-primary-600 transition-colors">
-                  {book.title}
+                <h3 className="text-xl font-serif font-bold text-secondary-900 mb-1 leading-tight group-hover:text-primary-600 transition-colors line-clamp-2">
+                  {book.titleSinhala || book.title}
                 </h3>
                 <div className="flex items-center justify-between mt-2">
-                  <span className="text-lg font-semibold text-secondary-800">
-                    {book.price}
-                  </span>
+                  <div className="flex flex-col">
+                    {book.isOnSale ? (
+                      <>
+                        <span className="text-lg font-semibold text-primary-600">
+                          Rs. {book.salePrice.toLocaleString()}
+                        </span>
+                        <span className="text-sm text-secondary-400 line-through">
+                          Rs. {book.price.toLocaleString()}
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-lg font-semibold text-secondary-800">
+                        Rs. {book.price.toLocaleString()}
+                      </span>
+                    )}
+                  </div>
                   <div className="flex items-center">
                     <Star className="w-4 h-4 text-yellow-400 fill-current" />
                     <span className="ml-1 text-sm text-secondary-500 font-medium">
-                      {book.rating}
+                      5.0
                     </span>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -307,11 +319,6 @@ const Home = () => {
                 className="bg-white p-8 rounded-3xl border border-secondary-100 shadow-soft hover:shadow-lg transition-all text-left"
               >
                 <div className="flex items-center mb-6">
-                  <img
-                    src={t.image}
-                    alt={t.name}
-                    className="w-12 h-12 rounded-full object-cover mr-4"
-                  />
                   <div>
                     <h4 className="font-bold text-secondary-900">{t.name}</h4>
                     <span className="text-xs text-primary-600 font-bold uppercase tracking-wide">

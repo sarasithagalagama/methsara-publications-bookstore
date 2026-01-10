@@ -87,6 +87,10 @@ const bookSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
+  displayOrder: {
+    type: Number,
+    default: 999,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
