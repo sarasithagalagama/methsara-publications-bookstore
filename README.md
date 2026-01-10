@@ -1,280 +1,149 @@
-# Methsara Publications Bookstore
+# 📚 Methsara Publications Bookstore
 
-A full-stack MERN (MongoDB, Express, React, Node.js) bookstore application for Methsara Publications, featuring JWT authentication, manual payment verification, and role-based access control.
+A professional, full-featured E-commerce platform dedicated to providing educational resources for Sri Lankan students. Built with the MERN stack and localized for the Sri Lankan market.
 
-## 🚀 Features
+![Status](https://img.shields.io/badge/Status-Production%20Ready-success)
+![Stack](https://img.shields.io/badge/Stack-MERN-blue)
+![Deployment](https://img.shields.io/badge/Deployment-Vercel-black)
 
-### Customer Features
-- ✅ Browse books by category (Grade 6-11, Advanced Level) and grade
-- ✅ Search and filter books
-- ✅ View detailed book information with 3D covers
-- ✅ Add books to shopping cart
-- ✅ Place orders with shipping information
-- ✅ Upload bank deposit slip for payment verification
-- ✅ Track order status in real-time
+## 🚀 Key Features
 
-### Admin Features
-- ✅ Manage book inventory (Create, Read, Update, Delete)
-- ✅ View all customer orders
-- ✅ View uploaded payment receipts
-- ✅ Verify payments and update order status
-- ✅ Dashboard with analytics
+### 🛍️ Customer Experience
+- **Localized Shopping**: Browser books by Grade (6-11) and Advanced Level streams with Sinhala titles.
+- **Smart Search**: Filter books by category, grade, and subject.
+- **Seamless Checkout**: 
+  - Standardized Sri Lankan address format (District selection).
+  - Multiple payment methods: Card, Bank Transfer, Cash on Delivery.
+- **Authentication**:
+  - **Google Login** for one-click access.
+  - Traditional Email/Password registration.
+- **Order Tracking**: Real-time status updates (Pending → Paid → Shipped).
 
-### Technical Features
-- ✅ JWT authentication with role-based access (customer/admin)
-- ✅ MongoDB Atlas database
-- ✅ Vercel Blob file storage for receipts
-- ✅ Responsive design with Tailwind CSS
-- ✅ Modern UI components (Shadcn UI style)
-- ✅ Serverless deployment ready (Vercel)
+### 👮‍♂️ Admin Dashboard
+- **Inventory Management**: Create, update, and manage book stock with image previews.
+- **Order Management**: View and process customer orders.
+- **Payment Verification**: Review uploaded bank deposit receipts directly from the dashboard.
+- **Analytics**: Track sales performance and user growth.
+
+### 🛠️ Technical Highlights
+- **Architecture**: Monorepo structure with separated Client (Vite) and Server (Express).
+- **Security**: 
+  - JWT Authentication using HttpOnly cookies (or Authorization header).
+  - Google OAuth 2.0 Integration.
+  - Password hashing with Bcrypt.
+- **Storage**: Vercel Blob for high-performance image storage (Book covers & Receipts).
+- **UI/UX**: Responsive design using **Tailwind CSS**, Lucide Icons, and React Hot Toast.
+
+---
 
 ## 📋 Tech Stack
 
-### Frontend
-- **Framework**: React 18 with Vite
-- **Styling**: Tailwind CSS
-- **UI Components**: Custom components (Shadcn UI style)
-- **Routing**: React Router v6
-- **HTTP Client**: Axios
-- **Icons**: Lucide React
-- **State Management**: Context API
+| Domain | Technologies |
+|--------|--------------|
+| **Frontend** | React 18, Vite, Tailwind CSS, Context API, Axios, Lucide React, Google OAuth |
+| **Backend** | Node.js, Express.js, MongoDB (Mongoose), Google Auth Library |
+| **Database** | MongoDB Atlas |
+| **Storage** | Vercel Blob |
+| **Deployment** | Vercel (Serverless) |
 
-### Backend
-- **Runtime**: Node.js
-- **Framework**: Express.js
-- **Database**: MongoDB with Mongoose ODM
-- **Authentication**: JWT (JSON Web Tokens)
-- **Password Hashing**: Bcrypt.js
-- **File Storage**: Vercel Blob
-- **File Upload**: Multer
+---
 
-## 🛠️ Installation & Setup
+## ⚙️ Installation & Setup
 
 ### Prerequisites
-- Node.js (v18 or higher)
-- MongoDB Atlas account
-- Vercel account (for Blob storage and deployment)
+- Node.js (v18+)
+- MongoDB Atlas Connection String
+- Vercel Account (for Blob Storage)
+- Google Cloud Console Project (for OAuth)
 
-### 1. Clone the Repository
+### 1. Clone & Install
+This project uses a monorepo structure. You can install dependencies for both client and server from the root.
+
 ```bash
-git clone <repository-url>
+git clone https://github.com/sarasithagalagama/methsara-publications-bookstore.git
 cd methsara-publications-bookstore
+
+# Install all dependencies (Root, Client, Server)
+npm run install:all
 ```
 
-### 2. Backend Setup
+### 2. Environment Variables
 
-```bash
-cd server
-npm install
-```
-
-Create a `.env` file in the `server` directory:
+Create `.env` file in **server/** directory:
 ```env
 NODE_ENV=development
 PORT=5000
 MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_super_secret_jwt_key
+JWT_SECRET=your_secure_jwt_secret
 BLOB_READ_WRITE_TOKEN=your_vercel_blob_token
+GOOGLE_CLIENT_ID=your_google_client_id
 CLIENT_URL=http://localhost:5173
 ```
 
-Start the backend server:
-```bash
-npm run dev
-```
-
-The server will run on `http://localhost:5000`
-
-### 3. Frontend Setup
-
-```bash
-cd client
-npm install
-```
-
-Create a `.env` file in the `client` directory:
+Create `.env` file in **client/** directory:
 ```env
 VITE_API_URL=http://localhost:5000/api
+VITE_GOOGLE_CLIENT_ID=your_google_client_id
 ```
 
-Start the frontend development server:
+### 3. Run Locally
+Start both the backend and frontend concurrently:
+
 ```bash
 npm run dev
 ```
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:5000`
 
-The client will run on `http://localhost:5173`
+---
 
-## 📁 Project Structure
+## 📦 Deployment (Vercel)
+
+This project is configured for **Vercel** monorepo deployment.
+
+1.  **Push to GitHub**.
+2.  **Import Project** in Vercel.
+3.  **Environment Variables**: Add the following in Vercel Project Settings:
+    - `MONGODB_URI`
+    - `JWT_SECRET`
+    - `BLOB_READ_WRITE_TOKEN`
+    - `GOOGLE_CLIENT_ID`
+    - `VITE_API_URL` (Set to `/api`)
+    - `CLIENT_URL` (Your Vercel domain)
+4.  **Deploy**! Vercel will automatically build the Frontend (Vite) and Backend (Express) based on `vercel.json`.
+
+---
+
+## 📂 Project Structure
 
 ```
 methsara-publications-bookstore/
-├── client/                 # React frontend
+├── client/                 # React Frontend (Vite)
 │   ├── src/
-│   │   ├── components/    # Reusable components
-│   │   │   ├── ui/       # UI components (Button, Card, Input)
-│   │   │   ├── Navbar.jsx
-│   │   │   └── Footer.jsx
-│   │   ├── pages/         # Page components
-│   │   │   ├── Home.jsx
-│   │   │   ├── About.jsx
-│   │   │   └── ... (more to be added)
-│   │   ├── context/       # React Context providers
-│   │   │   ├── AuthContext.jsx
-│   │   │   └── CartContext.jsx
-│   │   ├── services/      # API service functions
-│   │   │   ├── api.js
-│   │   │   ├── authService.js
-│   │   │   ├── bookService.js
-│   │   │   └── orderService.js
-│   │   ├── utils/         # Utility functions
-│   │   ├── App.jsx
-│   │   └── main.jsx
+│   │   ├── components/    # Reusable UI components
+│   │   ├── context/       # Auth & Cart State
+│   │   ├── pages/         # Application Pages (Shop, Cart, Admin...)
+│   │   └── services/      # API Integrations
 │   └── package.json
-├── server/                # Node.js backend
-│   ├── config/           # Configuration files
-│   │   └── db.js
-│   ├── models/           # Mongoose schemas
-│   │   ├── User.js
-│   │   ├── Book.js
-│   │   └── Order.js
-│   ├── controllers/      # Business logic
-│   │   ├── authController.js
-│   │   ├── bookController.js
-│   │   ├── orderController.js
-│   │   └── uploadController.js
-│   ├── routes/           # API routes
-│   │   ├── auth.js
-│   │   ├── books.js
-│   │   ├── orders.js
-│   │   └── upload.js
-│   ├── middleware/       # Custom middleware
-│   │   ├── auth.js
-│   │   └── errorHandler.js
-│   ├── server.js         # Express app
-│   └── package.json
-├── api/                  # Vercel serverless functions
-│   └── index.js
-└── vercel.json          # Vercel deployment config
+├── server/                # Node.js Backend (Express)
+│   ├── controllers/       # Business Logic
+│   ├── models/           # Mongoose Schemas (User, Book, Order)
+│   ├── routes/           # API Endpoints
+│   └── server.js         # Entry Point
+├── api/                  # Vercel Serverless Function Entry
+└── vercel.json           # Deployment Configuration
 ```
-
-## 🔐 Authentication Flow
-
-1. **Registration**: Users register with name, email, password, and optional address
-2. **Login**: Users login with email and password
-3. **JWT Token**: Server generates JWT token with user ID
-4. **Token Storage**: Frontend stores token in localStorage
-5. **Protected Routes**: Token sent in Authorization header for protected endpoints
-6. **Role-Based Access**: Admin routes check for admin role in JWT payload
-
-## 📦 Order & Payment Flow
-
-1. **Browse & Add to Cart**: Customer browses books and adds to cart
-2. **Checkout**: Customer provides shipping address and places order
-3. **Order Created**: Order status set to "Pending"
-4. **Bank Deposit**: Customer makes bank deposit
-5. **Upload Receipt**: Customer uploads deposit slip photo via /my-orders
-6. **Vercel Blob**: Receipt uploaded to Vercel Blob storage
-7. **Admin Review**: Admin views receipt in order management
-8. **Verify Payment**: Admin clicks "Verify Payment" → status changes to "Paid"
-9. **Order Processing**: Admin updates status: Processing → Shipped → Delivered
-
-## 🌐 API Endpoints
-
-### Authentication (`/api/auth`)
-- `POST /register` - Register new user
-- `POST /login` - Login user
-- `GET /me` - Get current user (Protected)
-
-### Books (`/api/books`)
-- `GET /` - Get all books (with filters)
-- `GET /:id` - Get single book
-- `POST /` - Create book (Admin only)
-- `PUT /:id` - Update book (Admin only)
-- `DELETE /:id` - Delete book (Admin only)
-
-### Orders (`/api/orders`)
-- `POST /` - Create order (Protected)
-- `GET /my-orders` - Get user's orders (Protected)
-- `GET /all` - Get all orders (Admin only)
-- `GET /:id` - Get single order (Protected)
-- `PUT /:id/receipt` - Upload receipt (Protected)
-- `PUT /:id/verify` - Verify payment (Admin only)
-- `PUT /:id/status` - Update order status (Admin only)
-
-### Upload (`/api/upload`)
-- `POST /receipt` - Upload receipt file (Protected)
-
-## 🚀 Deployment
-
-### Vercel Deployment
-
-1. **Install Vercel CLI**:
-```bash
-npm install -g vercel
-```
-
-2. **Set Environment Variables** in Vercel Dashboard:
-- `MONGODB_URI`
-- `JWT_SECRET`
-- `BLOB_READ_WRITE_TOKEN`
-
-3. **Deploy**:
-```bash
-vercel
-```
-
-### MongoDB Atlas Setup
-
-1. Create a MongoDB Atlas account
-2. Create a new cluster
-3. Create a database user
-4. Whitelist IP addresses (0.0.0.0/0 for development)
-5. Get connection string and add to `.env`
-
-### Vercel Blob Setup
-
-1. Go to Vercel Dashboard → Storage
-2. Create a new Blob store
-3. Copy the `BLOB_READ_WRITE_TOKEN`
-4. Add to environment variables
-
-## 👤 Creating Admin User
-
-To create an admin user, you can either:
-
-1. **Via MongoDB**: Manually update a user's role to 'admin' in the database
-2. **Via Registration**: Register normally, then update role in database
-
-## 📝 Current Progress
-
-✅ **Completed**:
-- Backend API (100%)
-- Database models
-- Authentication system
-- Frontend infrastructure
-- Home page
-- About page
-- Navbar & Footer
-
-🚧 **In Progress**:
-- Shop page
-- Product details page
-- Cart & Checkout
-- Customer dashboard
-- Admin dashboard
-
-## 🤝 Contributing
-
-This is a private project for Methsara Publications.
-
-## 📄 License
-
-Copyright © 2026 Methsara Publications. All rights reserved.
-
-## 📞 Support
-
-For support, email info@methsarapublications.lk
 
 ---
+
+## 🤝 Contributing
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+Copyright © 2026 Methsara Publications. All rights reserved.
 
 **Built with ❤️ for Sri Lankan Students**
