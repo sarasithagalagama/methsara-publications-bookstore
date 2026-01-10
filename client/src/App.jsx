@@ -6,6 +6,13 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import About from "./pages/About";
+import Shop from "./pages/Shop";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import BookDetails from "./pages/BookDetails";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import NotFound from "./pages/NotFound";
 import "./index.css";
 
 function App() {
@@ -19,7 +26,13 @@ function App() {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/about" element={<About />} />
-                {/* More routes will be added */}
+                <Route path="/shop" element={<Shop />} />
+                <Route path="/books/:id" element={<BookDetails />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
             <Footer />

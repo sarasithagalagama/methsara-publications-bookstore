@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import { Link } from "react-router-dom";
 import { Facebook, Instagram, Mail, Phone, MapPin } from "lucide-react";
 
@@ -6,21 +6,32 @@ const Footer = () => {
   return (
     <footer className="bg-gray-900 text-gray-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Company Info */}
-          <div>
-            <h3 className="text-white text-lg font-bold mb-4">
-              Methsara Publications
-            </h3>
-            <p className="text-sm mb-4">
+          <div className="col-span-1 md:col-span-2">
+            <div className="flex items-center mb-4">
+              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                <span className="text-gray-900 font-bold text-sm">M</span>
+              </div>
+              <span className="ml-2 text-lg font-bold text-white">
+                Methsara Publications
+              </span>
+            </div>
+            <p className="text-sm text-gray-400 mb-4 max-w-md">
               Empowering Sri Lankan students with quality educational materials
-              since 2015.
+              since 2015. Trusted by over 10,000 students nationwide.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="hover:text-primary-400 transition-colors">
+              <a
+                href="#"
+                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors"
+              >
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" className="hover:text-primary-400 transition-colors">
+              <a
+                href="#"
+                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors"
+              >
                 <Instagram className="h-5 w-5" />
               </a>
             </div>
@@ -28,38 +39,38 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-white text-lg font-semibold mb-4">
+            <h4 className="text-white text-sm font-semibold mb-4 uppercase tracking-wider">
               Quick Links
             </h4>
             <ul className="space-y-2">
               <li>
                 <Link
                   to="/"
-                  className="hover:text-primary-400 transition-colors"
+                  className="text-sm hover:text-white transition-colors"
                 >
                   Home
                 </Link>
               </li>
               <li>
                 <Link
+                  to="/shop"
+                  className="text-sm hover:text-white transition-colors"
+                >
+                  Books
+                </Link>
+              </li>
+              <li>
+                <Link
                   to="/about"
-                  className="hover:text-primary-400 transition-colors"
+                  className="text-sm hover:text-white transition-colors"
                 >
                   About Us
                 </Link>
               </li>
               <li>
                 <Link
-                  to="/shop"
-                  className="hover:text-primary-400 transition-colors"
-                >
-                  Shop
-                </Link>
-              </li>
-              <li>
-                <Link
                   to="/my-orders"
-                  className="hover:text-primary-400 transition-colors"
+                  className="text-sm hover:text-white transition-colors"
                 >
                   My Orders
                 </Link>
@@ -67,59 +78,50 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Categories */}
-          <div>
-            <h4 className="text-white text-lg font-semibold mb-4">
-              Categories
-            </h4>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  to="/shop?category=Grade 6-11"
-                  className="hover:text-primary-400 transition-colors"
-                >
-                  Grade 6-11 Books
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/shop?category=Advanced Level"
-                  className="hover:text-primary-400 transition-colors"
-                >
-                  Advanced Level Books
-                </Link>
-              </li>
-            </ul>
-          </div>
-
           {/* Contact Info */}
           <div>
-            <h4 className="text-white text-lg font-semibold mb-4">
-              Contact Us
+            <h4 className="text-white text-sm font-semibold mb-4 uppercase tracking-wider">
+              Contact
             </h4>
-            <ul className="space-y-2">
-              <li className="flex items-start">
-                <MapPin className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
-                <span className="text-sm">Colombo, Sri Lanka</span>
+            <ul className="space-y-3">
+              <li className="flex items-start text-sm">
+                <MapPin className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
+                <span>Colombo, Sri Lanka</span>
               </li>
-              <li className="flex items-center">
+              <li className="flex items-center text-sm">
                 <Phone className="h-5 w-5 mr-2 flex-shrink-0" />
-                <span className="text-sm">+94 XX XXX XXXX</span>
+                <span>+94 XX XXX XXXX</span>
               </li>
-              <li className="flex items-center">
+              <li className="flex items-center text-sm">
                 <Mail className="h-5 w-5 mr-2 flex-shrink-0" />
-                <span className="text-sm">info@methsarapublications.lk</span>
+                <span>info@methsara.lk</span>
               </li>
             </ul>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
-          <p>
-            &copy; {new Date().getFullYear()} Methsara Publications. All rights
-            reserved.
-          </p>
+        <div className="border-t border-gray-800 pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <p className="text-sm text-gray-400">
+              © {new Date().getFullYear()} Methsara Publications. All rights
+              reserved.
+            </p>
+            <div className="flex space-x-6 mt-4 md:mt-0">
+              <Link
+                to="#"
+                className="text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                Privacy Policy
+              </Link>
+              <Link
+                to="#"
+                className="text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                Terms of Service
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
@@ -127,4 +129,3 @@ const Footer = () => {
 };
 
 export default Footer;
-

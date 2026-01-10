@@ -1,42 +1,58 @@
-import React from 'react';
-import { BookOpen, Target, Heart, Users } from "lucide-react";
+import React from "react";
+import {
+  BookOpen,
+  Target,
+  Heart,
+  Users,
+  Award,
+  TrendingUp,
+  Shield,
+  Sparkles,
+} from "lucide-react";
 import { Card, CardContent } from "../components/ui/Card";
 
 const About = () => {
   const values = [
     {
-      icon: <BookOpen className="h-10 w-10 text-primary-600" />,
+      icon: <BookOpen className="h-6 w-6" />,
       title: "Quality Education",
       description:
-        "We believe every student deserves access to high-quality educational materials",
+        "Every student deserves access to high-quality educational materials",
     },
     {
-      icon: <Target className="h-10 w-10 text-primary-600" />,
+      icon: <Target className="h-6 w-6" />,
       title: "Student Success",
-      description:
-        "Our primary goal is to help students achieve their academic aspirations",
+      description: "Helping students achieve their academic aspirations",
     },
     {
-      icon: <Heart className="h-10 w-10 text-primary-600" />,
+      icon: <Heart className="h-6 w-6" />,
       title: "Passion for Teaching",
-      description:
-        "Created by educators who are passionate about making learning accessible",
+      description: "Created by educators passionate about accessible learning",
     },
     {
-      icon: <Users className="h-10 w-10 text-primary-600" />,
+      icon: <Users className="h-6 w-6" />,
       title: "Community Focus",
       description:
-        "Supporting the Sri Lankan student community with locally relevant content",
+        "Supporting Sri Lankan students with locally relevant content",
     },
+  ];
+
+  const stats = [
+    { number: "10,000+", label: "Students Served" },
+    { number: "50+", label: "Books Published" },
+    { number: "9", label: "Years of Excellence" },
+    { number: "100%", label: "Curriculum Aligned" },
   ];
 
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <section className="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">About Us</h1>
-          <p className="text-xl text-primary-100 max-w-2xl mx-auto">
+      <section className="bg-gray-50 py-16 border-b border-gray-200">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+            About Us
+          </h1>
+          <p className="text-xl text-gray-600">
             Empowering students through quality education since 2015
           </p>
         </div>
@@ -45,8 +61,8 @@ const About = () => {
       {/* Our Story Section */}
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+          <div className="mb-12">
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
               Our Story
             </h2>
           </div>
@@ -82,48 +98,68 @@ const About = () => {
       {/* Mission Section */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+          <div className="mb-12">
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
               Our Mission
             </h2>
           </div>
 
-          <Card className="bg-white shadow-lg">
+          <Card className="bg-white shadow-sm border-gray-200">
             <CardContent className="p-8">
               <p className="text-lg text-gray-700 leading-relaxed mb-6">
                 We are committed to empowering students through comprehensive,
                 curriculum-aligned educational materials. Our mission is to:
               </p>
 
-              <ul className="space-y-4 text-lg text-gray-700">
+              <ul className="space-y-4">
                 <li className="flex items-start">
-                  <span className="inline-block w-2 h-2 bg-primary-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                  <span>
-                    Provide <strong>accessible education</strong> for all Sri
-                    Lankan students, regardless of their economic background
+                  <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mt-1 mr-4">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700 leading-relaxed">
+                    Provide{" "}
+                    <strong className="text-gray-900">
+                      accessible education
+                    </strong>{" "}
+                    for all Sri Lankan students, regardless of their economic
+                    background
                   </span>
                 </li>
                 <li className="flex items-start">
-                  <span className="inline-block w-2 h-2 bg-primary-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                  <span>
+                  <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mt-1 mr-4">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700 leading-relaxed">
                     Deliver{" "}
-                    <strong>high-quality, curriculum-aligned content</strong>{" "}
+                    <strong className="text-gray-900">
+                      high-quality, curriculum-aligned content
+                    </strong>{" "}
                     that simplifies complex concepts and enhances understanding
                   </span>
                 </li>
                 <li className="flex items-start">
-                  <span className="inline-block w-2 h-2 bg-primary-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                  <span>
-                    Support <strong>academic excellence</strong> by building
-                    confidence in students preparing for O/L and A/L
+                  <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mt-1 mr-4">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700 leading-relaxed">
+                    Support{" "}
+                    <strong className="text-gray-900">
+                      academic excellence
+                    </strong>{" "}
+                    by building confidence in students preparing for O/L and A/L
                     examinations
                   </span>
                 </li>
                 <li className="flex items-start">
-                  <span className="inline-block w-2 h-2 bg-primary-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                  <span>
-                    Continuously <strong>innovate and improve</strong> our
-                    publications based on student feedback and curriculum
+                  <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mt-1 mr-4">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700 leading-relaxed">
+                    Continuously{" "}
+                    <strong className="text-gray-900">
+                      innovate and improve
+                    </strong>{" "}
+                    our publications based on student feedback and curriculum
                     changes
                   </span>
                 </li>
@@ -136,8 +172,8 @@ const About = () => {
       {/* Values Section */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
               Our Values
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -147,39 +183,34 @@ const About = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {values.map((value, index) => (
-              <Card
-                key={index}
-                className="text-center hover:shadow-lg transition-shadow duration-300"
-              >
-                <CardContent className="pt-6">
-                  <div className="flex justify-center mb-4">{value.icon}</div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    {value.title}
-                  </h3>
-                  <p className="text-gray-600">{value.description}</p>
-                </CardContent>
-              </Card>
+              <div key={index} className="text-center">
+                <div className="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-gray-700">
+                  {value.icon}
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  {value.title}
+                </h3>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  {value.description}
+                </p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 bg-gradient-to-r from-primary-600 to-primary-800 text-white">
+      <section className="py-20 bg-gray-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div>
-              <div className="text-5xl font-bold mb-2">10,000+</div>
-              <div className="text-xl text-primary-100">Students Served</div>
-            </div>
-            <div>
-              <div className="text-5xl font-bold mb-2">50+</div>
-              <div className="text-xl text-primary-100">Books Published</div>
-            </div>
-            <div>
-              <div className="text-5xl font-bold mb-2">9 Years</div>
-              <div className="text-xl text-primary-100">Of Excellence</div>
-            </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="text-4xl lg:text-5xl font-bold mb-2">
+                  {stat.number}
+                </div>
+                <div className="text-gray-400 text-sm">{stat.label}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -188,4 +219,3 @@ const About = () => {
 };
 
 export default About;
-
