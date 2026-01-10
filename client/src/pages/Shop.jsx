@@ -671,7 +671,7 @@ const Shop = () => {
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-secondary-900/90 via-secondary-900/40 to-transparent flex flex-col justify-center px-8 md:px-16">
-            <h2 className="text-3xl lg:text-5xl font-serif font-bold italic text-white mb-4 max-w-xl leading-tight">
+            <h2 className="text-3xl lg:text-5xl font-sans font-bold italic text-white mb-4 max-w-xl leading-tight">
               A book is a gift you can open again and again
             </h2>
             <p className="text-white/80 mb-8 font-serif italic text-lg opacity-90">
