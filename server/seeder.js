@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const User = require("./models/User");
-const Book = require("./models/Book"); // Assuming we might want to seed books later, but focused on User now
+const Book = require("./models/Book");
+const books = require("./data/books");
 
 dotenv.config();
 
@@ -13,40 +14,50 @@ mongoose
     process.exit(1);
   });
 
-const seedAdmin = async () => {
+const seedData = async () => {
   try {
-    // Check if admin already exists
+    // --- Seed Admin ---
     const adminExists = await User.findOne({ email: "admin@methsara.lk" });
 
     if (adminExists) {
       console.log("Admin user already exists");
-      process.exit();
+    } else {
+      const adminUser = new User({
+        name: "Super Admin",
+        email: "admin@methsara.lk",
+        password: "password123", // Will be hashed by pre-save hook
+        role: "admin",
+        phone: "0771234567",
+        address: {
+          street: "123 Admin St",
+          city: "Colombo",
+          province: "Western",
+          postalCode: "10100",
+          country: "Sri Lanka",
+        },
+      });
+
+      await adminUser.save();
+      console.log("Admin user created successfully");
+      console.log("Email: admin@methsara.lk");
+      console.log("Password: password123");
     }
 
-    const adminUser = new User({
-      name: "Super Admin",
-      email: "admin@methsara.lk",
-      password: "password123", // Will be hashed by pre-save hook
-      role: "admin",
-      phone: "0771234567",
-      address: {
-        street: "123 Admin St",
-        city: "Colombo",
-        province: "Western",
-        postalCode: "10100",
-        country: "Sri Lanka",
-      },
-    });
+    // --- Seed Books ---
+    console.log("Seeding Books...");
+    // Clear existing books to avoid duplicates
+    await Book.deleteMany({});
+    console.log("Cleared existing books.");
 
-    await adminUser.save();
-    console.log("Admin user created successfully");
-    console.log("Email: admin@methsara.lk");
-    console.log("Password: password123");
+    await Book.insertMany(books);
+    console.log(`${books.length} Books created successfully`);
+
+    console.log("DATA SEEDING COMPLETED!");
     process.exit();
   } catch (error) {
-    console.error("Error seeding admin:", error);
+    console.error("Error seeding data:", error);
     process.exit(1);
   }
 };
 
-seedAdmin();
+seedData();
