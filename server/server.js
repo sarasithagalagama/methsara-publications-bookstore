@@ -43,7 +43,7 @@ app.use(
 // Debug Route
 app.get("/api/debug", (req, res) => {
   res.json({
-    message: "Debug Info (Sanitized V4)",
+    message: "Debug Info (Sanitized V5 - Hardcoded Fallback)",
     mongo_uri_exists: !!process.env.MONGODB_URI,
     mongo_uri_has_whitespace: /\s/.test(process.env.MONGODB_URI || ""),
     sanitized_uri_preview: global.dbUriPreview || "Not generated",

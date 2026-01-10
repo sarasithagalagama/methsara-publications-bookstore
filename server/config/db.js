@@ -3,10 +3,16 @@ const mongoose = require("mongoose");
 const connectDB = async () => {
   try {
     let uri = process.env.MONGODB_URI;
-    if (!uri) throw new Error("MONGODB_URI is not defined");
 
-    // Auto-fix common paste errors: Nuclear option - Strip EVERYTHING until 'm' (start of mongodb)
-    uri = uri.replace(/^[^m]+/, "");
+    // TEMPORARY: Hardcoded fallback if env var is corrupted
+    if (!uri || uri.trim().length === 0) {
+      uri =
+        "mongodb+srv://sarasithagalagama_db_user:14EjbwV0ifCnm73R@methsara-prod.jreyzlj.mongodb.net/methsara-store?appName=methsara-prod";
+      console.log("Using hardcoded URI fallback");
+    } else {
+      // Auto-fix common paste errors: Nuclear option - Strip EVERYTHING until 'm' (start of mongodb)
+      uri = uri.replace(/^[^m]+/, "");
+    }
 
     global.dbUriPreview = uri.substring(0, 15) + "..."; // Store preview for debug
 
