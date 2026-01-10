@@ -5,8 +5,8 @@ const connectDB = async () => {
     let uri = process.env.MONGODB_URI;
     if (!uri) throw new Error("MONGODB_URI is not defined");
 
-    // Auto-fix common paste errors: Recursively remove quotes and whitespace from start/end
-    uri = uri.replace(/^[\s"']+|[\s"']+$/g, "");
+    // Auto-fix common paste errors: Nuclear option - Strip EVERYTHING until 'm' (start of mongodb)
+    uri = uri.replace(/^[^m]+/, "");
 
     const conn = await mongoose.connect(uri);
 
