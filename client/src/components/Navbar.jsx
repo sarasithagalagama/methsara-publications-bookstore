@@ -67,19 +67,11 @@ const Navbar = () => {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-primary-500/30 transition-all duration-300">
-                <span className="text-white font-bold text-lg font-serif">
-                  M
-                </span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-xl font-bold text-gray-900 leading-none group-hover:text-primary-700 transition-colors">
-                  Methsara
-                </span>
-                <span className="text-[10px] text-gray-500 font-medium tracking-wider uppercase">
-                  Publications
-                </span>
-              </div>
+              <img
+                src="/logo.png"
+                alt="Methsara Publications"
+                className="h-16 w-auto transition-transform duration-300 group-hover:scale-105"
+              />
             </Link>
 
             {/* Desktop Navigation */}

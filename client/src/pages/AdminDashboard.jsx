@@ -13,11 +13,14 @@ import {
   Upload,
   Image as ImageIcon,
   Search,
+  DollarSign,
+  AlertTriangle,
+  Tag,
+  TrendingDown,
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import { useAuth } from "../context/AuthContext";
-import { books as initialBooks } from "../data/books";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -147,30 +150,6 @@ const AdminDashboard = () => {
   };
 
   // Existing handlers...
-  const handleSeedData = async () => {
-    if (!window.confirm("Seed database?")) return;
-    try {
-      const token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      };
-      let timeout = 0;
-      for (const book of initialBooks) {
-        const { _id, ...bookData } = book;
-        await new Promise((resolve) => setTimeout(resolve, timeout));
-        await axios.post("http://localhost:5000/api/books", bookData, config);
-        timeout += 50;
-      }
-      alert("Database seeded!");
-      fetchDashboardData();
-    } catch (error) {
-      console.error("Seeding error:", error);
-      alert("Failed to seed.");
-    }
-  };
 
   const handleDeleteBook = async (id) => {
     if (!window.confirm("Delete this book?")) return;
@@ -394,8 +373,12 @@ const AdminDashboard = () => {
       <div className="flex-1 flex flex-col overflow-y-auto">
         <main className="p-8">
           {activeTab === "overview" && (
-            <div className="space-y-8">
-              <h2 className="text-2xl font-bold text-gray-900">Overview</h2>
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-gray-900">
+                Dashboard Overview
+              </h2>
+
+              {/* Stats Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard
                   label="Total Products"
@@ -411,20 +394,201 @@ const AdminDashboard = () => {
                   bg="bg-blue-50"
                   color="text-blue-600"
                 />
+                <StatCard
+                  label="Low Stock Items"
+                  value={
+                    books.filter((b) => b.stock <= 10 && b.stock > 0).length
+                  }
+                  icon={AlertTriangle}
+                  bg="bg-orange-50"
+                  color="text-orange-600"
+                />
+                <StatCard
+                  label="Active Sales"
+                  value={
+                    books.filter((b) => b.salePrice || b.isFlashSale).length
+                  }
+                  icon={Tag}
+                  bg="bg-green-50"
+                  color="text-green-600"
+                />
               </div>
-              {books.length === 0 && (
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-yellow-100 bg-yellow-50 mt-4">
-                  <h3 className="text-lg font-bold text-yellow-800 mb-2">
-                    Setup Required
+
+              {/* Revenue & Inventory Stats */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Inventory Status */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                    <Package className="w-5 h-5 mr-2 text-purple-600" />
+                    Inventory Status
                   </h3>
-                  <p className="text-yellow-700 mb-4">Database is empty.</p>
-                  <Button
-                    onClick={handleSeedData}
-                    variant="outline"
-                    className="bg-white border-yellow-300 text-yellow-800 hover:bg-yellow-100"
-                  >
-                    Seed Database
-                  </Button>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                      <span className="text-sm font-medium text-gray-700">
+                        In Stock
+                      </span>
+                      <span className="text-lg font-bold text-green-600">
+                        {books.filter((b) => b.stock > 10).length}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
+                      <span className="text-sm font-medium text-gray-700">
+                        Low Stock (≤10)
+                      </span>
+                      <span className="text-lg font-bold text-orange-600">
+                        {
+                          books.filter((b) => b.stock <= 10 && b.stock > 0)
+                            .length
+                        }
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
+                      <span className="text-sm font-medium text-gray-700">
+                        Out of Stock
+                      </span>
+                      <span className="text-lg font-bold text-red-600">
+                        {books.filter((b) => b.stock === 0).length}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sales Overview */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                    <Tag className="w-5 h-5 mr-2 text-green-600" />
+                    Sales Overview
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
+                      <span className="text-sm font-medium text-gray-700">
+                        Flash Sales
+                      </span>
+                      <span className="text-lg font-bold text-orange-600">
+                        {books.filter((b) => b.isFlashSale).length}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                      <span className="text-sm font-medium text-gray-700">
+                        Discounted Items
+                      </span>
+                      <span className="text-lg font-bold text-green-600">
+                        {books.filter((b) => b.salePrice).length}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                      <span className="text-sm font-medium text-gray-700">
+                        Regular Price
+                      </span>
+                      <span className="text-lg font-bold text-blue-600">
+                        {
+                          books.filter((b) => !b.salePrice && !b.isFlashSale)
+                            .length
+                        }
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Low Stock Alert */}
+              {books.filter((b) => b.stock <= 10 && b.stock > 0).length > 0 && (
+                <div className="bg-orange-50 border border-orange-200 rounded-2xl p-6">
+                  <div className="flex items-start">
+                    <AlertTriangle className="w-6 h-6 text-orange-600 mr-3 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold text-orange-900 mb-2">
+                        Low Stock Alert
+                      </h3>
+                      <p className="text-sm text-orange-700 mb-3">
+                        {
+                          books.filter((b) => b.stock <= 10 && b.stock > 0)
+                            .length
+                        }{" "}
+                        product(s) are running low on stock
+                      </p>
+                      <div className="space-y-2">
+                        {books
+                          .filter((b) => b.stock <= 10 && b.stock > 0)
+                          .slice(0, 5)
+                          .map((book) => (
+                            <div
+                              key={book._id}
+                              className="flex justify-between items-center bg-white p-3 rounded-lg"
+                            >
+                              <span className="text-sm font-medium text-gray-900 font-sinhala">
+                                {book.titleSinhala || book.title}
+                              </span>
+                              <span className="text-sm font-bold text-orange-600">
+                                {book.stock} left
+                              </span>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Recent Orders */}
+              {orders.length > 0 && (
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                  <div className="p-6 border-b border-gray-100">
+                    <h3 className="text-lg font-bold text-gray-900 flex items-center">
+                      <ShoppingBag className="w-5 h-5 mr-2 text-blue-600" />
+                      Recent Orders
+                    </h3>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                            Order ID
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                            Customer
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                            Status
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                            Date
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {orders.slice(0, 5).map((order) => (
+                          <tr key={order._id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-600">
+                              #{order._id.slice(-6).toUpperCase()}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {order.customerName || "Customer"}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span
+                                className={`px-2.5 py-1 text-xs font-medium rounded-full ${
+                                  order.status === "delivered"
+                                    ? "bg-green-100 text-green-800"
+                                    : order.status === "shipped"
+                                    ? "bg-blue-100 text-blue-800"
+                                    : order.status === "processing"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : "bg-gray-100 text-gray-800"
+                                }`}
+                              >
+                                {order.status}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {new Date(order.createdAt).toLocaleDateString()}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
             </div>
