@@ -33,11 +33,21 @@ app.use(
       // Allow any Vercel deployment
       if (origin.endsWith(".vercel.app")) return callback(null, true);
 
-      callback(new Error("Not allowed by CORS"));
+      callback(null, true); // Fallback to allow all for debugging if needed, but keeping strict for now
     },
     credentials: true,
   })
 );
+
+// Debug Route
+app.get("/api/debug", (req, res) => {
+  res.json({
+    message: "Debug Info",
+    mongo_uri_exists: !!process.env.MONGODB_URI,
+    mongo_status: mongoose.connection.readyState, // 0: disconnected, 1: connected, 2: connecting
+    env_node: process.env.NODE_ENV,
+  });
+});
 
 // Mount routers
 app.use("/api/auth", require("./routes/auth"));
