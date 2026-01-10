@@ -4,113 +4,92 @@ import {
   MapPin,
   ShoppingCart,
   Bell,
-  Filter,
-  Star,
-  Heart,
   SlidersHorizontal,
   ChevronDown,
   Check,
+  Star,
+  Heart,
+  Grid,
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { useCart } from "../context/CartContext";
-import { useAuth } from "../context/AuthContext";
-import { getBooks } from "../services/bookService";
 import { Link } from "react-router-dom";
 
 const Shop = () => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("All");
-  const [priceRange, setPriceRange] = useState([0, 5000]);
   const { addToCart } = useCart();
 
-  // Mock data for UI showcase (to match the beautiful reference design immediately)
-  // In a real scenario, we merge this with backend data
+  // Mock data matching the theme
   const mockBooks = [
     {
       _id: "1",
-      title: "This Book and Innocence",
-      author: "Eve Matthews",
-      price: 810,
+      title: "Science Part 1 (Grade 10)",
+      author: "Methsara Publications",
+      price: 1250,
       image:
-        "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=800",
-      rating: 4.2,
+        "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=600",
+      rating: 4.8,
       isFlashSale: true,
-      category: "Romance",
+      category: "Grade 6-11",
     },
     {
       _id: "2",
-      title: "Books and Glasses",
-      author: "Jessie Merrill",
-      price: 1700,
+      title: "Mathematics Part 1 (Grade 9)",
+      author: "Methsara Publications",
+      price: 1100,
       image:
-        "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=800",
-      rating: 4.8,
-      isFlashSale: true,
-      category: "Science",
+        "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=600",
+      rating: 4.9,
+      isFlashSale: false,
+      category: "Grade 6-11",
     },
     {
       _id: "3",
-      title: "Beautiful and Dare",
-      author: "Arlene Pena",
-      price: 900,
+      title: "A/L Biology - Unit Papers",
+      author: "Dr. A. Perera",
+      price: 1800,
       image:
-        "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=800",
+        "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=600",
       rating: 5.0,
       isFlashSale: true,
-      category: "Adventure",
+      category: "Advanced Level",
     },
     {
       _id: "4",
-      title: "Morning White",
-      author: "Tyra Dhall",
-      price: 2400,
+      title: "Civics Q&A (Grade 7)",
+      author: "Methsara Publications",
+      price: 950,
       image:
-        "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80&w=800",
-      rating: 4.5,
-      isFlashSale: true,
-      category: "Fantasy",
+        "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80&w=600",
+      rating: 4.7,
+      isFlashSale: false,
+      category: "Grade 6-11",
     },
     {
       _id: "5",
-      title: "My Book and Daily Life",
-      author: "Taylor Woods",
-      price: 2750,
+      title: "A/L Chemistry Revision",
+      author: "S. Silva",
+      price: 2100,
       image:
-        "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&q=80&w=800",
-      rating: 4.7,
-      isFlashSale: true,
-      category: "Lifestyle",
+        "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&q=80&w=600",
+      rating: 4.6,
+      isFlashSale: false,
+      category: "Advanced Level",
     },
     {
       _id: "6",
-      title: "The Design of Everyday",
-      author: "Don Norman",
-      price: 1500,
+      title: "Health & PE (Grade 8)",
+      author: "Methsara Publications",
+      price: 850,
       image:
-        "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=800",
-      rating: 4.9,
-      isFlashSale: false,
-      category: "Design",
+        "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=600",
+      rating: 4.5,
+      isFlashSale: true,
+      category: "Grade 6-11",
     },
   ];
-
-  /* 
-  // Backend Integration (Commented out to show UI first as requested)
-  useEffect(() => {
-    const fetchBooks = async () => {
-      try {
-        const data = await getBooks();
-        setBooks(data.data);
-      } catch (error) {
-        console.error("Failed to fetch books", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchBooks();
-  }, []);
-  */
 
   useEffect(() => {
     // Simulate loading
@@ -124,116 +103,70 @@ const Shop = () => {
     "All",
     "Grade 6-11",
     "Advanced Level",
-    "Adventure",
-    "Fantasy",
-    "Science",
-    "Romance",
+    "Past Papers",
+    "Workbooks",
+    "Revision Guides",
   ];
-  const priceTags = ["Rs. 500 - 1000", "Rs. 1000 - 2000", "Rs. 2000+"];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex font-sans">
+    <div className="min-h-screen bg-white flex font-sans text-secondary-900">
       {/* Sidebar Filter - Desktop */}
-      <aside className="hidden lg:block w-72 bg-white border-r border-gray-100 p-8 fixed top-16 h-[calc(100vh-4rem)] overflow-y-auto z-40">
-        <div className="mb-10">
-          <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <span className="bg-gray-900 text-white w-8 h-8 rounded-lg flex items-center justify-center text-sm">
-              M
-            </span>
-            Methsara
+      <aside className="hidden lg:block w-72 bg-white border-r border-secondary-100 p-8 fixed top-16 h-[calc(100vh-4rem)] overflow-y-auto z-40">
+        <div className="mb-12">
+          <h2 className="text-2xl font-serif font-bold text-secondary-900 flex items-center gap-2">
+            Filters
           </h2>
         </div>
 
-        <div className="space-y-8">
-          {/* Navigation Group */}
+        <div className="space-y-10">
+          {/* Categories */}
           <div>
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
-              Discover
+            <h3 className="text-sm font-bold text-secondary-900 uppercase tracking-wider mb-6">
+              Category
             </h3>
-            <ul className="space-y-3">
-              <li>
-                <a
-                  href="#"
-                  className="flex items-center text-gray-900 font-medium bg-gray-50 px-3 py-2 rounded-xl"
+            <div className="space-y-3">
+              {categories.map((cat, idx) => (
+                <label
+                  key={idx}
+                  className="flex items-center group cursor-pointer"
                 >
-                  <span className="w-1.5 h-1.5 bg-gray-900 rounded-full mr-3"></span>
-                  Shop All
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="flex items-center text-gray-500 hover:text-gray-900 px-3 py-2 rounded-xl transition-colors"
-                >
-                  <span className="w-1.5 h-1.5 bg-gray-300 rounded-full mr-3"></span>
-                  Flash Sales
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Filters */}
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-gray-900">Filter</h3>
-              <SlidersHorizontal className="w-4 h-4 text-gray-400" />
-            </div>
-
-            {/* Category Filter */}
-            <div className="mb-6">
-              <h4 className="text-sm font-medium text-gray-700 mb-3">
-                Category
-              </h4>
-              <div className="space-y-2">
-                {categories.map((cat, idx) => (
-                  <label
-                    key={idx}
-                    className="flex items-center group cursor-pointer"
-                  >
-                    <div
-                      className={`w-5 h-5 rounded-md border flex items-center justify-center mr-3 transition-colors ${
-                        activeCategory === cat
-                          ? "bg-gray-900 border-gray-900"
-                          : "border-gray-300 group-hover:border-gray-400"
-                      }`}
-                    >
-                      {activeCategory === cat && (
-                        <Check className="w-3.5 h-3.5 text-white" />
-                      )}
-                    </div>
+                  <div className="relative flex items-center">
                     <input
                       type="checkbox"
-                      className="hidden"
+                      className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border border-secondary-300 transition-all checked:border-primary-500 checked:bg-primary-500 hover:border-primary-400"
                       checked={activeCategory === cat}
                       onChange={() => setActiveCategory(cat)}
                     />
-                    <span
-                      className={`text-sm ${
-                        activeCategory === cat
-                          ? "text-gray-900 font-medium"
-                          : "text-gray-500 group-hover:text-gray-700"
-                      }`}
-                    >
-                      {cat}
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Price Filter */}
-            <div>
-              <h4 className="text-sm font-medium text-gray-700 mb-3">Price</h4>
-              <div className="flex flex-wrap gap-2">
-                {priceTags.map((tag, idx) => (
-                  <button
-                    key={idx}
-                    className="text-xs px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                    <Check className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100" />
+                  </div>
+                  <span
+                    className={`ml-3 text-sm transition-colors ${
+                      activeCategory === cat
+                        ? "text-secondary-900 font-medium"
+                        : "text-secondary-500 group-hover:text-secondary-700"
+                    }`}
                   >
-                    {tag}
-                  </button>
-                ))}
-              </div>
+                    {cat}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Price Range */}
+          <div>
+            <h3 className="text-sm font-bold text-secondary-900 uppercase tracking-wider mb-6">
+              Price Range
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {["< 1000", "1000-2000", "2000+"].map((price, idx) => (
+                <button
+                  key={idx}
+                  className="px-4 py-2 rounded-full border border-secondary-200 text-sm text-secondary-600 hover:border-primary-500 hover:text-primary-600 transition-all"
+                >
+                  {price}
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -243,56 +176,49 @@ const Shop = () => {
       <main className="flex-1 lg:ml-72 p-4 lg:p-8">
         {/* Header Section */}
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-          <div className="flex items-center gap-2 text-sm text-gray-500 bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100">
-            <span className="text-gray-400">Sent to</span>
-            <span className="font-semibold text-gray-900 flex items-center gap-1">
-              Colombo, LK <ChevronDown className="w-3 h-3" />
-            </span>
+          <div>
+            <h1 className="text-3xl font-serif font-bold text-secondary-900">
+              Book Store
+            </h1>
+            <p className="text-secondary-500 text-sm">
+              Find your next favorite study companion
+            </p>
           </div>
 
           <div className="flex items-center gap-4 w-full md:w-auto">
             <div className="relative flex-1 md:w-96">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary-400" />
               <input
                 type="text"
-                placeholder="Find the best educational books..."
-                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10 transition-shadow shadow-sm"
+                placeholder="Search by title, author, or ISBN..."
+                className="w-full pl-10 pr-4 py-3 bg-secondary-50 border border-transparent rounded-full text-sm focus:outline-none focus:bg-white focus:border-secondary-200 focus:ring-2 focus:ring-primary-100 transition-all"
               />
             </div>
-            <div className="flex items-center gap-3">
-              <button className="p-2.5 bg-white rounded-full border border-gray-200 text-gray-600 hover:text-gray-900 hover:bg-gray-50 shadow-sm transition-all">
-                <ShoppingCart className="w-5 h-5" />
-              </button>
-              <button className="p-2.5 bg-white rounded-full border border-gray-200 text-gray-600 hover:text-gray-900 hover:bg-gray-50 shadow-sm transition-all">
-                <Bell className="w-5 h-5" />
+            <div className="flex items-center gap-2">
+              <button className="p-3 bg-secondary-50 rounded-full hover:bg-secondary-100 text-secondary-900 transition-colors">
+                <SlidersHorizontal className="w-5 h-5" />
               </button>
             </div>
           </div>
         </header>
 
-        {/* Hero / Promo Banner */}
-        <div className="relative w-full h-80 rounded-[2.5rem] overflow-hidden mb-10 group cursor-pointer shadow-lg">
+        {/* Hero / Promo Banner - KEPT AS USER LIKED */}
+        <div className="relative w-full h-80 rounded-[2.5rem] overflow-hidden mb-12 group cursor-pointer shadow-xl shadow-secondary-900/5">
           <img
             src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&q=80&w=2000"
             alt="Library"
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent flex flex-col justify-center px-12">
-            <h2 className="text-3xl lg:text-5xl font-bold text-white mb-4 max-w-xl leading-tight">
+          <div className="absolute inset-0 bg-gradient-to-r from-secondary-900/90 via-secondary-900/40 to-transparent flex flex-col justify-center px-8 md:px-16">
+            <h2 className="text-3xl lg:text-5xl font-serif font-bold text-white mb-4 max-w-xl leading-tight">
               A book is a gift you can open again and again
             </h2>
-            <p className="text-gray-300 mb-8 font-medium italic">
+            <p className="text-white/80 mb-8 font-serif italic text-lg opacity-90">
               — Garrison Keillor
             </p>
             <div className="flex items-center gap-4">
-              <Button className="bg-[#B89F7D] hover:bg-[#a68e6d] text-white border-none rounded-full px-8 py-6 text-base shadow-lg hover:shadow-xl transition-all">
-                Claim Discount
-              </Button>
-              <Button
-                variant="outline"
-                className="bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white rounded-full px-8 py-6 text-base backdrop-blur-sm"
-              >
-                Best Seller Book
+              <Button className="bg-primary-500 hover:bg-primary-600 text-white border-none rounded-full px-8 py-6 text-base shadow-lg hover:shadow-primary-500/30 transition-all font-serif italic">
+                Get Started
               </Button>
             </div>
           </div>
@@ -300,74 +226,73 @@ const Shop = () => {
 
         {/* Book Grid */}
         <div>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Popular Books</h2>
-            <div className="flex items-center gap-2">
-              <button className="text-sm font-medium text-gray-500 hover:text-gray-900 px-3 py-1 bg-white rounded-full shadow-sm border border-gray-100">
-                Latest
-              </button>
-              <button className="text-sm font-medium text-white px-3 py-1 bg-gray-900 rounded-full shadow-md">
-                Best Seller
-              </button>
-            </div>
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-serif font-bold text-secondary-900">
+              All Books
+            </h2>
+            <span className="text-sm text-secondary-500">
+              Showing {books.length} results
+            </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {books.map((book) => (
               <div
                 key={book._id}
-                className="group relative bg-white rounded-[2rem] p-4 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100"
+                className="group relative bg-white rounded-[2rem] p-4 border border-transparent hover:border-secondary-100 hover:shadow-xl hover:shadow-secondary-900/5 transition-all duration-300"
               >
                 {/* Image Container */}
-                <div className="relative aspect-[4/5] rounded-[1.5rem] overflow-hidden mb-4 bg-gray-100">
+                <div className="relative aspect-[3/4] rounded-[1.5rem] overflow-hidden mb-4 bg-secondary-50">
                   <img
                     src={book.image}
                     alt={book.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
 
-                  {/* Tags/Badges */}
-                  <div className="absolute top-3 left-3 flex gap-2">
+                  {/* Overlay Gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-secondary-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                  {/* Badges */}
+                  <div className="absolute top-4 left-4 flex gap-2">
                     {book.isFlashSale && (
-                      <span className="bg-black/40 backdrop-blur-md text-white text-[10px] uppercase font-bold px-2 py-1 rounded-full border border-white/10">
-                        Flash Sale
+                      <span className="bg-primary-500 text-white text-[10px] uppercase font-bold px-3 py-1.5 rounded-full tracking-wide">
+                        Sale
                       </span>
                     )}
                   </div>
-                  <div className="absolute top-3 right-3 flex gap-2">
-                    <span className="flex items-center gap-1 bg-white/90 backdrop-blur-md text-gray-900 text-xs font-bold px-2 py-1 rounded-full shadow-sm">
-                      <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                      {book.rating}
-                    </span>
-                  </div>
 
-                  {/* Wishlist Button */}
-                  <button className="absolute bottom-3 right-3 w-8 h-8 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-gray-700 hover:text-red-500 shadow-sm transition-colors opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 duration-300">
-                    <Heart className="w-4 h-4" />
-                  </button>
+                  {/* Quick Actions */}
+                  <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-3 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                    <button
+                      onClick={() => addToCart(book)}
+                      className="w-10 h-10 bg-white text-secondary-900 rounded-full flex items-center justify-center hover:bg-primary-500 hover:text-white transition-colors shadow-lg"
+                    >
+                      <ShoppingCart className="w-5 h-5" />
+                    </button>
+                    <button className="w-10 h-10 bg-white text-secondary-900 rounded-full flex items-center justify-center hover:text-red-500 transition-colors shadow-lg">
+                      <Heart className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Content */}
-                <div className="px-2 pb-2">
-                  <h3 className="font-bold text-gray-900 text-lg mb-1 truncate leading-tight group-hover:text-blue-600 transition-colors">
+                <div className="px-2">
+                  <h3 className="font-serif font-bold text-secondary-900 text-lg mb-1 truncate group-hover:text-primary-600 transition-colors">
                     {book.title}
                   </h3>
-                  <p className="text-gray-500 text-sm mb-3 flex items-center gap-1">
+                  <p className="text-secondary-500 text-xs uppercase tracking-wide font-bold mb-3">
                     {book.author}
-                    <span className="inline-block w-3 h-3 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center">
-                      <Check className="w-2 h-2" />
-                    </span>
                   </p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold text-gray-900">
+                  <div className="flex items-center justify-between border-t border-secondary-100 pt-3">
+                    <span className="text-lg font-bold text-secondary-900">
                       Rs. {book.price.toLocaleString()}
                     </span>
-                    <button
-                      onClick={() => addToCart(book)}
-                      className="w-8 h-8 bg-gray-900 text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-transform active:scale-95 shadow-lg shadow-gray-900/20"
-                    >
-                      <ShoppingCart className="w-4 h-4" />
-                    </button>
+                    <div className="flex items-center gap-1">
+                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                      <span className="text-sm font-medium text-secondary-600">
+                        {book.rating}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -375,10 +300,10 @@ const Shop = () => {
           </div>
 
           {/* Load More */}
-          <div className="mt-12 text-center">
+          <div className="mt-16 text-center">
             <Button
               variant="outline"
-              className="rounded-full px-8 border-gray-300 hover:bg-gray-50 text-gray-600"
+              className="rounded-full px-10 py-6 border-secondary-200 text-secondary-600 hover:bg-secondary-50 hover:border-secondary-300 hover:text-secondary-900 transition-all text-base"
             >
               Load More Books
             </Button>
