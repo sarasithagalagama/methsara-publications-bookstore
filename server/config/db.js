@@ -10,6 +10,7 @@ const connectDB = async () => {
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error(`Error: ${error.message}`);
+    global.dbError = error.message;
     // process.exit(1); // Do not exit in serverless environment
   }
 };

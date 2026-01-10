@@ -45,7 +45,9 @@ app.get("/api/debug", (req, res) => {
   res.json({
     message: "Debug Info",
     mongo_uri_exists: !!process.env.MONGODB_URI,
+    mongo_uri_has_whitespace: /\s/.test(process.env.MONGODB_URI || ""),
     mongo_status: mongoose.connection.readyState, // 0: disconnected, 1: connected, 2: connecting
+    last_db_error: global.dbError || "No error captured (Check Vercel Logs)",
     env_node: process.env.NODE_ENV,
   });
 });
