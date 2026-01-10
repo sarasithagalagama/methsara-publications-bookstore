@@ -1,8 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const { uploadReceipt } = require("../controllers/uploadController");
-const { protect } = require("../middleware/auth");
+const {
+  uploadReceipt,
+  uploadImage,
+} = require("../controllers/uploadController");
+const { protect, authorize } = require("../middleware/auth");
 
 // Configure multer for memory storage
 const upload = multer({
@@ -13,5 +16,12 @@ const upload = multer({
 });
 
 router.post("/receipt", protect, upload.single("receipt"), uploadReceipt);
+router.post(
+  "/image",
+  protect,
+  authorize("admin"),
+  upload.single("image"),
+  uploadImage
+);
 
 module.exports = router;

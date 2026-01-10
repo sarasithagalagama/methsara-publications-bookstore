@@ -12,6 +12,7 @@ import Register from "./pages/Register";
 import BookDetails from "./pages/BookDetails";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
+import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import "./index.css";
 
@@ -30,6 +31,7 @@ function App() {
                 <Route path="/books/:id" element={<BookDetails />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<Checkout />} />
+                <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="*" element={<NotFound />} />

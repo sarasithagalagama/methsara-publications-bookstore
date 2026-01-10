@@ -6,20 +6,28 @@ const bookSchema = new mongoose.Schema({
     required: [true, "Please provide a book title"],
     trim: true,
   },
+  titleSinhala: {
+    type: String,
+    trim: true,
+  },
   author: {
     type: String,
     required: [true, "Please provide an author name"],
     trim: true,
   },
+  publisher: {
+    type: String,
+    trim: true,
+  },
   category: {
     type: String,
     required: [true, "Please provide a category"],
-    enum: ["Grade 6-11", "Advanced Level"],
+    trim: true,
   },
   grade: {
     type: String,
     required: [true, "Please provide a grade"],
-    enum: ["6", "7", "8", "9", "10", "11", "12", "13"],
+    trim: true,
   },
   subject: {
     type: String,
@@ -33,27 +41,50 @@ const bookSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: [true, "Please provide a description"],
     trim: true,
   },
-  synopsis: {
+  image: {
     type: String,
-    trim: true,
+    default:
+      "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=600",
   },
-  coverImage: {
+  backCoverImage: {
     type: String,
-    default: "/images/default-book-cover.jpg",
+  },
+  pageCount: {
+    type: Number,
+    min: 0,
+  },
+  rating: {
+    type: Number,
+    default: 0,
+  },
+  isFlashSale: {
+    type: Boolean,
+    default: false,
+  },
+  salePrice: {
+    type: Number,
+    min: 0,
+  },
+  discountPercentage: {
+    type: Number,
+    min: 0,
+    max: 100,
+  },
+  saleStartDate: {
+    type: Date,
+  },
+  saleEndDate: {
+    type: Date,
   },
   stock: {
     type: Number,
-    required: [true, "Please provide stock quantity"],
     min: 0,
-    default: 0,
+    default: 100,
   },
   isbn: {
     type: String,
-    unique: true,
-    sparse: true,
     trim: true,
   },
   createdAt: {
@@ -64,6 +95,14 @@ const bookSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+});
+
+// Virtual field to check if book is currently on sale
+bookSchema.virtual("isOnSale").get(function () {
+  if (!this.salePrice && !this.discountPercentage) return false;
+  if (!this.saleStartDate || !this.saleEndDate) return true; // If no dates set, sale is always active
+  const now = new Date();
+  return now >= this.saleStartDate && now <= this.saleEndDate;
 });
 
 // Update the updatedAt field before saving

@@ -49,11 +49,24 @@ exports.getBooks = async (req, res, next) => {
       sortOption = { createdAt: -1 }; // Default: newest first
     }
 
-    const books = await Book.find(query).sort(sortOption);
+    // Pagination
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const books = await Book.find(query)
+      .sort(sortOption)
+      .skip(skip)
+      .limit(limit);
+
+    const total = await Book.countDocuments(query);
 
     res.status(200).json({
       success: true,
       count: books.length,
+      page,
+      pages: Math.ceil(total / limit),
+      total,
       books,
     });
   } catch (error) {
