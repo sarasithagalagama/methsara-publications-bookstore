@@ -8,6 +8,8 @@ const connectDB = async () => {
     // Auto-fix common paste errors: Nuclear option - Strip EVERYTHING until 'm' (start of mongodb)
     uri = uri.replace(/^[^m]+/, "");
 
+    global.dbUriPreview = uri.substring(0, 15) + "..."; // Store preview for debug
+
     const conn = await mongoose.connect(uri);
 
     console.log(`MongoDB Connected: ${conn.connection.host}`);
