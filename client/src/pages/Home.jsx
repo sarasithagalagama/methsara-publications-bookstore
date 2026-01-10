@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "../services/api";
 import {
   BookOpen,
   Users,
@@ -23,7 +23,7 @@ const Home = () => {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/books");
+        const response = await api.get("/books");
         const allBooks = response.data.books || [];
 
         // Shuffle array

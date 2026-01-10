@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../services/api";
 import {
   Users,
   Package,
@@ -92,9 +92,6 @@ const AdminDashboard = () => {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
-      const config = { headers: { Authorization: `Bearer ${token}` } };
-
       if (activeTab === "products" || activeTab === "overview") {
         try {
           const queryParams = new URLSearchParams({
@@ -105,9 +102,7 @@ const AdminDashboard = () => {
             ...(filters.grade && { grade: filters.grade }),
           });
 
-          const booksRes = await axios.get(
-            `http://localhost:5000/api/books?${queryParams}`
-          );
+          const booksRes = await api.get(`/books?${queryParams}`);
           setBooks(booksRes.data.books || []);
           setPagination((prev) => ({
             ...prev,
@@ -122,10 +117,7 @@ const AdminDashboard = () => {
       if (activeTab === "orders" || activeTab === "overview") {
         try {
           // Orders fetch remains the same for now
-          const ordersRes = await axios.get(
-            "http://localhost:5000/api/orders/all",
-            config
-          );
+          const ordersRes = await api.get("/orders/all");
           setOrders(ordersRes.data.orders || []);
         } catch (err) {
           console.error("Error fetching orders:", err);
@@ -154,10 +146,7 @@ const AdminDashboard = () => {
   const handleDeleteBook = async (id) => {
     if (!window.confirm("Delete this book?")) return;
     try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/api/books/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.delete(`/books/${id}`);
       // specific refresh to keep pagination consistent or just fetch again
       fetchDashboardData();
     } catch (error) {
@@ -169,12 +158,7 @@ const AdminDashboard = () => {
 
   const handleOrderStatus = async (id, status) => {
     try {
-      const token = localStorage.getItem("token");
-      await axios.put(
-        `http://localhost:5000/api/orders/${id}/status`,
-        { status },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await api.put(`/orders/${id}/status`, { status });
       setOrders(
         orders.map((order) => (order._id === id ? { ...order, status } : order))
       );
@@ -200,20 +184,14 @@ const AdminDashboard = () => {
     setLoader(true);
 
     try {
-      const token = localStorage.getItem("token");
       const formDataUpload = new FormData();
       formDataUpload.append("image", file);
 
-      const res = await axios.post(
-        "http://localhost:5000/api/upload/image",
-        formDataUpload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const res = await api.post("/upload/image", formDataUpload, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       setFormData((prev) => ({ ...prev, [field]: res.data.url }));
     } catch (error) {
@@ -283,9 +261,6 @@ const AdminDashboard = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem("token");
-      const config = { headers: { Authorization: `Bearer ${token}` } };
-
       const payload = {
         ...formData,
         price: Number(formData.price),
@@ -305,13 +280,9 @@ const AdminDashboard = () => {
       );
 
       if (editMode && currentBook) {
-        await axios.put(
-          `http://localhost:5000/api/books/${currentBook._id}`,
-          payload,
-          config
-        );
+        await api.put(`/books/${currentBook._id}`, payload);
       } else {
-        await axios.post("http://localhost:5000/api/books", payload, config);
+        await api.post("/books", payload);
       }
       setIsModalOpen(false);
       fetchDashboardData(); // Refresh list to see changes

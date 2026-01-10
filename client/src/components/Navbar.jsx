@@ -16,6 +16,7 @@ import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { Button } from "./ui/Button";
+import api from "../services/api";
 
 const Navbar = () => {
   const { user, logout, isAdmin, isAuthenticated } = useAuth();
@@ -53,13 +54,10 @@ const Navbar = () => {
 
     setSearchLoading(true);
     try {
-      const response = await fetch(
-        `http://localhost:5000/api/books?search=${encodeURIComponent(
-          query
-        )}&limit=5`
+      const response = await api.get(
+        `/books?search=${encodeURIComponent(query)}&limit=5`
       );
-      const data = await response.json();
-      setSearchResults(data.books || []);
+      setSearchResults(response.data.books || []);
     } catch (error) {
       console.error("Search error:", error);
       setSearchResults([]);

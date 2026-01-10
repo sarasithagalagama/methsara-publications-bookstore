@@ -15,7 +15,7 @@ import { Button } from "../components/ui/Button";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { Link, useSearchParams } from "react-router-dom";
-import axios from "axios";
+import api from "../services/api";
 
 const Shop = () => {
   const [books, setBooks] = useState([]);
@@ -64,9 +64,7 @@ const Shop = () => {
       // Fetch all books for display (no pagination limit for shop page)
       params.append("limit", "100");
 
-      const response = await axios.get(
-        `http://localhost:5000/api/books?${params}`
-      );
+      const response = await api.get(`/books?${params.toString()}`);
       let fetchedBooks = response.data.books || [];
 
       // Client-side filtering for subjects (since backend doesn't support multiple subjects)
@@ -91,9 +89,7 @@ const Shop = () => {
 
       // Store all books for filter options (fetch once without filters)
       if (allBooks.length === 0) {
-        const allBooksResponse = await axios.get(
-          `http://localhost:5000/api/books?limit=100`
-        );
+        const allBooksResponse = await api.get(`/books?limit=100`);
         setAllBooks(allBooksResponse.data.books || []);
       }
     } catch (error) {

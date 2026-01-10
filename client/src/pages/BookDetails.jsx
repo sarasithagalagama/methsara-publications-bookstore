@@ -15,7 +15,7 @@ import {
 import { Button } from "../components/ui/Button";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
-import axios from "axios";
+import api from "../services/api";
 
 const BookDetails = () => {
   const { id } = useParams();
@@ -31,9 +31,7 @@ const BookDetails = () => {
     // Fetch book from API by ID
     const fetchBook = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:5000/api/books/${id}`
-        );
+        const response = await api.get(`/books/${id}`);
         setBook(response.data.book);
       } catch (error) {
         console.error("Error fetching book:", error);
