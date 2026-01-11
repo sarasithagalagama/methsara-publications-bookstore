@@ -89,6 +89,11 @@ const AdminDashboard = () => {
     isFlashSale: false,
   });
 
+  // Book List Modal State
+  const [isBookListModalOpen, setIsBookListModalOpen] = useState(false);
+  const [bookListModalTitle, setBookListModalTitle] = useState("");
+  const [bookListModalBooks, setBookListModalBooks] = useState([]);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(filters.search);
@@ -546,15 +551,11 @@ const AdminDashboard = () => {
                       (b) => b.stock <= 10 && b.stock > 0
                     );
                     if (lowStockBooks.length > 0) {
-                      const bookList = lowStockBooks
-                        .map(
-                          (b) =>
-                            `${b.titleSinhala || b.title} (Stock: ${b.stock})`
-                        )
-                        .join("\n");
-                      alert(
-                        `Low Stock Items (${lowStockBooks.length}):\n\n${bookList}`
+                      setBookListModalTitle(
+                        `Low Stock Items (${lowStockBooks.length})`
                       );
+                      setBookListModalBooks(lowStockBooks);
+                      setIsBookListModalOpen(true);
                     } else {
                       alert("No low stock items");
                     }
@@ -573,20 +574,11 @@ const AdminDashboard = () => {
                       (b) => b.salePrice || b.isFlashSale
                     );
                     if (activeSalesBooks.length > 0) {
-                      const bookList = activeSalesBooks
-                        .map((b) => {
-                          const price = b.salePrice
-                            ? `Rs. ${b.salePrice}`
-                            : `Rs. ${b.price}`;
-                          const badge = b.isFlashSale ? " [FLASH SALE]" : "";
-                          return `${
-                            b.titleSinhala || b.title
-                          } - ${price}${badge}`;
-                        })
-                        .join("\n");
-                      alert(
-                        `Active Sales (${activeSalesBooks.length}):\n\n${bookList}`
+                      setBookListModalTitle(
+                        `Active Sales (${activeSalesBooks.length})`
                       );
+                      setBookListModalBooks(activeSalesBooks);
+                      setIsBookListModalOpen(true);
                     } else {
                       alert("No active sales");
                     }
@@ -2212,6 +2204,114 @@ const AdminDashboard = () => {
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Book List Modal */}
+      {isBookListModalOpen && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+            <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-gray-900">
+                {bookListModalTitle}
+              </h3>
+              <button
+                onClick={() => setIsBookListModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto flex-1">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {bookListModalBooks.map((book) => (
+                  <div
+                    key={book._id}
+                    className="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:border-primary-300 transition-colors"
+                  >
+                    <div className="flex gap-3">
+                      <div className="flex-shrink-0 w-16 h-20 bg-white rounded overflow-hidden border border-gray-200">
+                        {book.image ? (
+                          <img
+                            src={book.image}
+                            alt={book.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                            <Package className="w-6 h-6 text-gray-400" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-sinhala font-bold text-sm text-gray-900 mb-1 line-clamp-2">
+                          {book.titleSinhala || book.title}
+                        </h4>
+                        {book.title && book.titleSinhala && (
+                          <p className="text-xs text-gray-500 mb-2 line-clamp-1">
+                            {book.title}
+                          </p>
+                        )}
+                        <div className="space-y-1">
+                          {book.stock !== undefined && (
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-gray-600">
+                                Stock:
+                              </span>
+                              <span
+                                className={`text-xs font-medium ${
+                                  book.stock <= 5
+                                    ? "text-red-600"
+                                    : book.stock <= 10
+                                    ? "text-orange-600"
+                                    : "text-green-600"
+                                }`}
+                              >
+                                {book.stock}
+                              </span>
+                            </div>
+                          )}
+                          {(book.salePrice || book.price) && (
+                            <div className="flex items-center gap-2">
+                              {book.salePrice ? (
+                                <>
+                                  <span className="text-sm font-bold text-orange-600">
+                                    Rs. {book.salePrice}
+                                  </span>
+                                  <span className="text-xs text-gray-400 line-through">
+                                    Rs. {book.price}
+                                  </span>
+                                </>
+                              ) : (
+                                <span className="text-sm font-medium text-gray-900">
+                                  Rs. {book.price}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                          {book.isFlashSale && (
+                            <span className="inline-block px-2 py-0.5 text-xs font-medium bg-orange-100 text-orange-700 rounded">
+                              FLASH SALE
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-gray-100">
+              <Button
+                onClick={() => setIsBookListModalOpen(false)}
+                className="w-full"
+              >
+                Close
+              </Button>
             </div>
           </div>
         </div>
