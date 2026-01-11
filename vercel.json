@@ -29,12 +29,5 @@
       "src": "/(.*)",
       "dest": "/client/index.html"
     }
-  ],
-  "env": {
-    "MONGODB_URI": "Set in Vercel Dashboard",
-    "JWT_SECRET": "Set in Vercel Dashboard",
-    "BLOB_READ_WRITE_TOKEN": "Set in Vercel Dashboard",
-    "GOOGLE_CLIENT_ID": "Set in Vercel Dashboard",
-    "CLIENT_URL": "Your Vercel URL"
-  }
+  ]
 }

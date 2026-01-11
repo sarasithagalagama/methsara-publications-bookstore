@@ -22,6 +22,10 @@ const connectDB = async () => {
   if (!cached.promise) {
     const uri = process.env.MONGODB_URI;
 
+    // DEBUG: Log what Vercel is seeing (first 15 chars only for security)
+    console.log("DB URI starts with:", uri ? uri.slice(0, 15) : "NOT FOUND");
+    console.log("Environment:", process.env.NODE_ENV || "development");
+
     if (!uri) {
       const error = new Error(
         "MONGODB_URI is not defined in environment variables. " +
