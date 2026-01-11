@@ -6,8 +6,11 @@ const mongoose = require("mongoose");
 const { errorHandler } = require("./middleware/errorHandler");
 const ensureDbConnection = require("./middleware/dbConnection");
 
-// Load env vars
-dotenv.config();
+// Load env vars from .env file only in development
+// In production (Vercel), environment variables are set in the dashboard
+if (process.env.NODE_ENV !== "production") {
+  dotenv.config();
+}
 
 const app = express();
 
