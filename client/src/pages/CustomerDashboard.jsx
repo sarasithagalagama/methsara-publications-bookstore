@@ -145,9 +145,16 @@ const CustomerDashboard = () => {
       }
     } catch (error) {
       console.error("Profile update failed", error);
+      const errorMessage =
+        error.response?.data?.message ||
+        "Failed to update profile: " +
+          (error.response?.data
+            ? JSON.stringify(error.response.data).slice(0, 100)
+            : error.message);
+
       setProfileMessage({
         type: "error",
-        text: error.response?.data?.message || "Failed to update profile",
+        text: errorMessage,
       });
     } finally {
       setSavingProfile(false);
