@@ -1050,18 +1050,18 @@ const AdminDashboard = () => {
                             </td>
                             <td className="px-6 py-4">
                               <div className="text-sm font-medium text-gray-900">
-                                {order.customerName || "N/A"}
+                                {order.shippingAddress?.name ||
+                                  order.user?.name ||
+                                  "N/A"}
                               </div>
-                              {order.email && (
-                                <div className="text-xs text-gray-500">
-                                  {order.email}
-                                </div>
-                              )}
-                              {order.phone && (
-                                <div className="text-xs text-gray-500">
-                                  {order.phone}
-                                </div>
-                              )}
+                              <div className="text-xs text-gray-500">
+                                {order.user?.email || "No Email"}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                {order.shippingAddress?.phone ||
+                                  order.user?.phone ||
+                                  "N/A"}
+                              </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm text-gray-900">
@@ -1070,7 +1070,7 @@ const AdminDashboard = () => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm font-bold text-gray-900">
-                                Rs. {order.total?.toLocaleString() || "0"}
+                                Rs. {(order.totalAmount || 0).toLocaleString()}
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
@@ -1598,7 +1598,7 @@ const AdminDashboard = () => {
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Total Amount</p>
                   <p className="text-lg font-bold text-primary-600">
-                    Rs. {selectedOrder.total?.toLocaleString()}
+                    Rs. {(selectedOrder.totalAmount || 0).toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -1614,19 +1614,23 @@ const AdminDashboard = () => {
                       <span className="text-gray-500 w-20 inline-block">
                         Name:
                       </span>
-                      {selectedOrder.customerName || "N/A"}
+                      {selectedOrder.shippingAddress?.name ||
+                        selectedOrder.user?.name ||
+                        "N/A"}
                     </p>
                     <p className="text-sm text-gray-900">
                       <span className="text-gray-500 w-20 inline-block">
                         Email:
                       </span>
-                      {selectedOrder.email || "N/A"}
+                      {selectedOrder.user?.email || "N/A"}
                     </p>
                     <p className="text-sm text-gray-900">
                       <span className="text-gray-500 w-20 inline-block">
                         Phone:
                       </span>
-                      {selectedOrder.phone || "N/A"}
+                      {selectedOrder.shippingAddress?.phone ||
+                        selectedOrder.user?.phone ||
+                        "N/A"}
                     </p>
                   </div>
                 </div>
@@ -1637,9 +1641,10 @@ const AdminDashboard = () => {
                   <div className="bg-white border border-gray-200 rounded-lg p-4 text-sm text-gray-600 leading-relaxed">
                     {selectedOrder.shippingAddress ? (
                       <>
-                        <p>{selectedOrder.shippingAddress.address}</p>
+                        <p>{selectedOrder.shippingAddress.street}</p>
                         <p>
                           {selectedOrder.shippingAddress.city},{" "}
+                          {selectedOrder.shippingAddress.province},{" "}
                           {selectedOrder.shippingAddress.postalCode}
                         </p>
                         <p>{selectedOrder.shippingAddress.country}</p>
