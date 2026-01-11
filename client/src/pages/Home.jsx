@@ -162,7 +162,7 @@ const Home = () => {
                 key={book._id}
                 className="group cursor-pointer"
               >
-                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-8 mb-4 relative overflow-hidden aspect-[3/4] flex items-center justify-center transition-all duration-300 group-hover:shadow-xl">
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-4 mb-4 relative overflow-hidden aspect-[3/4] flex items-center justify-center transition-all duration-300 group-hover:shadow-xl">
                   <img
                     src={book.image}
                     alt={book.title}
