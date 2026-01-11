@@ -86,8 +86,35 @@ const CustomerDashboard = () => {
     }
   };
 
+  // Validation State
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const newErrors = {};
+    const phoneRegex = /^(?:0|94|\+94)?(?:7\d{8})$/; // Sri Lankan mobile format
+
+    if (!profileData.phone) {
+      newErrors.phone = "Phone number is required";
+    } else if (!phoneRegex.test(profileData.phone.replace(/\s/g, ""))) {
+      newErrors.phone = "Invalid phone number (e.g., 0712345678)";
+    }
+
+    if (!profileData.street) newErrors.street = "Street address is required";
+    if (!profileData.city) newErrors.city = "City is required";
+    if (!profileData.postalCode)
+      newErrors.postalCode = "Postal code is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     setSavingProfile(true);
     setProfileMessage(null);
 
@@ -133,6 +160,10 @@ const CustomerDashboard = () => {
       ...prev,
       [name]: value,
     }));
+    // Clear specific error when user types
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: null }));
+    }
   };
 
   const handleLogout = () => {
@@ -572,12 +603,18 @@ const CustomerDashboard = () => {
                             placeholder="07XXXXXXXX"
                             required
                             className={`block w-full pl-10 pr-3 py-2.5 border rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors bg-gray-50/50 hover:bg-white ${
-                              !profileData.phone && showProfileAlert
+                              errors.phone ||
+                              (!profileData.phone && showProfileAlert)
                                 ? "border-red-300 ring-2 ring-red-100 placeholder-red-300"
                                 : "border-gray-200"
                             }`}
                           />
                         </div>
+                        {errors.phone && (
+                          <p className="text-xs text-red-600 mt-1 ml-1">
+                            {errors.phone}
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -609,12 +646,18 @@ const CustomerDashboard = () => {
                               placeholder="No. 123, Main Street"
                               required
                               className={`block w-full pl-10 pr-3 py-2.5 border rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors bg-gray-50/50 hover:bg-white ${
-                                !profileData.street && showProfileAlert
+                                errors.street ||
+                                (!profileData.street && showProfileAlert)
                                   ? "border-red-300 ring-2 ring-red-100 placeholder-red-300"
                                   : "border-gray-200"
                               }`}
                             />
                           </div>
+                          {errors.street && (
+                            <p className="text-xs text-red-600 mt-1 ml-1">
+                              {errors.street}
+                            </p>
+                          )}
                         </div>
 
                         <div className="space-y-2">
@@ -628,11 +671,17 @@ const CustomerDashboard = () => {
                             onChange={handleInputChange}
                             required
                             className={`block w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors bg-gray-50/50 hover:bg-white ${
-                              !profileData.city && showProfileAlert
+                              errors.city ||
+                              (!profileData.city && showProfileAlert)
                                 ? "border-red-300 ring-2 ring-red-100 placeholder-red-300"
                                 : "border-gray-200"
                             }`}
                           />
+                          {errors.city && (
+                            <p className="text-xs text-red-600 mt-1 ml-1">
+                              {errors.city}
+                            </p>
+                          )}
                         </div>
 
                         <div className="space-y-2">
@@ -646,11 +695,17 @@ const CustomerDashboard = () => {
                             onChange={handleInputChange}
                             required
                             className={`block w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors bg-gray-50/50 hover:bg-white ${
-                              !profileData.postalCode && showProfileAlert
+                              errors.postalCode ||
+                              (!profileData.postalCode && showProfileAlert)
                                 ? "border-red-300 ring-2 ring-red-100 placeholder-red-300"
                                 : "border-gray-200"
                             }`}
                           />
+                          {errors.postalCode && (
+                            <p className="text-xs text-red-600 mt-1 ml-1">
+                              {errors.postalCode}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </div>
