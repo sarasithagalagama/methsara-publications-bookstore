@@ -384,6 +384,7 @@ const AdminDashboard = () => {
       </aside>
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-y-auto">
+        {/* Dashboard Content */}
         <main className="p-8">
           {activeTab === "overview" && (
             <div className="space-y-6">
@@ -1544,7 +1545,7 @@ const AdminDashboard = () => {
           </div>
         </div>
       )}
-      )}
+
       {/* Order Details Modal */}
       {isOrderModalOpen && selectedOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
