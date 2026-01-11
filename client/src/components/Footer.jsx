@@ -19,7 +19,7 @@ const Footer = () => {
             </div>
             <p className="text-sm text-gray-400 mb-4 max-w-md">
               Empowering Sri Lankan students with quality educational materials
-              since 2015. Trusted by over 10,000 students nationwide.
+              since 2012. Trusted by over 10,000 students nationwide.
             </p>
             <div className="flex space-x-4">
               <a
