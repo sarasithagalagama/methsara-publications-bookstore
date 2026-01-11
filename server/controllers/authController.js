@@ -304,3 +304,35 @@ exports.resetPassword = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc    Update user details
+// @route   PUT /api/auth/updatedetails
+// @access  Private
+exports.updateDetails = async (req, res, next) => {
+  try {
+    const fieldsToUpdate = {
+      name: req.body.name,
+      phone: req.body.phone,
+      address: req.body.address,
+    };
+
+    const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
+      new: true,
+      runValidators: true,
+    });
+
+    res.status(200).json({
+      success: true,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        phone: user.phone,
+        address: user.address,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};

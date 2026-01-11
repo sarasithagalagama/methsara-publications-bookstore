@@ -11,23 +11,71 @@ import {
   MapPin,
   Mail,
   Phone,
+  User,
+  Package,
+  Settings,
+  LogOut,
+  ShoppingBag,
+  MapPin,
+  Mail,
+  Phone,
   Clock,
   CheckCircle,
   Truck,
   Image as ImageIcon,
   Loader2,
+  Save,
+  AlertCircle,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const CustomerDashboard = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, checkUser } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
   const [orders, setOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
+  const [showProfileAlert, setShowProfileAlert] = useState(false);
+
+  // Settings State
+  const [profileData, setProfileData] = useState({
+    name: "",
+    phone: "",
+    street: "",
+    city: "",
+    postalCode: "",
+    country: "",
+  });
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [profileMessage, setProfileMessage] = useState(null);
 
   useEffect(() => {
-    if (activeTab === "orders" || activeTab === "overview") {
+    if (user) {
+      setProfileData({
+        name: user.name || "",
+        phone: user.phone || "",
+        street: user.address?.street || "",
+        city: user.address?.city || "",
+        postalCode: user.address?.postalCode || "",
+        country: user.address?.country || "Sri Lanka",
+      });
+
+      // Check if profile is incomplete (missing phone or address)
+      const isProfileIncomplete =
+        !user.phone ||
+        !user.address?.street ||
+        !user.address?.city ||
+        !user.address?.postalCode;
+
+      if (isProfileIncomplete && activeTab !== "settings") {
+        setShowProfileAlert(true);
+        setActiveTab("settings");
+      }
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (activeTab === "orders") {
       fetchOrders();
     }
   }, [activeTab]);
@@ -44,6 +92,55 @@ const CustomerDashboard = () => {
     } finally {
       setLoadingOrders(false);
     }
+  };
+
+  const handleProfileUpdate = async (e) => {
+    e.preventDefault();
+    setSavingProfile(true);
+    setProfileMessage(null);
+
+    try {
+      const updateData = {
+        name: profileData.name,
+        phone: profileData.phone,
+        address: {
+          street: profileData.street,
+          city: profileData.city,
+          postalCode: profileData.postalCode,
+          country: profileData.country,
+        },
+      };
+
+      const res = await api.put("/auth/updatedetails", updateData);
+
+      if (res.data.success) {
+        // Refresh user data
+        await checkUser();
+        setProfileMessage({
+          type: "success",
+          text: "Profile updated successfully!",
+        });
+        setShowProfileAlert(false);
+        // Clear message after 3 seconds
+        setTimeout(() => setProfileMessage(null), 3000);
+      }
+    } catch (error) {
+      console.error("Profile update failed", error);
+      setProfileMessage({
+        type: "error",
+        text: error.response?.data?.message || "Failed to update profile",
+      });
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setProfileData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleLogout = () => {
@@ -125,6 +222,22 @@ const CustomerDashboard = () => {
                 >
                   <ShoppingBag className="w-5 h-5 mr-3" />
                   My Orders
+                </button>
+                <button
+                  onClick={() => setActiveTab("settings")}
+                  className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors ${
+                    activeTab === "settings"
+                      ? "bg-primary-50 text-primary-700"
+                      : "text-gray-600 hover:bg-gray-50"
+                  }`}
+                >
+                  <div className="flex items-center flex-1">
+                    <Settings className="w-5 h-5 mr-3" />
+                    Settings
+                  </div>
+                  {showProfileAlert && (
+                    <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                  )}
                 </button>
                 <div className="pt-2 border-t border-gray-100 mt-2">
                   <button
@@ -379,6 +492,165 @@ const CustomerDashboard = () => {
                     ))}
                   </div>
                 )}
+              </div>
+            )}
+
+            {activeTab === "settings" && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-2xl font-bold text-gray-900">Settings</h2>
+                </div>
+
+                {showProfileAlert && (
+                  <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 flex items-start">
+                    <AlertCircle className="w-5 h-5 text-orange-500 mt-0.5 mr-3 flex-shrink-0" />
+                    <div>
+                      <h4 className="text-sm font-bold text-orange-800">
+                        Please complete your profile
+                      </h4>
+                      <p className="text-sm text-orange-700 mt-1">
+                        To ensure smooth delivery of your orders, please provide
+                        your phone number and shipping address.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+                  <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                    <User className="w-5 h-5 mr-2 text-primary-600" />
+                    Personal & Shipping Details
+                  </h3>
+
+                  {profileMessage && (
+                    <div
+                      className={`mb-6 p-4 rounded-lg ${
+                        profileMessage.type === "success"
+                          ? "bg-green-50 text-green-700 border border-green-200"
+                          : "bg-red-50 text-red-700 border border-red-200"
+                      }`}
+                    >
+                      {profileMessage.text}
+                    </div>
+                  )}
+
+                  <form onSubmit={handleProfileUpdate} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">
+                          Full Name
+                        </label>
+                        <input
+                          type="text"
+                          name="name"
+                          value={profileData.name}
+                          onChange={handleInputChange}
+                          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">
+                          Phone Number *
+                        </label>
+                        <input
+                          type="tel"
+                          name="phone"
+                          value={profileData.phone}
+                          onChange={handleInputChange}
+                          placeholder="07XXXXXXXX"
+                          required
+                          className={`w-full rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 ${
+                            !profileData.phone && showProfileAlert
+                              ? "border-red-300 ring-1 ring-red-300"
+                              : "border-gray-300"
+                          }`}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="border-t border-gray-100 pt-6">
+                      <h4 className="text-sm font-semibold text-gray-900 mb-4">
+                        Shipping Address
+                      </h4>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-gray-700">
+                            Street Address *
+                          </label>
+                          <input
+                            type="text"
+                            name="street"
+                            value={profileData.street}
+                            onChange={handleInputChange}
+                            placeholder="No. 123, Main Street"
+                            required
+                            className={`w-full rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 ${
+                              !profileData.street && showProfileAlert
+                                ? "border-red-300 ring-1 ring-red-300"
+                                : "border-gray-300"
+                            }`}
+                          />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700">
+                              City *
+                            </label>
+                            <input
+                              type="text"
+                              name="city"
+                              value={profileData.city}
+                              onChange={handleInputChange}
+                              required
+                              className={`w-full rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 ${
+                                !profileData.city && showProfileAlert
+                                  ? "border-red-300 ring-1 ring-red-300"
+                                  : "border-gray-300"
+                              }`}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700">
+                              Postal Code *
+                            </label>
+                            <input
+                              type="text"
+                              name="postalCode"
+                              value={profileData.postalCode}
+                              onChange={handleInputChange}
+                              required
+                              className={`w-full rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 ${
+                                !profileData.postalCode && showProfileAlert
+                                  ? "border-red-300 ring-1 ring-red-300"
+                                  : "border-gray-300"
+                              }`}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end pt-4">
+                      <button
+                        type="submit"
+                        disabled={savingProfile}
+                        className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+                      >
+                        {savingProfile ? (
+                          <>
+                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <Save className="w-5 h-5 mr-2" />
+                            Save Changes
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                </div>
               </div>
             )}
           </div>
