@@ -155,46 +155,48 @@ const Home = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredBooks.map((book) => (
               <Link
                 to={`/books/${book._id}`}
                 key={book._id}
                 className="group cursor-pointer"
               >
-                <div className="bg-secondary-50 rounded-[2rem] p-6 mb-4 relative overflow-hidden aspect-[4/5] flex items-center justify-center transition-all duration-300 group-hover:bg-secondary-100">
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-8 mb-4 relative overflow-hidden aspect-[3/4] flex items-center justify-center transition-all duration-300 group-hover:shadow-xl">
                   <img
                     src={book.image}
                     alt={book.title}
-                    className="w-full h-full object-cover rounded shadow-md group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-contain drop-shadow-2xl group-hover:scale-105 transition-transform duration-500"
                   />
                   {book.isOnSale && (
-                    <div className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wide z-10">
+                    <div className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide z-10">
                       Sale
                     </div>
                   )}
                 </div>
-                <h3 className="font-sinhala font-bold text-secondary-900 text-base mb-1 leading-tight group-hover:text-primary-600 transition-colors line-clamp-2">
-                  {book.titleSinhala || book.title}
-                </h3>
-                <p className="text-secondary-500 text-xs font-medium mb-3 line-clamp-1">
-                  {book.title}
-                </p>
-                <div className="flex items-center justify-between border-t border-secondary-100 pt-3">
-                  {book.isOnSale ? (
-                    <div className="flex flex-col">
-                      <span className="text-lg font-bold text-primary-600">
-                        Rs. {book.salePrice.toLocaleString()}
-                      </span>
-                      <span className="text-sm text-secondary-400 line-through">
+                <div className="text-center px-2">
+                  <h3 className="font-sinhala font-bold text-gray-900 text-lg mb-1 leading-tight group-hover:text-primary-600 transition-colors line-clamp-2">
+                    {book.titleSinhala || book.title}
+                  </h3>
+                  <p className="text-gray-500 text-xs font-medium mb-4 line-clamp-1 uppercase tracking-wide">
+                    {book.title}
+                  </p>
+                  <div className="flex items-center justify-center">
+                    {book.isOnSale ? (
+                      <div className="flex flex-col items-center">
+                        <span className="text-2xl font-bold text-gray-900">
+                          Rs. {book.salePrice.toLocaleString()}
+                        </span>
+                        <span className="text-sm text-gray-400 line-through">
+                          Rs. {book.price.toLocaleString()}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-2xl font-bold text-gray-900">
                         Rs. {book.price.toLocaleString()}
                       </span>
-                    </div>
-                  ) : (
-                    <span className="text-lg font-bold text-secondary-900">
-                      Rs. {book.price.toLocaleString()}
-                    </span>
-                  )}
+                    )}
+                  </div>
                 </div>
               </Link>
             ))}
