@@ -133,8 +133,10 @@ const CustomerDashboard = () => {
       const res = await api.put("/auth/updatedetails", updateData);
 
       if (res.data.success) {
-        // Refresh user data
-        await checkUser();
+        // Refresh user data if function exists
+        if (checkUser) {
+          await checkUser();
+        }
         setProfileMessage({
           type: "success",
           text: "Profile updated successfully!",
