@@ -112,7 +112,9 @@ bookSchema.virtual("isOnSale").get(function () {
 // Update the updatedAt field before saving
 bookSchema.pre("save", function (next) {
   this.updatedAt = Date.now();
-  next();
+  if (typeof next === "function") {
+    next();
+  }
 });
 
 module.exports = mongoose.model("Book", bookSchema);
