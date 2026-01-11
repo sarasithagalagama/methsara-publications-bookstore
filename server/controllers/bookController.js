@@ -219,7 +219,6 @@ exports.bulkUpdateBooks = async (req, res, next) => {
             {
               salePrice,
               discountPercentage: data.discountPercentage,
-              isOnSale: true,
               ...(data.saleStartDate && { saleStartDate: data.saleStartDate }),
               ...(data.saleEndDate && { saleEndDate: data.saleEndDate }),
             },
@@ -241,7 +240,6 @@ exports.bulkUpdateBooks = async (req, res, next) => {
 
         updateData = {
           salePrice: data.salePrice,
-          isOnSale: true,
           ...(data.saleStartDate && { saleStartDate: data.saleStartDate }),
           ...(data.saleEndDate && { saleEndDate: data.saleEndDate }),
         };
@@ -271,7 +269,6 @@ exports.bulkUpdateBooks = async (req, res, next) => {
             saleStartDate: "",
             saleEndDate: "",
           },
-          isOnSale: false,
           isFlashSale: false,
         };
         break;

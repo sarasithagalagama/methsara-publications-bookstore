@@ -439,7 +439,12 @@ const AdminDashboard = () => {
       fetchDashboardData();
     } catch (error) {
       console.error("Bulk update error:", error);
-      alert("Failed to update books. Please try again.");
+      console.error("Error response:", error.response?.data);
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to update books. Please try again.";
+      alert(`Error: ${errorMessage}`);
     }
   };
 
