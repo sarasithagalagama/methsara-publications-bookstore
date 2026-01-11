@@ -859,11 +859,80 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
+              {/* Bulk Actions Toolbar */}
+              {selectedBooks.length > 0 && (
+                <div className="bg-primary-50 border border-primary-200 rounded-xl p-4 flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-medium text-gray-700">
+                      {selectedBooks.length} book(s) selected
+                    </span>
+                    <button
+                      onClick={() => setSelectedBooks([])}
+                      className="text-sm text-gray-500 hover:text-gray-700"
+                    >
+                      Clear selection
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => openBulkModal("applyDiscount")}
+                      className="text-xs"
+                    >
+                      <Tag className="w-4 h-4 mr-1" />
+                      Apply Discount
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => openBulkModal("setSalePrice")}
+                      className="text-xs"
+                    >
+                      <DollarSign className="w-4 h-4 mr-1" />
+                      Set Sale Price
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => openBulkModal("toggleFlashSale")}
+                      className="text-xs"
+                    >
+                      <TrendingUp className="w-4 h-4 mr-1" />
+                      Flash Sale
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setBulkOperation("clearSales");
+                        handleBulkSubmit({ preventDefault: () => {} });
+                      }}
+                      className="text-xs text-red-600 hover:text-red-700 border-red-200"
+                    >
+                      <TrendingDown className="w-4 h-4 mr-1" />
+                      Clear Sales
+                    </Button>
+                  </div>
+                </div>
+              )}
+
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
+                        <th className="px-6 py-4 text-left">
+                          <input
+                            type="checkbox"
+                            checked={
+                              selectedBooks.length === books.length &&
+                              books.length > 0
+                            }
+                            onChange={handleSelectAll}
+                            className="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                          />
+                        </th>
                         <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                           Product
                         </th>
@@ -887,6 +956,14 @@ const AdminDashboard = () => {
                           key={book._id}
                           className="hover:bg-gray-50 transition-colors"
                         >
+                          <td className="px-6 py-4">
+                            <input
+                              type="checkbox"
+                              checked={selectedBooks.includes(book._id)}
+                              onChange={() => handleSelectBook(book._id)}
+                              className="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                            />
+                          </td>
                           <td className="px-6 py-4">
                             <div className="flex items-center">
                               <div className="h-12 w-9 flex-shrink-0 bg-gray-100 rounded overflow-hidden border border-gray-200">
@@ -1095,6 +1172,154 @@ const AdminDashboard = () => {
                   </div>
                 )}
               </div>
+
+              {/* Bulk Sale Modal */}
+              {isBulkModalOpen && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                  <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+                    <div className="p-6 border-b border-gray-100">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-bold text-gray-900">
+                          {bulkOperation === "applyDiscount" &&
+                            "Apply Discount"}
+                          {bulkOperation === "setSalePrice" && "Set Sale Price"}
+                          {bulkOperation === "toggleFlashSale" &&
+                            "Toggle Flash Sale"}
+                        </h3>
+                        <button
+                          onClick={closeBulkModal}
+                          className="text-gray-400 hover:text-gray-600"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
+                      </div>
+                      <p className="text-sm text-gray-500 mt-1">
+                        {selectedBooks.length} book(s) selected
+                      </p>
+                    </div>
+
+                    <form onSubmit={handleBulkSubmit} className="p-6 space-y-4">
+                      {bulkOperation === "applyDiscount" && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Discount Percentage (%)
+                          </label>
+                          <input
+                            type="number"
+                            min="1"
+                            max="100"
+                            value={bulkFormData.discountPercentage}
+                            onChange={(e) =>
+                              setBulkFormData({
+                                ...bulkFormData,
+                                discountPercentage: e.target.value,
+                              })
+                            }
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            placeholder="e.g., 20"
+                            required
+                          />
+                        </div>
+                      )}
+
+                      {bulkOperation === "setSalePrice" && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Sale Price (Rs.)
+                          </label>
+                          <input
+                            type="number"
+                            min="1"
+                            value={bulkFormData.salePrice}
+                            onChange={(e) =>
+                              setBulkFormData({
+                                ...bulkFormData,
+                                salePrice: e.target.value,
+                              })
+                            }
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            placeholder="e.g., 500"
+                            required
+                          />
+                        </div>
+                      )}
+
+                      {bulkOperation === "toggleFlashSale" && (
+                        <div>
+                          <label className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={bulkFormData.isFlashSale}
+                              onChange={(e) =>
+                                setBulkFormData({
+                                  ...bulkFormData,
+                                  isFlashSale: e.target.checked,
+                                })
+                              }
+                              className="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                            />
+                            <span className="text-sm font-medium text-gray-700">
+                              Enable Flash Sale
+                            </span>
+                          </label>
+                        </div>
+                      )}
+
+                      {(bulkOperation === "applyDiscount" ||
+                        bulkOperation === "setSalePrice") && (
+                        <>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Sale Start Date (Optional)
+                            </label>
+                            <input
+                              type="date"
+                              value={bulkFormData.saleStartDate}
+                              onChange={(e) =>
+                                setBulkFormData({
+                                  ...bulkFormData,
+                                  saleStartDate: e.target.value,
+                                })
+                              }
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Sale End Date (Optional)
+                            </label>
+                            <input
+                              type="date"
+                              value={bulkFormData.saleEndDate}
+                              onChange={(e) =>
+                                setBulkFormData({
+                                  ...bulkFormData,
+                                  saleEndDate: e.target.value,
+                                })
+                              }
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            />
+                          </div>
+                        </>
+                      )}
+
+                      <div className="flex gap-3 pt-4">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={closeBulkModal}
+                          className="flex-1"
+                        >
+                          Cancel
+                        </Button>
+                        <Button type="submit" className="flex-1">
+                          Apply to {selectedBooks.length} Book(s)
+                        </Button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
