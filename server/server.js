@@ -4,14 +4,16 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 const mongoose = require("mongoose");
 const { errorHandler } = require("./middleware/errorHandler");
+const ensureDbConnection = require("./middleware/dbConnection");
 
 // Load env vars
 dotenv.config();
 
-// Connect to database
-connectDB();
-
 const app = express();
+
+// Ensure database connection before processing any API requests
+// This is critical for Vercel serverless - connection must be awaited
+app.use("/api", ensureDbConnection);
 
 // Body parser middleware
 app.use(express.json());
