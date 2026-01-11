@@ -344,8 +344,13 @@ exports.updateOrderStatus = async (req, res, next) => {
         } - Methsara Publications`,
         message,
       });
+      console.log(
+        `Sending email to ${fullOrder.user.email} for status ${status}`
+      );
     } catch (emailError) {
-      console.error("Email send failed:", emailError);
+      console.error("UNKNOWN EMAIL ERROR:", emailError);
+      console.error("Stack:", emailError.stack);
+      // We don't fail the request, but we want to see this in logs
     }
 
     res.status(200).json({
