@@ -102,8 +102,18 @@ const Contact = () => {
                     <h3 className="text-sm font-semibold text-gray-900 mb-1">
                       Phone
                     </h3>
-                    <p className="text-gray-600">071 432 5383</p>
-                    <p className="text-gray-600">071 448 5899</p>
+                    <a
+                      href="tel:0714325383"
+                      className="block text-gray-600 hover:text-primary-600 transition-colors"
+                    >
+                      071 432 5383
+                    </a>
+                    <a
+                      href="tel:0714485899"
+                      className="block text-gray-600 hover:text-primary-600 transition-colors"
+                    >
+                      071 448 5899
+                    </a>
                   </div>
                 </div>
               </div>
@@ -119,7 +129,12 @@ const Contact = () => {
                     <h3 className="text-sm font-semibold text-gray-900 mb-1">
                       Email
                     </h3>
-                    <p className="text-gray-600">methsarabooks@gmail.com</p>
+                    <a
+                      href="mailto:methsarabooks@gmail.com"
+                      className="text-gray-600 hover:text-primary-600 transition-colors"
+                    >
+                      methsarabooks@gmail.com
+                    </a>
                   </div>
                 </div>
               </div>
@@ -140,26 +155,6 @@ const Contact = () => {
                       <br />
                       Sri Lanka
                     </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                <div className="flex items-start">
-                  <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
-                      <Clock className="w-6 h-6 text-primary-600" />
-                    </div>
-                  </div>
-                  <div className="ml-4">
-                    <h3 className="text-sm font-semibold text-gray-900 mb-1">
-                      Business Hours
-                    </h3>
-                    <p className="text-gray-600">
-                      Monday - Friday: 9:00 AM - 6:00 PM
-                    </p>
-                    <p className="text-gray-600">Saturday: 9:00 AM - 4:00 PM</p>
-                    <p className="text-gray-600">Sunday: Closed</p>
                   </div>
                 </div>
               </div>

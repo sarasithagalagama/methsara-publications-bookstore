@@ -314,16 +314,35 @@ const About = () => {
             <div className="p-6 rounded-2xl bg-gray-50 flex flex-col items-center">
               <Phone className="w-10 h-10 text-primary-600 mb-4" />
               <h3 className="text-lg font-bold text-gray-900 mb-2">Phone</h3>
-              <p className="text-gray-600">071 432 5383 / 071 448 5899</p>
+              <p className="text-gray-600">
+                <a
+                  href="tel:0714325383"
+                  className="hover:text-primary-600 transition-colors"
+                >
+                  071 432 5383
+                </a>{" "}
+                /{" "}
+                <a
+                  href="tel:0714485899"
+                  className="hover:text-primary-600 transition-colors"
+                >
+                  071 448 5899
+                </a>
+              </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-gray-50 flex flex-col items-center">
+            <a
+              href="https://www.facebook.com/methsarabooks"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-6 rounded-2xl bg-gray-50 flex flex-col items-center hover:bg-gray-100 transition-colors cursor-pointer"
+            >
               <Facebook className="w-10 h-10 text-blue-600 mb-4" />
               <h3 className="text-lg font-bold text-gray-900 mb-2">
                 Follow Us
               </h3>
               <p className="text-gray-600 font-medium">Methsara Books</p>
-            </div>
+            </a>
           </div>
         </div>
       </section>
