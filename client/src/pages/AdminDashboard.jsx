@@ -909,9 +909,37 @@ const AdminDashboard = () => {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => {
-                        setBulkOperation("clearSales");
-                        handleBulkSubmit({ preventDefault: () => {} });
+                      onClick={async () => {
+                        if (
+                          !window.confirm(
+                            `Clear all sales from ${selectedBooks.length} selected book(s)?`
+                          )
+                        ) {
+                          return;
+                        }
+                        try {
+                          await api.put("/books/bulk-update", {
+                            bookIds: selectedBooks,
+                            operation: "clearSales",
+                            data: {},
+                          });
+                          alert(
+                            `Successfully cleared sales from ${selectedBooks.length} book(s)`
+                          );
+                          setSelectedBooks([]);
+                          fetchDashboardData();
+                        } catch (error) {
+                          console.error("Bulk update error:", error);
+                          console.error(
+                            "Error response:",
+                            error.response?.data
+                          );
+                          const errorMessage =
+                            error.response?.data?.message ||
+                            error.message ||
+                            "Failed to clear sales. Please try again.";
+                          alert(`Error: ${errorMessage}`);
+                        }
                       }}
                       className="text-xs text-red-600 hover:text-red-700 border-red-200"
                     >
