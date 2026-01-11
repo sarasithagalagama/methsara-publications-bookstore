@@ -155,7 +155,7 @@ const Home = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredBooks.map((book) => (
               <Link
                 to={`/books/${book._id}`}
