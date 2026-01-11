@@ -249,7 +249,7 @@ exports.getAllOrders = async (req, res, next) => {
 
 // Helper to generate rich email template
 const generateEmailTemplate = (order, title, messageText) => {
-  const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+  const clientUrl = process.env.CLIENT_URL || "https://methsarabooks.com";
   const logoUrl =
     "https://public-files.gumroad.com/f6f6838d0411770956424e65492379db.png"; // Placeholder book logo or use your own if available
 
