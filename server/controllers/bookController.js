@@ -167,3 +167,140 @@ exports.deleteBook = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc    Bulk update books (for sales, discounts, etc.)
+// @route   PUT /api/books/bulk-update
+// @access  Private/Admin
+exports.bulkUpdateBooks = async (req, res, next) => {
+  try {
+    const { bookIds, operation, data } = req.body;
+
+    // Validate input
+    if (!bookIds || !Array.isArray(bookIds) || bookIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide an array of book IDs",
+      });
+    }
+
+    if (!operation) {
+      return res.status(400).json({
+        success: false,
+        message: "Please specify an operation",
+      });
+    }
+
+    let updateData = {};
+
+    switch (operation) {
+      case "applyDiscount":
+        // Apply percentage discount
+        if (
+          !data.discountPercentage ||
+          data.discountPercentage <= 0 ||
+          data.discountPercentage > 100
+        ) {
+          return res.status(400).json({
+            success: false,
+            message: "Please provide a valid discount percentage (1-100)",
+          });
+        }
+
+        // Get books to calculate sale prices
+        const booksForDiscount = await Book.find({ _id: { $in: bookIds } });
+
+        // Update each book with calculated sale price
+        const discountUpdates = booksForDiscount.map(async (book) => {
+          const salePrice = Math.round(
+            book.price * (1 - data.discountPercentage / 100)
+          );
+          return Book.findByIdAndUpdate(
+            book._id,
+            {
+              salePrice,
+              discountPercentage: data.discountPercentage,
+              isOnSale: true,
+              ...(data.saleStartDate && { saleStartDate: data.saleStartDate }),
+              ...(data.saleEndDate && { saleEndDate: data.saleEndDate }),
+            },
+            { new: true }
+          );
+        });
+
+        await Promise.all(discountUpdates);
+        break;
+
+      case "setSalePrice":
+        // Set fixed sale price
+        if (!data.salePrice || data.salePrice <= 0) {
+          return res.status(400).json({
+            success: false,
+            message: "Please provide a valid sale price",
+          });
+        }
+
+        updateData = {
+          salePrice: data.salePrice,
+          isOnSale: true,
+          ...(data.saleStartDate && { saleStartDate: data.saleStartDate }),
+          ...(data.saleEndDate && { saleEndDate: data.saleEndDate }),
+        };
+        break;
+
+      case "setDates":
+        // Set sale dates only
+        updateData = {
+          ...(data.saleStartDate && { saleStartDate: data.saleStartDate }),
+          ...(data.saleEndDate && { saleEndDate: data.saleEndDate }),
+        };
+        break;
+
+      case "toggleFlashSale":
+        // Toggle flash sale status
+        updateData = {
+          isFlashSale: data.isFlashSale !== undefined ? data.isFlashSale : true,
+        };
+        break;
+
+      case "clearSales":
+        // Remove all sale settings
+        updateData = {
+          $unset: {
+            salePrice: "",
+            discountPercentage: "",
+            saleStartDate: "",
+            saleEndDate: "",
+          },
+          isOnSale: false,
+          isFlashSale: false,
+        };
+        break;
+
+      default:
+        return res.status(400).json({
+          success: false,
+          message: "Invalid operation",
+        });
+    }
+
+    // Perform bulk update (except for applyDiscount which is handled above)
+    let result;
+    if (operation !== "applyDiscount") {
+      result = await Book.updateMany({ _id: { $in: bookIds } }, updateData);
+    } else {
+      result = { modifiedCount: bookIds.length };
+    }
+
+    // Get updated books
+    const updatedBooks = await Book.find({ _id: { $in: bookIds } });
+
+    res.status(200).json({
+      success: true,
+      message: `Successfully updated ${result.modifiedCount} book(s)`,
+      count: result.modifiedCount,
+      books: updatedBooks,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -77,6 +77,18 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Bulk Selection State
+  const [selectedBooks, setSelectedBooks] = useState([]);
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
+  const [bulkOperation, setBulkOperation] = useState("");
+  const [bulkFormData, setBulkFormData] = useState({
+    discountPercentage: "",
+    salePrice: "",
+    saleStartDate: "",
+    saleEndDate: "",
+    isFlashSale: false,
+  });
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(filters.search);
@@ -322,6 +334,112 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error("Save error:", error);
       alert("Failed to save product.");
+    }
+  };
+
+  // Bulk Operation Handlers
+  const handleSelectBook = (bookId) => {
+    setSelectedBooks((prev) =>
+      prev.includes(bookId)
+        ? prev.filter((id) => id !== bookId)
+        : [...prev, bookId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedBooks.length === books.length) {
+      setSelectedBooks([]);
+    } else {
+      setSelectedBooks(books.map((book) => book._id));
+    }
+  };
+
+  const openBulkModal = (operation) => {
+    setBulkOperation(operation);
+    setIsBulkModalOpen(true);
+  };
+
+  const closeBulkModal = () => {
+    setIsBulkModalOpen(false);
+    setBulkOperation("");
+    setBulkFormData({
+      discountPercentage: "",
+      salePrice: "",
+      saleStartDate: "",
+      saleEndDate: "",
+      isFlashSale: false,
+    });
+  };
+
+  const handleBulkSubmit = async (e) => {
+    e.preventDefault();
+
+    if (selectedBooks.length === 0) {
+      alert("Please select at least one book");
+      return;
+    }
+
+    try {
+      let requestData = {
+        bookIds: selectedBooks,
+        operation: bulkOperation,
+        data: {},
+      };
+
+      switch (bulkOperation) {
+        case "applyDiscount":
+          if (!bulkFormData.discountPercentage) {
+            alert("Please enter a discount percentage");
+            return;
+          }
+          requestData.data = {
+            discountPercentage: Number(bulkFormData.discountPercentage),
+            saleStartDate: bulkFormData.saleStartDate || undefined,
+            saleEndDate: bulkFormData.saleEndDate || undefined,
+          };
+          break;
+
+        case "setSalePrice":
+          if (!bulkFormData.salePrice) {
+            alert("Please enter a sale price");
+            return;
+          }
+          requestData.data = {
+            salePrice: Number(bulkFormData.salePrice),
+            saleStartDate: bulkFormData.saleStartDate || undefined,
+            saleEndDate: bulkFormData.saleEndDate || undefined,
+          };
+          break;
+
+        case "toggleFlashSale":
+          requestData.data = {
+            isFlashSale: bulkFormData.isFlashSale,
+          };
+          break;
+
+        case "clearSales":
+          if (
+            !window.confirm(
+              `Clear all sales from ${selectedBooks.length} selected book(s)?`
+            )
+          ) {
+            return;
+          }
+          break;
+
+        default:
+          break;
+      }
+
+      await api.put("/books/bulk-update", requestData);
+
+      alert(`Successfully updated ${selectedBooks.length} book(s)`);
+      closeBulkModal();
+      setSelectedBooks([]);
+      fetchDashboardData();
+    } catch (error) {
+      console.error("Bulk update error:", error);
+      alert("Failed to update books. Please try again.");
     }
   };
 
