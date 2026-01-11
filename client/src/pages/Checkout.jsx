@@ -46,7 +46,7 @@ const Checkout = () => {
 
   const [step, setStep] = useState(1); // 1: Info, 2: Payment
   const [loading, setLoading] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState("bank"); // 'cod', 'bank'
+  const [paymentMethod, setPaymentMethod] = useState("bank"); // Only 'bank' now
   const [receiptFile, setReceiptFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
 
@@ -111,7 +111,7 @@ const Checkout = () => {
     } else {
       // Handle Payment & Order Creation
 
-      if (paymentMethod === "bank" && !receiptFile) {
+      if (!receiptFile) {
         toast.error("Please upload your payment receipt");
         return;
       }
@@ -121,20 +121,18 @@ const Checkout = () => {
       try {
         let receiptUrl = null;
 
-        // Upload Receipt if Bank Transfer
-        if (paymentMethod === "bank" && receiptFile) {
-          const formData = new FormData();
-          formData.append("receipt", receiptFile);
+        // Upload Receipt
+        const formData = new FormData();
+        formData.append("receipt", receiptFile);
 
-          const uploadRes = await api.post("/upload/receipt", formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
+        const uploadRes = await api.post("/upload/receipt", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
 
-          if (uploadRes.data.success) {
-            receiptUrl = uploadRes.data.url;
-          } else {
-            throw new Error("Failed to upload receipt");
-          }
+        if (uploadRes.data.success) {
+          receiptUrl = uploadRes.data.url;
+        } else {
+          throw new Error("Failed to upload receipt");
         }
 
         // Create Order Object
@@ -153,7 +151,7 @@ const Checkout = () => {
             country: "Sri Lanka",
           },
           totalAmount: total,
-          notes: paymentMethod === "cod" ? "Cash on Delivery" : "Bank Transfer",
+          notes: "Bank Transfer",
           receiptImage: receiptUrl,
         };
 
@@ -391,35 +389,7 @@ const Checkout = () => {
                       </label>
                     </div>
 
-                    {/* COD Option */}
-                    <div
-                      onClick={() => setPaymentMethod("cod")}
-                      className={`border rounded-lg p-4 flex items-center cursor-pointer transition-all ${
-                        paymentMethod === "cod"
-                          ? "border-primary-500 bg-primary-50 ring-1 ring-primary-500"
-                          : "border-gray-200 hover:border-primary-200"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="payment"
-                        id="cod"
-                        checked={paymentMethod === "cod"}
-                        onChange={() => setPaymentMethod("cod")}
-                        className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
-                      />
-                      <label
-                        htmlFor="cod"
-                        className="ml-3 flex items-center flex-1 cursor-pointer"
-                      >
-                        <Truck className="w-5 h-5 text-gray-600 mr-2" />
-                        <span className="font-medium text-gray-900">
-                          Cash on Delivery
-                        </span>
-                      </label>
-                    </div>
-                  </div>
-
+                  {/* Bank Transfer Details */}
                   {paymentMethod === "bank" && (
                     <div className="mt-6 space-y-6">
                       <div className="bg-blue-50 p-6 rounded-xl border border-blue-100">
