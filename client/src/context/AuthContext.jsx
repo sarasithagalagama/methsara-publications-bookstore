@@ -61,6 +61,8 @@ export const AuthProvider = ({ children }) => {
     try {
       const data = await getCurrentUser();
       setUser(data.user);
+      // Update local storage to persist changes across reloads
+      localStorage.setItem("user", JSON.stringify(data.user));
       return data.user;
     } catch (error) {
       console.error("Failed to check user:", error);
