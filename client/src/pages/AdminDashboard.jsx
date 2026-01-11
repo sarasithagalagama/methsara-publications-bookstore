@@ -45,6 +45,8 @@ const AdminDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [currentBook, setCurrentBook] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -1119,6 +1121,18 @@ const AdminDashboard = () => {
                                   N/A
                                 </span>
                               )}
+                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                              <div className="flex items-center justify-end space-x-2">
+                                <button
+                                  onClick={() => {
+                                    setSelectedOrder(order);
+                                    setIsOrderModalOpen(true);
+                                  }}
+                                  className="text-primary-600 hover:text-primary-900 bg-primary-50 px-3 py-1 rounded-lg"
+                                >
+                                  Details
+                                </button>
+                              </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <select
@@ -1530,6 +1544,212 @@ const AdminDashboard = () => {
                 </Button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      )}
+
+      {/* Order Details Modal */}
+      {isOrderModalOpen && selectedOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">
+                  Order Details
+                </h2>
+                <p className="text-sm text-gray-500">
+                  ID: #{selectedOrder._id.toUpperCase()}
+                </p>
+              </div>
+              <button
+                onClick={() => setIsOrderModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-8">
+              {/* Status Section */}
+              <div className="flex flex-wrap gap-4 justify-between items-center bg-gray-50 p-4 rounded-xl">
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">Current Status</p>
+                  <span
+                    className={`px-3 py-1 text-sm font-bold rounded-full ${
+                      selectedOrder.status === "delivered"
+                        ? "bg-green-100 text-green-800"
+                        : selectedOrder.status === "shipped"
+                        ? "bg-blue-100 text-blue-800"
+                        : selectedOrder.status === "processing"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : selectedOrder.status === "cancelled"
+                        ? "bg-red-100 text-red-800"
+                        : "bg-gray-100 text-gray-800"
+                    }`}
+                  >
+                    {selectedOrder.status.charAt(0).toUpperCase() +
+                      selectedOrder.status.slice(1)}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">Order Date</p>
+                  <p className="text-sm font-medium text-gray-900">
+                    {new Date(selectedOrder.createdAt).toLocaleString()}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">Total Amount</p>
+                  <p className="text-lg font-bold text-primary-600">
+                    Rs. {selectedOrder.total?.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+
+              {/* Customer & Shipping Info */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-3">
+                    Customer Information
+                  </h3>
+                  <div className="bg-white border border-gray-200 rounded-lg p-4 space-y-2">
+                    <p className="text-sm text-gray-900">
+                      <span className="text-gray-500 w-20 inline-block">
+                        Name:
+                      </span>
+                      {selectedOrder.customerName || "N/A"}
+                    </p>
+                    <p className="text-sm text-gray-900">
+                      <span className="text-gray-500 w-20 inline-block">
+                        Email:
+                      </span>
+                      {selectedOrder.email || "N/A"}
+                    </p>
+                    <p className="text-sm text-gray-900">
+                      <span className="text-gray-500 w-20 inline-block">
+                        Phone:
+                      </span>
+                      {selectedOrder.phone || "N/A"}
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-3">
+                    Shipping Address
+                  </h3>
+                  <div className="bg-white border border-gray-200 rounded-lg p-4 text-sm text-gray-600 leading-relaxed">
+                    {selectedOrder.shippingAddress ? (
+                      <>
+                        <p>{selectedOrder.shippingAddress.address}</p>
+                        <p>
+                          {selectedOrder.shippingAddress.city},{" "}
+                          {selectedOrder.shippingAddress.postalCode}
+                        </p>
+                        <p>{selectedOrder.shippingAddress.country}</p>
+                      </>
+                    ) : (
+                      <p>No shipping address provided</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Order Items */}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-3">
+                  Ordered Items
+                </h3>
+                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Product
+                        </th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                          Price
+                        </th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                          Qty
+                        </th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                          Subtotal
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {selectedOrder.items?.map((item, index) => (
+                        <tr key={index}>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center">
+                              {item.book?.coverImage && (
+                                <img
+                                  src={item.book.coverImage}
+                                  alt=""
+                                  className="h-10 w-8 object-cover rounded mr-3"
+                                />
+                              )}
+                              <div>
+                                <p className="text-sm font-medium text-gray-900 line-clamp-1">
+                                  {item.book?.title || "Unknown Book"}
+                                </p>
+                                <p className="text-xs text-gray-500 line-clamp-1">
+                                  {item.book?.author}
+                                </p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 text-right text-sm text-gray-500">
+                            Rs. {item.price?.toLocaleString()}
+                          </td>
+                          <td className="px-4 py-3 text-right text-sm text-gray-900">
+                            {item.quantity}
+                          </td>
+                          <td className="px-4 py-3 text-right text-sm font-medium text-gray-900">
+                            Rs. {(item.price * item.quantity).toLocaleString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot className="bg-gray-50">
+                      <tr>
+                        <td
+                          colSpan="3"
+                          className="px-4 py-3 text-right text-sm font-bold text-gray-900"
+                        >
+                          Total:
+                        </td>
+                        <td className="px-4 py-3 text-right text-sm font-bold text-primary-600">
+                          Rs. {selectedOrder.total?.toLocaleString()}
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+
+              {/* Payment Receipt */}
+              {selectedOrder.receiptImage && (
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-3">
+                    Payment Receipt
+                  </h3>
+                  <div className="border border-gray-200 rounded-lg p-2 bg-gray-50 inline-block">
+                    <a
+                      href={selectedOrder.receiptImage}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <img
+                        src={selectedOrder.receiptImage}
+                        alt="Payment Receipt"
+                        className="max-h-64 rounded shadow-sm hover:opacity-95 transition-opacity"
+                      />
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
