@@ -571,7 +571,7 @@ const Shop = () => {
                 {/* Content */}
                 <div className="px-2">
                   <Link to={`/books/${book._id}`} className="block">
-                    <h3 className="font-sinhala font-bold text-secondary-900 text-lg mb-1 line-clamp-2 leading-tight group-hover:text-primary-600 transition-colors">
+                    <h3 className="font-sinhala font-bold text-secondary-900 text-base mb-1 line-clamp-2 leading-tight group-hover:text-primary-600 transition-colors">
                       {book.titleSinhala || book.title}
                     </h3>
                   </Link>
