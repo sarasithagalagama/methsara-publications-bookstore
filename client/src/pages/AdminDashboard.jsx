@@ -95,6 +95,11 @@ const AdminDashboard = () => {
   const [bookListModalTitle, setBookListModalTitle] = useState("");
   const [bookListModalBooks, setBookListModalBooks] = useState([]);
 
+  // Confirmation Modal State
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [confirmMessage, setConfirmMessage] = useState("");
+  const [confirmAction, setConfirmAction] = useState(null);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(filters.search);
@@ -937,43 +942,42 @@ const AdminDashboard = () => {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={async () => {
+                      onClick={() => {
                         if (selectedBooks.length === 0) {
                           toast.error("Please select books first");
                           return;
                         }
 
-                        // Show confirmation toast
-                        const confirmed = window.confirm(
+                        // Show custom confirmation modal
+                        setConfirmMessage(
                           `Clear all sales from ${selectedBooks.length} selected book(s)?`
                         );
-                        if (!confirmed) {
-                          return;
-                        }
-
-                        try {
-                          await api.put("/books/bulk-update", {
-                            bookIds: selectedBooks,
-                            operation: "clearSales",
-                            data: {},
-                          });
-                          toast.success(
-                            `Successfully cleared sales from ${selectedBooks.length} book(s)`
-                          );
-                          setSelectedBooks([]);
-                          fetchDashboardData();
-                        } catch (error) {
-                          console.error("Bulk update error:", error);
-                          console.error(
-                            "Error response:",
-                            error.response?.data
-                          );
-                          const errorMessage =
-                            error.response?.data?.message ||
-                            error.message ||
-                            "Failed to clear sales. Please try again.";
-                          toast.error(`Error: ${errorMessage}`);
-                        }
+                        setConfirmAction(() => async () => {
+                          try {
+                            await api.put("/books/bulk-update", {
+                              bookIds: selectedBooks,
+                              operation: "clearSales",
+                              data: {},
+                            });
+                            toast.success(
+                              `Successfully cleared sales from ${selectedBooks.length} book(s)`
+                            );
+                            setSelectedBooks([]);
+                            fetchDashboardData();
+                          } catch (error) {
+                            console.error("Bulk update error:", error);
+                            console.error(
+                              "Error response:",
+                              error.response?.data
+                            );
+                            const errorMessage =
+                              error.response?.data?.message ||
+                              error.message ||
+                              "Failed to clear sales. Please try again.";
+                            toast.error(`Error: ${errorMessage}`);
+                          }
+                        });
+                        setIsConfirmModalOpen(true);
                       }}
                       className="text-xs text-red-600 hover:text-red-700 border-red-200"
                     >
@@ -2313,6 +2317,45 @@ const AdminDashboard = () => {
               >
                 Close
               </Button>
+            </div>
+          </div>
+        </div>
+        </div>
+      )}
+
+      {/* Confirmation Modal */}
+      {isConfirmModalOpen && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+            <div className="p-6">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">
+                Confirm Action
+              </h3>
+              <p className="text-gray-600 mb-6">{confirmMessage}</p>
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setIsConfirmModalOpen(false);
+                    setConfirmAction(null);
+                  }}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => {
+                    if (confirmAction) {
+                      confirmAction();
+                    }
+                    setIsConfirmModalOpen(false);
+                    setConfirmAction(null);
+                  }}
+                  className="flex-1 bg-red-600 hover:bg-red-700"
+                >
+                  Confirm
+                </Button>
+              </div>
             </div>
           </div>
         </div>
