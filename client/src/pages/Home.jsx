@@ -162,11 +162,11 @@ const Home = () => {
                 key={book._id}
                 className="group cursor-pointer"
               >
-                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-4 mb-4 relative overflow-hidden aspect-[3/4] flex items-center justify-center transition-all duration-300 group-hover:shadow-xl">
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl mb-4 relative overflow-hidden aspect-[3/4] transition-all duration-300 group-hover:shadow-xl">
                   <img
                     src={book.image}
                     alt={book.title}
-                    className="w-full h-full object-contain drop-shadow-2xl group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   {book.isOnSale && (
                     <div className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide z-10">
