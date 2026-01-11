@@ -30,12 +30,6 @@ const Footer = () => {
               >
                 <Facebook className="h-5 w-5" />
               </a>
-              <a
-                href="#"
-                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors"
-              >
-                <Instagram className="h-5 w-5" />
-              </a>
             </div>
           </div>
 
@@ -99,19 +93,6 @@ const Footer = () => {
                 <span>Kottawa, Sri Lanka</span>
               </li>
               <li className="flex items-center text-sm">
-                <Phone className="h-5 w-5 mr-2 flex-shrink-0" />
-                <span>
-                  <a
-                    href="tel:0714325383"
-                    className="hover:text-white transition-colors"
-                  >
-                    071 432 5383
-                  </a>
-                  {" / "}
-                  <a
-                    href="tel:0714485899"
-                    className="hover:text-white transition-colors"
-                  >
                     071 448 5899
                   </a>
                 </span>

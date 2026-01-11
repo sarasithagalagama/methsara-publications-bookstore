@@ -83,11 +83,11 @@ const Navbar = () => {
       <div className="bg-gray-900 text-white text-xs py-2 px-4 hidden md:flex justify-between items-center z-50">
         <div className="flex items-center space-x-4">
           <span className="flex items-center">
-            <Phone className="w-3 h-3 mr-1" />
             <a
               href="tel:0714325383"
-              className="hover:text-gray-300 transition-colors"
+              className="flex items-center hover:text-gray-300 transition-colors"
             >
+              <Phone className="w-3 h-3 mr-1" />
               071 432 5383
             </a>
             <span className="mx-1">/</span>
