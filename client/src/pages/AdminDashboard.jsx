@@ -22,6 +22,7 @@ import {
 import { Button } from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import { useAuth } from "../context/AuthContext";
+import { toast } from "react-hot-toast";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -423,13 +424,7 @@ const AdminDashboard = () => {
           break;
 
         case "clearSales":
-          if (
-            !window.confirm(
-              `Clear all sales from ${selectedBooks.length} selected book(s)?`
-            )
-          ) {
-            return;
-          }
+          // Confirmation handled by Clear Sales button
           break;
 
         default:
@@ -438,7 +433,7 @@ const AdminDashboard = () => {
 
       await api.put("/books/bulk-update", requestData);
 
-      alert(`Successfully updated ${selectedBooks.length} book(s)`);
+      toast.success(`Successfully updated ${selectedBooks.length} book(s)`);
       closeBulkModal();
       setSelectedBooks([]);
       fetchDashboardData();
@@ -449,7 +444,7 @@ const AdminDashboard = () => {
         error.response?.data?.message ||
         error.message ||
         "Failed to update books. Please try again.";
-      alert(`Error: ${errorMessage}`);
+      toast.error(`Error: ${errorMessage}`);
     }
   };
 
@@ -557,7 +552,7 @@ const AdminDashboard = () => {
                       setBookListModalBooks(lowStockBooks);
                       setIsBookListModalOpen(true);
                     } else {
-                      alert("No low stock items");
+                      toast.info("No low stock items");
                     }
                   }}
                 />
@@ -580,7 +575,7 @@ const AdminDashboard = () => {
                       setBookListModalBooks(activeSalesBooks);
                       setIsBookListModalOpen(true);
                     } else {
-                      alert("No active sales");
+                      toast.info("No active sales");
                     }
                   }}
                 />
@@ -943,20 +938,26 @@ const AdminDashboard = () => {
                       size="sm"
                       variant="outline"
                       onClick={async () => {
-                        if (
-                          !window.confirm(
-                            `Clear all sales from ${selectedBooks.length} selected book(s)?`
-                          )
-                        ) {
+                        if (selectedBooks.length === 0) {
+                          toast.error("Please select books first");
                           return;
                         }
+
+                        // Show confirmation toast
+                        const confirmed = window.confirm(
+                          `Clear all sales from ${selectedBooks.length} selected book(s)?`
+                        );
+                        if (!confirmed) {
+                          return;
+                        }
+
                         try {
                           await api.put("/books/bulk-update", {
                             bookIds: selectedBooks,
                             operation: "clearSales",
                             data: {},
                           });
-                          alert(
+                          toast.success(
                             `Successfully cleared sales from ${selectedBooks.length} book(s)`
                           );
                           setSelectedBooks([]);
@@ -971,7 +972,7 @@ const AdminDashboard = () => {
                             error.response?.data?.message ||
                             error.message ||
                             "Failed to clear sales. Please try again.";
-                          alert(`Error: ${errorMessage}`);
+                          toast.error(`Error: ${errorMessage}`);
                         }
                       }}
                       className="text-xs text-red-600 hover:text-red-700 border-red-200"
