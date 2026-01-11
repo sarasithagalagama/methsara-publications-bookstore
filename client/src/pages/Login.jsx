@@ -33,7 +33,7 @@ const Login = () => {
 
     try {
       await login(formData);
-      navigate("/");
+      navigate("/dashboard");
     } catch (err) {
       setError(
         err.response?.data?.message ||
@@ -179,7 +179,7 @@ const Login = () => {
                 onSuccess={async (credentialResponse) => {
                   try {
                     await googleLogin(credentialResponse.credential);
-                    navigate("/");
+                    navigate("/dashboard");
                   } catch (err) {
                     setError(
                       err.response?.data?.message || "Google Login Failed"

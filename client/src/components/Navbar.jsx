@@ -197,12 +197,12 @@ const Navbar = () => {
 
                         <div className="px-2 space-y-1">
                           <Link
-                            to="/my-orders"
+                            to="/dashboard"
                             className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-700 rounded-xl transition-colors"
                             onClick={() => setShowUserMenu(false)}
                           >
                             <Package className="h-4 w-4 mr-3" />
-                            My Orders
+                            My Dashboard
                           </Link>
 
                           {isAdmin && (
@@ -305,11 +305,11 @@ const Navbar = () => {
                     <p className="text-xs text-gray-500">{user?.email}</p>
                   </div>
                   <Link
-                    to="/my-orders"
+                    to="/dashboard"
                     className="flex items-center text-gray-700 py-3"
                     onClick={() => setShowMobileMenu(false)}
                   >
-                    <Package className="w-5 h-5 mr-3" /> My Orders
+                    <Package className="w-5 h-5 mr-3" /> My Dashboard
                   </Link>
                   {isAdmin && (
                     <Link

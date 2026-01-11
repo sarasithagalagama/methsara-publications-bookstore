@@ -19,6 +19,7 @@ import Wishlist from "./pages/Wishlist";
 import Checkout from "./pages/Checkout";
 import MyOrders from "./pages/MyOrders";
 import AdminDashboard from "./pages/AdminDashboard";
+import CustomerDashboard from "./pages/CustomerDashboard";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
@@ -45,6 +46,7 @@ function App() {
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="/my-orders" element={<MyOrders />} />
                   <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="/dashboard" element={<CustomerDashboard />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
