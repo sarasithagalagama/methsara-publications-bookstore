@@ -382,7 +382,6 @@ const AdminDashboard = () => {
           </button>
         </nav>
       </aside>
-
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-y-auto">
         <main className="p-8">
@@ -1121,33 +1120,32 @@ const AdminDashboard = () => {
                                   N/A
                                 </span>
                               )}
-                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                              <div className="flex items-center justify-end space-x-2">
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center space-x-2">
                                 <button
                                   onClick={() => {
                                     setSelectedOrder(order);
                                     setIsOrderModalOpen(true);
                                   }}
-                                  className="text-primary-600 hover:text-primary-900 bg-primary-50 px-3 py-1 rounded-lg"
+                                  className="text-primary-600 hover:text-primary-900 bg-primary-50 px-3 py-1 rounded-lg text-sm font-medium"
                                 >
                                   Details
                                 </button>
+                                <select
+                                  className="text-sm border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 px-3 py-1.5"
+                                  value={order.status}
+                                  onChange={(e) =>
+                                    handleOrderStatus(order._id, e.target.value)
+                                  }
+                                >
+                                  <option value="pending">Pending</option>
+                                  <option value="processing">Processing</option>
+                                  <option value="shipped">Shipped</option>
+                                  <option value="delivered">Delivered</option>
+                                  <option value="cancelled">Cancelled</option>
+                                </select>
                               </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <select
-                                className="text-sm border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 px-3 py-1.5"
-                                value={order.status}
-                                onChange={(e) =>
-                                  handleOrderStatus(order._id, e.target.value)
-                                }
-                              >
-                                <option value="pending">Pending</option>
-                                <option value="processing">Processing</option>
-                                <option value="shipped">Shipped</option>
-                                <option value="delivered">Delivered</option>
-                                <option value="cancelled">Cancelled</option>
-                              </select>
                             </td>
                           </tr>
                         ))
@@ -1160,7 +1158,6 @@ const AdminDashboard = () => {
           )}
         </main>
       </div>
-
       {/* Add/Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -1548,7 +1545,6 @@ const AdminDashboard = () => {
         </div>
       )}
       )}
-
       {/* Order Details Modal */}
       {isOrderModalOpen && selectedOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
