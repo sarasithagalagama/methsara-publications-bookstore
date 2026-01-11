@@ -526,98 +526,131 @@ const CustomerDashboard = () => {
                     </div>
                   )}
 
-                  <form onSubmit={handleProfileUpdate} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <form onSubmit={handleProfileUpdate} className="space-y-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8">
+                      <div className="col-span-1 md:col-span-2">
+                        <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-1">
+                          Personal Details
+                        </h4>
+                        <p className="text-xs text-gray-500 mb-6">
+                          Update your personal information and contact details.
+                        </p>
+                      </div>
+
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700">
                           Full Name
                         </label>
-                        <input
-                          type="text"
-                          name="name"
-                          value={profileData.name}
-                          onChange={handleInputChange}
-                          className="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">
-                          Phone Number *
-                        </label>
-                        <input
-                          type="tel"
-                          name="phone"
-                          value={profileData.phone}
-                          onChange={handleInputChange}
-                          placeholder="07XXXXXXXX"
-                          required
-                          className={`w-full rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 ${
-                            !profileData.phone && showProfileAlert
-                              ? "border-red-300 ring-1 ring-red-300"
-                              : "border-gray-300"
-                          }`}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="border-t border-gray-100 pt-6">
-                      <h4 className="text-sm font-semibold text-gray-900 mb-4">
-                        Shipping Address
-                      </h4>
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium text-gray-700">
-                            Street Address *
-                          </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <User className="h-5 w-5 text-gray-400" />
+                          </div>
                           <input
                             type="text"
-                            name="street"
-                            value={profileData.street}
+                            name="name"
+                            value={profileData.name}
                             onChange={handleInputChange}
-                            placeholder="No. 123, Main Street"
+                            className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors bg-gray-50/50 hover:bg-white"
+                            placeholder="Your full name"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">
+                          Phone Number <span className="text-red-500">*</span>
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <Phone className="h-5 w-5 text-gray-400" />
+                          </div>
+                          <input
+                            type="tel"
+                            name="phone"
+                            value={profileData.phone}
+                            onChange={handleInputChange}
+                            placeholder="07XXXXXXXX"
                             required
-                            className={`w-full rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 ${
-                              !profileData.street && showProfileAlert
-                                ? "border-red-300 ring-1 ring-red-300"
-                                : "border-gray-300"
+                            className={`block w-full pl-10 pr-3 py-2.5 border rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors bg-gray-50/50 hover:bg-white ${
+                              !profileData.phone && showProfileAlert
+                                ? "border-red-300 ring-2 ring-red-100 placeholder-red-300"
+                                : "border-gray-200"
                             }`}
                           />
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">
-                              City *
-                            </label>
+                      </div>
+                    </div>
+
+                    <div className="border-t border-gray-100 pt-8">
+                      <div className="mb-6">
+                        <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-1">
+                          Shipping Address
+                        </h4>
+                        <p className="text-xs text-gray-500">
+                          Where should we send your orders?
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+                        <div className="space-y-2 md:col-span-2">
+                          <label className="text-sm font-medium text-gray-700">
+                            Street Address{" "}
+                            <span className="text-red-500">*</span>
+                          </label>
+                          <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                              <MapPin className="h-5 w-5 text-gray-400" />
+                            </div>
                             <input
                               type="text"
-                              name="city"
-                              value={profileData.city}
+                              name="street"
+                              value={profileData.street}
                               onChange={handleInputChange}
+                              placeholder="No. 123, Main Street"
                               required
-                              className={`w-full rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 ${
-                                !profileData.city && showProfileAlert
-                                  ? "border-red-300 ring-1 ring-red-300"
-                                  : "border-gray-300"
+                              className={`block w-full pl-10 pr-3 py-2.5 border rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors bg-gray-50/50 hover:bg-white ${
+                                !profileData.street && showProfileAlert
+                                  ? "border-red-300 ring-2 ring-red-100 placeholder-red-300"
+                                  : "border-gray-200"
                               }`}
                             />
                           </div>
-                          <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">
-                              Postal Code *
-                            </label>
-                            <input
-                              type="text"
-                              name="postalCode"
-                              value={profileData.postalCode}
-                              onChange={handleInputChange}
-                              required
-                              className={`w-full rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 ${
-                                !profileData.postalCode && showProfileAlert
-                                  ? "border-red-300 ring-1 ring-red-300"
-                                  : "border-gray-300"
-                              }`}
-                            />
-                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-gray-700">
+                            City <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            name="city"
+                            value={profileData.city}
+                            onChange={handleInputChange}
+                            required
+                            className={`block w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors bg-gray-50/50 hover:bg-white ${
+                              !profileData.city && showProfileAlert
+                                ? "border-red-300 ring-2 ring-red-100 placeholder-red-300"
+                                : "border-gray-200"
+                            }`}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-gray-700">
+                            Postal Code <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            name="postalCode"
+                            value={profileData.postalCode}
+                            onChange={handleInputChange}
+                            required
+                            className={`block w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-colors bg-gray-50/50 hover:bg-white ${
+                              !profileData.postalCode && showProfileAlert
+                                ? "border-red-300 ring-2 ring-red-100 placeholder-red-300"
+                                : "border-gray-200"
+                            }`}
+                          />
                         </div>
                       </div>
                     </div>
@@ -626,7 +659,7 @@ const CustomerDashboard = () => {
                       <button
                         type="submit"
                         disabled={savingProfile}
-                        className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+                        className="inline-flex items-center px-8 py-3 border border-transparent text-sm font-semibold rounded-xl text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary-600/20 hover:shadow-primary-600/30"
                       >
                         {savingProfile ? (
                           <>
