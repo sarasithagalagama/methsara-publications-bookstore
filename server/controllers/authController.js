@@ -333,7 +333,6 @@ exports.updateDetails = async (req, res, next) => {
       },
     });
   } catch (error) {
-  } catch (error) {
     console.error("Update Details Error:", error);
     res.status(500).json({
       success: false,
