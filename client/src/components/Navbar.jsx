@@ -80,33 +80,34 @@ const Navbar = () => {
   return (
     <div className="flex flex-col w-full z-50 sticky top-0">
       {/* Top Banner */}
-      <div className="bg-gray-900 text-white text-xs py-2 px-4 hidden md:flex justify-between items-center z-50">
-        <div className="flex items-center space-x-4">
-          <span className="flex items-center">
+      <div className="bg-gray-900 text-white py-2.5 px-4 hidden md:flex justify-between items-center z-50">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <a
               href="tel:0714325383"
-              className="flex items-center hover:text-gray-300 transition-colors"
+              className="flex items-center gap-1.5 hover:text-blue-400 transition-colors text-sm"
             >
-              <Phone className="w-3 h-3 mr-1" />
-              071 432 5383
+              <Phone className="w-3.5 h-3.5" />
+              <span>071 432 5383</span>
             </a>
-            <span className="mx-1">/</span>
+            <span className="text-gray-500">/</span>
             <a
               href="tel:0714485899"
-              className="hover:text-gray-300 transition-colors"
+              className="flex items-center gap-1.5 hover:text-blue-400 transition-colors text-sm"
             >
-              071 448 5899
+              <Phone className="w-3.5 h-3.5" />
+              <span>071 448 5899</span>
             </a>
-          </span>
-          <span className="text-gray-400">|</span>
+          </div>
+          <span className="text-gray-600">|</span>
           <a
             href="mailto:methsarabooks@gmail.com"
-            className="hover:text-gray-300 transition-colors"
+            className="hover:text-blue-400 transition-colors text-sm"
           >
             methsarabooks@gmail.com
           </a>
         </div>
-        <div className="flex items-center space-x-4 font-medium">
+        <div className="flex items-center font-medium text-sm">
           <span>Island-wide Delivery</span>
         </div>
       </div>

@@ -155,7 +155,7 @@ const Home = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
             {featuredBooks.map((book) => (
               <Link
                 to={`/books/${book._id}`}
@@ -174,32 +174,27 @@ const Home = () => {
                     </div>
                   )}
                 </div>
-                <h3 className="text-xl font-serif font-bold text-secondary-900 mb-1 leading-tight group-hover:text-primary-600 transition-colors line-clamp-2">
+                <h3 className="font-sinhala font-bold text-secondary-900 text-base mb-1 leading-tight group-hover:text-primary-600 transition-colors line-clamp-2">
                   {book.titleSinhala || book.title}
                 </h3>
-                <div className="flex items-center justify-between mt-2">
-                  <div className="flex flex-col">
-                    {book.isOnSale ? (
-                      <>
-                        <span className="text-lg font-semibold text-primary-600">
-                          Rs. {book.salePrice.toLocaleString()}
-                        </span>
-                        <span className="text-sm text-secondary-400 line-through">
-                          Rs. {book.price.toLocaleString()}
-                        </span>
-                      </>
-                    ) : (
-                      <span className="text-lg font-semibold text-secondary-800">
+                <p className="text-secondary-500 text-xs font-medium mb-3 line-clamp-1">
+                  {book.title}
+                </p>
+                <div className="flex items-center justify-between border-t border-secondary-100 pt-3">
+                  {book.isOnSale ? (
+                    <div className="flex flex-col">
+                      <span className="text-lg font-bold text-primary-600">
+                        Rs. {book.salePrice.toLocaleString()}
+                      </span>
+                      <span className="text-sm text-secondary-400 line-through">
                         Rs. {book.price.toLocaleString()}
                       </span>
-                    )}
-                  </div>
-                  <div className="flex items-center">
-                    <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                    <span className="ml-1 text-sm text-secondary-500 font-medium">
-                      5.0
+                    </div>
+                  ) : (
+                    <span className="text-lg font-bold text-secondary-900">
+                      Rs. {book.price.toLocaleString()}
                     </span>
-                  </div>
+                  )}
                 </div>
               </Link>
             ))}

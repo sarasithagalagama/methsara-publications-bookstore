@@ -8,6 +8,7 @@ import { CartProvider } from "./context/CartContext";
 import { WishlistProvider } from "./context/WishlistContext";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import WhatsAppButton from "./components/WhatsAppButton";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -59,6 +60,7 @@ function App() {
                 </Routes>
               </main>
               <Footer />
+              <WhatsAppButton />
             </div>
           </WishlistProvider>
         </CartProvider>
