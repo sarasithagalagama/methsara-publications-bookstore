@@ -1,128 +1,180 @@
-# 📚 Methsara Publications Bookstore
+# Methsara Publications Bookstore
 
-<div align="center">
+A modern, full-stack e-commerce platform for educational books, built with the MERN stack and deployed on Vercel.
 
-![Status](https://img.shields.io/badge/Status-Production%20Ready-success?style=for-the-badge&logo=vercel)
-![Stack](https://img.shields.io/badge/Stack-MERN-blue?style=for-the-badge&logo=react)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+[![Live Demo](https://img.shields.io/badge/demo-live-success?style=for-the-badge)](https://methsarapublications.vercel.app/)
+[![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
 
-[![React](https://img.shields.io/badge/Frontend-React_18-61DAFB?style=flat-square&logo=react)](https://react.dev/)
-[![Vite](https://img.shields.io/badge/Build-Vite-646CFF?style=flat-square&logo=vite)](https://vitejs.dev/)
-[![Tailwind](https://img.shields.io/badge/UI-Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
-[![Node](https://img.shields.io/badge/Backend-Node.js-339933?style=flat-square&logo=node.js)](https://nodejs.org/)
-[![MongoDB](https://img.shields.io/badge/Database-MongoDB_Atlas-47A248?style=flat-square&logo=mongodb)](https://www.mongodb.com/)
-[![Express](https://img.shields.io/badge/Framework-Express.js-000000?style=flat-square&logo=express)](https://expressjs.com/)
+## 📖 About
 
-A high-performance, localization-first E-commerce platform engineered for the Sri Lankan educational market. Built on a scalable **Monorepo Architecture** and deployed on **Vercel Serverless Infrastrucure**.
+Methsara Publications Bookstore is a comprehensive e-commerce solution designed for the Sri Lankan educational market. The platform provides a seamless shopping experience for students, parents, and educators to browse and purchase educational materials.
 
-[View Demo](https://methsarapublications.vercel.app/) · [Report Bug](https://github.com/sarasithagalagama/methsara-publications-bookstore/issues) · [Request Feature](https://github.com/sarasithagalagama/methsara-publications-bookstore/issues)
+## ✨ Features
 
-</div>
+- **User Authentication**: Secure login with Google OAuth 2.0 and JWT-based session management
+- **Product Catalog**: Browse books by category, grade, and subject with advanced filtering
+- **Shopping Cart**: Add items to cart with real-time price calculations
+- **Wishlist**: Save favorite books for later
+- **Secure Checkout**: Complete purchase flow with order management
+- **Admin Dashboard**: Comprehensive admin panel for inventory and order management
+- **Bulk Operations**: Efficient mass updates for pricing and inventory
+- **Contact Form**: Integrated contact system with email notifications
+- **Responsive Design**: Mobile-first design optimized for all devices
+- **Image Management**: Cloud-based image storage with Vercel Blob
 
----
+## 🛠️ Tech Stack
 
-## 🏗️ Architecture
+### Frontend
+- **React** 18.2 - UI library
+- **Vite** 5.0 - Build tool and dev server
+- **Tailwind CSS** 3.4 - Utility-first CSS framework
+- **React Router** - Client-side routing
+- **Axios** - HTTP client
+- **React Hot Toast** - Toast notifications
+- **Lucide React** - Icon library
 
-The application follows a **Monolithic Repository (Monorepo)** pattern, orchestrating decoupled client and server environments that converge during deployment via Vercel's serverless runtime.
+### Backend
+- **Node.js** - Runtime environment
+- **Express.js** 4.18 - Web framework
+- **MongoDB** - NoSQL database
+- **Mongoose** 8.0 - ODM for MongoDB
+- **JWT** - Authentication tokens
+- **Google Auth Library** - OAuth 2.0 integration
+- **Nodemailer** - Email service
+- **Vercel Blob** - File storage
 
-```mermaid
-graph TD
-    Client[Client (Vite/React)] -->|REST API| API[Server API (Express)]
-    Client -->|Uploads| Blob[Vercel Blob Storage]
-    API -->|Auth/Data| Atlas[(MongoDB Atlas)]
-    API -->|Auth| Google[Google OAuth 2.0]
-    API -->|SMTP| Email[Email Service]
-    
-    subgraph Vercel Infrastructure
-    Client
-    API
-    Blob
-    end
+### Deployment
+- **Vercel** - Serverless deployment platform
+- **MongoDB Atlas** - Cloud database
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js (v18 or higher)
+- npm or yarn
+- MongoDB Atlas account
+- Vercel account (for deployment)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/sarasithagalagama/methsara-publications-bookstore.git
+   cd methsara-publications-bookstore
+   ```
+
+2. **Install dependencies**
+   ```bash
+   # Install server dependencies
+   cd server
+   npm install
+
+   # Install client dependencies
+   cd ../client
+   npm install
+   ```
+
+3. **Environment Setup**
+
+   Create a `.env` file in the `server` directory:
+   ```env
+   MONGODB_URI=your_mongodb_connection_string
+   JWT_SECRET=your_jwt_secret
+   GOOGLE_CLIENT_ID=your_google_client_id
+   BLOB_READ_WRITE_TOKEN=your_vercel_blob_token
+   EMAIL_USER=your_email
+   EMAIL_PASS=your_email_password
+   ```
+
+   Create a `.env` file in the `client` directory:
+   ```env
+   VITE_API_URL=http://localhost:5000
+   VITE_GOOGLE_CLIENT_ID=your_google_client_id
+   ```
+
+4. **Run the application**
+
+   ```bash
+   # Start the server (from server directory)
+   npm run dev
+
+   # Start the client (from client directory)
+   npm run dev
+   ```
+
+   The client will run on `http://localhost:5173` and the server on `http://localhost:5000`.
+
+## 📁 Project Structure
+
 ```
-
-### Key Architectural Decisions
-- **Hybrid Rendering**: Client-Side Rendering (CSR) via Vite for dynamic interactivity, backed by static asset serving.
-- **Serverless API Adaptation**: Express.js server adapted for Vercel Serverless Functions (`/api/*`), ensuring zero-cold-start latency optimization.
-- **Optimized Storage**: Utilization of Vercel Blob for high-throughput image delivery (Edge Network Caching).
-- **Stateless Authentication**: JWT-based auth flow suitable for horizontal scaling.
-
----
-
-## 🚀 Technical Highlights & "Under the Hood"
-
-### 🛡️ Secure Authentication Flow
-Implemented a robust **JWT (JSON Web Token)** strategy.
-1.  **Google OAuth 2.0**: ID Tokens verified server-side using `google-auth-library`.
-2.  **Session Management**: 
-    - `HttpOnly` cookie fallback for maximum security against XSS.
-    - Authorization Header `Bearer <token>` support for API flexibility.
-3.  **Role-Based Access Control (RBAC)**: Middleware-level protection for Admin routes.
-
-### ⚡ Bulk Operations Engine
-A sophisticated algorithm for handling mass inventory updates (O(n) complexity optimized):
-- **Batch Processing**: MongoDB `bulkWrite` operations for atomic updates.
-- **Transactional Integrity**: Updates either succeed completely or roll back.
-- **Capabilities**:
-    - Percentage-based dynamic pricing calculation.
-    - Date-range validation for temporal sales (Flash Sales).
-    - Status toggling (Stock visibility).
-
-### 🎨 UI/UX Optimization
-- **Tailwind JIT**: Just-In-Time compilation for minimal CSS bundle size.
-- **Lucide Icons**: Tree-shakeable SVG icons.
-- **Mobile-First Grid System**: Responsive layouts handling 2-column (mobile) to 5-column (4k) grids.
-- **Optimistic Updates**: Immediate UI feedback using `react-hot-toast` while background requests process.
-
----
-
-## 🛠️ Tech Stack Deep Dive
-
-| Layer | Technology | Version | Rationale |
-|-------|------------|---------|-----------|
-| **Frontend** | React | ^18.2 | Component-based architecture, Virtual DOM |
-| **Build Tool** | Vite | ^5.0 | ES modules based, HMR, blistering fast builds |
-| **Styling** | Tailwind CSS | ^3.4 | Utility-first, standardized design system |
-| **State** | Context API | - | Built-in global state without Redux overhead |
-| **Backend** | Express | ^4.18 | Unopinionated, flexible middleware ecosystem |
-| **Database** | Mongoose | ^8.0 | Schema-based modeling, validation, type casting |
-| **Storage** | Vercel Blob | SDK | Edge-cached asset delivery |
-| **Deploy** | Vercel | - | Zero-config CI/CD, global CDN |
-
----
-
-
----
-
-## 📂 Monorepo Structure
-
-```bash
-root/
-├── client/                 # SPA Frontend
+methsara-publications-bookstore/
+├── client/                 # Frontend application
+│   ├── public/            # Static assets
 │   ├── src/
-│   │   ├── services/      # Axios Interceptor Pattern
-│   │   ├── context/       # React Context Providers
-│   │   └── hooks/         # Custom React Hooks
-│   └── vite.config.js     # Build Configuration
-├── server/                # REST API
-│   ├── controllers/       # Request Handlers
-│   ├── middleware/        # Auth, Error Handling
-│   ├── models/            # Mongoose Schemas
-│   └── utils/             # Helper Functions
-└── vercel.json           # Serverless Routing Config
+│   │   ├── components/    # Reusable UI components
+│   │   ├── context/       # React Context providers
+│   │   ├── pages/         # Page components
+│   │   ├── services/      # API service layer
+│   │   └── App.jsx        # Main app component
+│   └── package.json
+├── server/                # Backend application
+│   ├── controllers/       # Route controllers
+│   ├── middleware/        # Custom middleware
+│   ├── models/           # Mongoose models
+│   ├── routes/           # API routes
+│   ├── utils/            # Utility functions
+│   └── index.js          # Server entry point
+├── api/                  # Vercel serverless functions
+└── vercel.json          # Vercel configuration
 ```
 
----
+## 🔑 Key Features Explained
+
+### Authentication System
+- JWT-based authentication with HttpOnly cookies
+- Google OAuth 2.0 integration for social login
+- Role-based access control (Admin/User)
+
+### Admin Dashboard
+- Product management (CRUD operations)
+- Bulk pricing updates
+- Order management
+- Image upload with Vercel Blob
+
+### Shopping Experience
+- Advanced product filtering
+- Real-time cart updates
+- Wishlist functionality
+- Responsive checkout process
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contribution Guidelines](CONTRIBUTING.md) for details on code style, commit conventions, and pull request processes.
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## 📄 License
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 👤 Author
+
+**Sarasitha Galagama**
+
+- GitHub: [@sarasithagalagama](https://github.com/sarasithagalagama)
+
+## 🙏 Acknowledgments
+
+- Educational institutions in Sri Lanka for inspiration
+- Open source community for amazing tools and libraries
 
 ---
 
 <div align="center">
-  <sub>Built with ❤️ by <a href="https://github.com/sarasithagalagama">Sarasitha Galagama</a></sub>
+  Made with ❤️ for education
 </div>
