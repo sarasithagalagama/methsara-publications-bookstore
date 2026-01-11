@@ -175,7 +175,7 @@ const Home = () => {
                   )}
                 </div>
                 <div className="text-center px-2">
-                  <h3 className="font-sinhala font-bold text-gray-900 text-lg mb-1 leading-tight group-hover:text-primary-600 transition-colors line-clamp-2">
+                  <h3 className="font-sinhala font-bold text-gray-900 text-base mb-1 leading-tight group-hover:text-primary-600 transition-colors line-clamp-2">
                     {book.titleSinhala || book.title}
                   </h3>
                   <p className="text-gray-500 text-xs font-medium mb-4 line-clamp-1 uppercase tracking-wide">
