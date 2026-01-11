@@ -305,7 +305,7 @@ const About = () => {
               <MapPin className="w-10 h-10 text-primary-600 mb-4" />
               <h3 className="text-lg font-bold text-gray-900 mb-2">Location</h3>
               <p className="text-gray-600">
-                Kottawa, Colombo
+                Kottawa,
                 <br />
                 Sri Lanka
               </p>
@@ -314,7 +314,7 @@ const About = () => {
             <div className="p-6 rounded-2xl bg-gray-50 flex flex-col items-center">
               <Phone className="w-10 h-10 text-primary-600 mb-4" />
               <h3 className="text-lg font-bold text-gray-900 mb-2">Phone</h3>
-              <p className="text-gray-600">+94 11 234 5678</p>
+              <p className="text-gray-600">071 432 5383 / 071 448 5899</p>
             </div>
 
             <div className="p-6 rounded-2xl bg-gray-50 flex flex-col items-center">

@@ -23,7 +23,9 @@ const Footer = () => {
             </p>
             <div className="flex space-x-4">
               <a
-                href="#"
+                href="https://www.facebook.com/methsarabooks"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors"
               >
                 <Facebook className="h-5 w-5" />
@@ -94,15 +96,15 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-start text-sm">
                 <MapPin className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
-                <span>Colombo, Sri Lanka</span>
+                <span>Kottawa, Sri Lanka</span>
               </li>
               <li className="flex items-center text-sm">
                 <Phone className="h-5 w-5 mr-2 flex-shrink-0" />
-                <span>+94 XX XXX XXXX</span>
+                <span>071 432 5383 / 071 448 5899</span>
               </li>
               <li className="flex items-center text-sm">
                 <Mail className="h-5 w-5 mr-2 flex-shrink-0" />
-                <span>info@methsara.lk</span>
+                <span>methsarabooks@gmail.com</span>
               </li>
             </ul>
           </div>

@@ -83,15 +83,13 @@ const Navbar = () => {
       <div className="bg-gray-900 text-white text-xs py-2 px-4 hidden md:flex justify-between items-center z-50">
         <div className="flex items-center space-x-4">
           <span className="flex items-center">
-            <Phone className="w-3 h-3 mr-1" /> +94 11 234 5678
+            <Phone className="w-3 h-3 mr-1" /> 071 432 5383 / 071 448 5899
           </span>
           <span className="text-gray-400">|</span>
-          <span>info@methsara.lk</span>
+          <span>methsarabooks@gmail.com</span>
         </div>
         <div className="flex items-center space-x-4 font-medium">
           <span>Island-wide Delivery</span>
-          <span className="text-gray-400">|</span>
-          <span>Cash on Delivery Available</span>
         </div>
       </div>
 

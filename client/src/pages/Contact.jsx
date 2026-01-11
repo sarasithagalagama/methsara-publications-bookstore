@@ -102,8 +102,8 @@ const Contact = () => {
                     <h3 className="text-sm font-semibold text-gray-900 mb-1">
                       Phone
                     </h3>
-                    <p className="text-gray-600">+94 11 234 5678</p>
-                    <p className="text-gray-600">+94 77 123 4567</p>
+                    <p className="text-gray-600">071 432 5383</p>
+                    <p className="text-gray-600">071 448 5899</p>
                   </div>
                 </div>
               </div>
@@ -119,8 +119,7 @@ const Contact = () => {
                     <h3 className="text-sm font-semibold text-gray-900 mb-1">
                       Email
                     </h3>
-                    <p className="text-gray-600">info@methsara.lk</p>
-                    <p className="text-gray-600">support@methsara.lk</p>
+                    <p className="text-gray-600">methsarabooks@gmail.com</p>
                   </div>
                 </div>
               </div>
@@ -137,9 +136,7 @@ const Contact = () => {
                       Address
                     </h3>
                     <p className="text-gray-600">
-                      123 Main Street,
-                      <br />
-                      Colombo 00700,
+                      Kottawa,
                       <br />
                       Sri Lanka
                     </p>
@@ -175,7 +172,9 @@ const Contact = () => {
               </h3>
               <div className="flex space-x-4">
                 <a
-                  href="#"
+                  href="https://www.facebook.com/methsarabooks"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-primary-600 hover:bg-primary-600 hover:text-white transition-colors shadow-sm"
                 >
                   <Facebook className="w-5 h-5" />
