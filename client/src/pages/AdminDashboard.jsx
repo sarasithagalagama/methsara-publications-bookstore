@@ -541,6 +541,24 @@ const AdminDashboard = () => {
                   icon={AlertTriangle}
                   bg="bg-orange-50"
                   color="text-orange-600"
+                  onClick={() => {
+                    const lowStockBooks = books.filter(
+                      (b) => b.stock <= 10 && b.stock > 0
+                    );
+                    if (lowStockBooks.length > 0) {
+                      const bookList = lowStockBooks
+                        .map(
+                          (b) =>
+                            `${b.titleSinhala || b.title} (Stock: ${b.stock})`
+                        )
+                        .join("\n");
+                      alert(
+                        `Low Stock Items (${lowStockBooks.length}):\n\n${bookList}`
+                      );
+                    } else {
+                      alert("No low stock items");
+                    }
+                  }}
                 />
                 <StatCard
                   label="Active Sales"
@@ -550,6 +568,29 @@ const AdminDashboard = () => {
                   icon={Tag}
                   bg="bg-green-50"
                   color="text-green-600"
+                  onClick={() => {
+                    const activeSalesBooks = books.filter(
+                      (b) => b.salePrice || b.isFlashSale
+                    );
+                    if (activeSalesBooks.length > 0) {
+                      const bookList = activeSalesBooks
+                        .map((b) => {
+                          const price = b.salePrice
+                            ? `Rs. ${b.salePrice}`
+                            : `Rs. ${b.price}`;
+                          const badge = b.isFlashSale ? " [FLASH SALE]" : "";
+                          return `${
+                            b.titleSinhala || b.title
+                          } - ${price}${badge}`;
+                        })
+                        .join("\n");
+                      alert(
+                        `Active Sales (${activeSalesBooks.length}):\n\n${bookList}`
+                      );
+                    } else {
+                      alert("No active sales");
+                    }
+                  }}
                 />
               </div>
 
@@ -2179,8 +2220,13 @@ const AdminDashboard = () => {
   );
 };
 
-const StatCard = ({ label, value, icon: Icon, color, bg }) => (
-  <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+const StatCard = ({ label, value, icon: Icon, color, bg, onClick }) => (
+  <div
+    className={`bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between transition-all ${
+      onClick ? "cursor-pointer hover:shadow-md hover:border-gray-200" : ""
+    }`}
+    onClick={onClick}
+  >
     <div>
       <p className="text-sm font-medium text-gray-500 mb-1">{label}</p>
       <h3 className="text-2xl font-bold text-gray-900">{value}</h3>
