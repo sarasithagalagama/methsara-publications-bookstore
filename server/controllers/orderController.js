@@ -264,6 +264,35 @@ exports.verifyPayment = async (req, res, next) => {
     order.paymentVerifiedBy = req.user._id;
     await order.save();
 
+    // Send payment confirmation email
+    try {
+      const message = `
+        <h1>Payment Verified</h1>
+        <p>Your payment for Order #${order._id
+          .toString()
+          .slice(-8)
+          .toUpperCase()} has been successfully verified.</p>
+        <p>We are now processing your order.</p>
+        <p>Thank you for shopping with Methsara Publications!</p>
+      `;
+
+      // Get user email - populate if not present or query generic
+      // order.user is likely an ObjectId here unless populated, but verifyPayment didn't populate it.
+      // We need to fetch user email.
+      const fullOrder = await Order.findById(order._id).populate(
+        "user",
+        "email name"
+      );
+
+      await sendEmail({
+        email: fullOrder.user.email,
+        subject: "Payment Verified - Methsara Publications",
+        message,
+      });
+    } catch (emailError) {
+      console.error("Email send failed:", emailError);
+    }
+
     res.status(200).json({
       success: true,
       order,
@@ -291,6 +320,33 @@ exports.updateOrderStatus = async (req, res, next) => {
 
     order.status = status;
     await order.save();
+
+    // Send status update email
+    try {
+      const fullOrder = await Order.findById(order._id).populate(
+        "user",
+        "email name"
+      );
+
+      const message = `
+        <h1>Order Status Update</h1>
+        <p>The status of your Order #${order._id
+          .toString()
+          .slice(-8)
+          .toUpperCase()} has been updated to: <strong>${status}</strong>.</p>
+        <p>Please check your dashboard for more details.</p>
+      `;
+
+      await sendEmail({
+        email: fullOrder.user.email,
+        subject: `Order ${
+          status.charAt(0).toUpperCase() + status.slice(1)
+        } - Methsara Publications`,
+        message,
+      });
+    } catch (emailError) {
+      console.error("Email send failed:", emailError);
+    }
 
     res.status(200).json({
       success: true,
