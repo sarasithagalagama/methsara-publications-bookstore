@@ -333,7 +333,11 @@ exports.updateDetails = async (req, res, next) => {
       },
     });
   } catch (error) {
+  } catch (error) {
     console.error("Update Details Error:", error);
-    next(error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Server Error",
+    });
   }
 };
