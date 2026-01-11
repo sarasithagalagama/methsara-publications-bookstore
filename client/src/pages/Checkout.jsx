@@ -1,14 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  ArrowLeft,
-  Check,
-  CreditCard,
-  Truck,
-  Upload,
-  FileText,
-  X,
-} from "lucide-react";
+import { ArrowLeft, Check, Truck, Upload, FileText, X } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import Button from "../components/ui/Button";
@@ -54,7 +46,7 @@ const Checkout = () => {
 
   const [step, setStep] = useState(1); // 1: Info, 2: Payment
   const [loading, setLoading] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState("card"); // 'card', 'cod', 'bank'
+  const [paymentMethod, setPaymentMethod] = useState("bank"); // 'cod', 'bank'
   const [receiptFile, setReceiptFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
 
@@ -161,12 +153,7 @@ const Checkout = () => {
             country: "Sri Lanka",
           },
           totalAmount: total,
-          notes:
-            paymentMethod === "cod"
-              ? "Cash on Delivery"
-              : paymentMethod === "bank"
-              ? "Bank Transfer"
-              : "Card Payment",
+          notes: paymentMethod === "cod" ? "Cash on Delivery" : "Bank Transfer",
           receiptImage: receiptUrl,
         };
 
@@ -376,34 +363,6 @@ const Checkout = () => {
                   </h2>
 
                   <div className="space-y-4">
-                    {/* Card Option */}
-                    <div
-                      onClick={() => setPaymentMethod("card")}
-                      className={`border rounded-lg p-4 flex items-center cursor-pointer transition-all ${
-                        paymentMethod === "card"
-                          ? "border-primary-500 bg-primary-50 ring-1 ring-primary-500"
-                          : "border-gray-200 hover:border-primary-200"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="payment"
-                        id="card"
-                        checked={paymentMethod === "card"}
-                        onChange={() => setPaymentMethod("card")}
-                        className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
-                      />
-                      <label
-                        htmlFor="card"
-                        className="ml-3 flex items-center flex-1 cursor-pointer"
-                      >
-                        <CreditCard className="w-5 h-5 text-gray-600 mr-2" />
-                        <span className="font-medium text-gray-900">
-                          Credit / Debit Card
-                        </span>
-                      </label>
-                    </div>
-
                     {/* Bank Transfer Option */}
                     <div
                       onClick={() => setPaymentMethod("bank")}
@@ -460,31 +419,6 @@ const Checkout = () => {
                       </label>
                     </div>
                   </div>
-
-                  {paymentMethod === "card" && (
-                    <div className="mt-6 space-y-4 bg-gray-50 p-6 rounded-xl border border-gray-200">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Card Number
-                        </label>
-                        <Input placeholder="0000 0000 0000 0000" />
-                      </div>
-                      <div className="grid grid-cols-2 gap-6">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Expiry Date
-                          </label>
-                          <Input placeholder="MM/YY" />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            CVC
-                          </label>
-                          <Input placeholder="123" />
-                        </div>
-                      </div>
-                    </div>
-                  )}
 
                   {paymentMethod === "bank" && (
                     <div className="mt-6 space-y-6">
