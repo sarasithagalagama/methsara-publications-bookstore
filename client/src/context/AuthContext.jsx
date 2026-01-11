@@ -4,6 +4,7 @@ import {
   register as registerService,
   logout as logoutService,
   googleLogin as googleLoginService,
+  getCurrentUser,
 } from "../services/authService";
 
 const AuthContext = createContext();
@@ -55,8 +56,23 @@ export const AuthProvider = ({ children }) => {
   const isAdmin = user?.role === "admin";
   const isAuthenticated = !!user;
 
+  // Check user method (exposed to components)
+  const checkUser = async () => {
+    try {
+      const data = await getCurrentUser();
+      setUser(data.user);
+      return data.user;
+    } catch (error) {
+      console.error("Failed to check user:", error);
+      // If check fails (e.g. 401), maybe logout?
+      // For now, just return null, don't auto-logout to avoid loops
+      return null;
+    }
+  };
+
   const value = {
     user,
+    checkUser,
     login,
     googleLogin,
     register,
