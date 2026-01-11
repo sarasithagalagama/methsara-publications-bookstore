@@ -60,37 +60,47 @@ exports.createOrder = async (req, res, next) => {
       receiptImage: req.body.receiptImage,
     });
 
-    // Send confirmation email
+    // Send confirmation email to Customer
     try {
-      const message = `
-        <h1>Order Confirmation</h1>
-        <p>Thank you for your order!</p>
-        <p><strong>Order ID:</strong> ${order._id}</p>
-        <p><strong>Total Amount:</strong> LKR ${totalAmount.toLocaleString()}</p>
-        
-        <h2>Order Items:</h2>
-        <ul>
-          ${orderItems
-            .map(
-              (item) => `
-            <li>
-              ${item.quantity} x Book (ID: ${item.book}) - LKR ${(
-                item.price * item.quantity
-              ).toLocaleString()}
-            </li>
-          `
-            )
-            .join("")}
-        </ul>
+      // Need full order with book details for template
+      // Since orderItems already has book info (price, id), we might need titles
+      // But orderItems array above just has IDs.
+      // Let's rely on Populate for simplicity and correctness
+      const fullOrder = await Order.findById(order._id)
+        .populate("user", "email name")
+        .populate("items.book", "title");
 
-        <p>We will process your order shortly.</p>
-      `;
+      // 1. Customer Email
+      const customerHtml = generateEmailTemplate(
+        fullOrder,
+        "Order Confirmation 🎉",
+        "Thank you for your order! We will process it shortly."
+      );
 
       await sendEmail({
         email: req.user.email,
         subject: "Order Confirmation - Methsara Publications",
-        message,
+        html: customerHtml,
       });
+
+      // 2. Admin/Owner Email
+      const adminHtml = generateEmailTemplate(
+        fullOrder,
+        "New Order Received 🚀",
+        `You have received a new order from <strong>${req.user.name}</strong>.`
+      );
+
+      // Send to owner/admin email defined in env
+      if (process.env.SMTP_EMAIL) {
+        await sendEmail({
+          email: process.env.SMTP_EMAIL,
+          subject: `New Order #${order._id
+            .toString()
+            .slice(-8)
+            .toUpperCase()} - Methsara Publications`,
+          html: adminHtml,
+        });
+      }
     } catch (emailError) {
       console.error("Email send failed:", emailError);
       // Don't fail the order if email fails, just log it
@@ -238,6 +248,111 @@ exports.getAllOrders = async (req, res, next) => {
   }
 };
 
+// Helper to generate rich email template
+const generateEmailTemplate = (order, title, messageText) => {
+  const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+  const logoUrl =
+    "https://public-files.gumroad.com/f6f6838d0411770956424e65492379db.png"; // Placeholder book logo or use your own if available
+
+  const itemsHtml = order.items
+    .map(
+      (item) => `
+    <tr>
+      <td style="padding: 8px; border-bottom: 1px solid #eee;">
+        ${item.book.title}
+      </td>
+      <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center;">
+        ${item.quantity}
+      </td>
+      <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">
+        Rs. ${item.price.toLocaleString()}
+      </td>
+    </tr>
+  `
+    )
+    .join("");
+
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; overflow: hidden; }
+        .header { background-color: #059669; padding: 20px; text-align: center; color: white; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .content { padding: 30px 20px; }
+        .order-info { background-color: #f9fafb; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
+        .table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .table th { text-align: left; padding: 8px; border-bottom: 2px solid #ddd; color: #555; }
+        .total { text-align: right; font-size: 18px; font-weight: bold; color: #059669; }
+        .button { display: inline-block; background-color: #059669; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 20px; }
+        .footer { background-color: #f3f4f6; padding: 15px; text-align: center; font-size: 12px; color: #666; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Methsara Publications</h1>
+        </div>
+        <div class="content">
+          <h2>${title}</h2>
+          <p>Hi ${order.user.name.split(" ")[0]},</p>
+          <p>${messageText}</p>
+          
+          <div class="order-info">
+            <p style="margin: 0;"><strong>Order ID:</strong> #${order._id
+              .toString()
+              .slice(-8)
+              .toUpperCase()}</p>
+            <p style="margin: 5px 0 0;"><strong>Date:</strong> ${new Date(
+              order.createdAt
+            ).toLocaleDateString()}</p>
+          </div>
+
+          <h3>Order Summary</h3>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th style="text-align: center;">Qty</th>
+                <th style="text-align: right;">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsHtml}
+            </tbody>
+          </table>
+          
+          <div class="total">
+            Total: Rs. ${order.totalAmount.toLocaleString()}
+          </div>
+
+          <h3>Shipping Address</h3>
+          <p style="color: #666; margin-bottom: 5px;">
+            ${order.shippingAddress.name}<br>
+            ${order.shippingAddress.street}<br>
+            ${order.shippingAddress.city}, ${
+    order.shippingAddress.postalCode
+  }<br>
+            ${order.shippingAddress.country}
+          </p>
+          <p style="color: #666;">Phone: ${order.shippingAddress.phone}</p>
+
+          <div style="text-align: center;">
+            <a href="${clientUrl}/my-orders" class="button">View Order Details</a>
+          </div>
+        </div>
+        <div class="footer">
+          <p>&copy; ${new Date().getFullYear()} Methsara Publications. All rights reserved.</p>
+          <p>If you have any questions, please reply to this email.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+};
+
 // @desc    Verify payment (Admin)
 // @route   PUT /api/orders/:id/verify
 // @access  Private/Admin
@@ -266,28 +381,20 @@ exports.verifyPayment = async (req, res, next) => {
 
     // Send payment confirmation email
     try {
-      const message = `
-        <h1>Payment Verified</h1>
-        <p>Your payment for Order #${order._id
-          .toString()
-          .slice(-8)
-          .toUpperCase()} has been successfully verified.</p>
-        <p>We are now processing your order.</p>
-        <p>Thank you for shopping with Methsara Publications!</p>
-      `;
+      const fullOrder = await Order.findById(order._id)
+        .populate("user", "email name")
+        .populate("items.book", "title");
 
-      // Get user email - populate if not present or query generic
-      // order.user is likely an ObjectId here unless populated, but verifyPayment didn't populate it.
-      // We need to fetch user email.
-      const fullOrder = await Order.findById(order._id).populate(
-        "user",
-        "email name"
+      const htmlContent = generateEmailTemplate(
+        fullOrder,
+        "Payment Verified ✅",
+        "Your payment has been successfully verified. We are now processing your order."
       );
 
       await sendEmail({
         email: fullOrder.user.email,
         subject: "Payment Verified - Methsara Publications",
-        message,
+        html: htmlContent,
       });
     } catch (emailError) {
       console.error("Email send failed:", emailError);
@@ -323,27 +430,22 @@ exports.updateOrderStatus = async (req, res, next) => {
 
     // Send status update email
     try {
-      const fullOrder = await Order.findById(order._id).populate(
-        "user",
-        "email name"
-      );
+      const fullOrder = await Order.findById(order._id)
+        .populate("user", "email name")
+        .populate("items.book", "title");
 
-      const message = `
-        <h1>Order Status Update</h1>
-        <p>The status of your Order #${order._id
-          .toString()
-          .slice(-8)
-          .toUpperCase()} has been updated to: <strong>${status}</strong>.</p>
-        <p>Please check your dashboard for more details.</p>
-      `;
+      const htmlContent = generateEmailTemplate(
+        fullOrder,
+        `Order ${status} 📦`,
+        `The status of your order has been updated to <strong>${status}</strong>.`
+      );
 
       await sendEmail({
         email: fullOrder.user.email,
-        subject: `Order ${
-          status.charAt(0).toUpperCase() + status.slice(1)
-        } - Methsara Publications`,
-        message,
+        subject: `Order ${status} - Methsara Publications`,
+        html: htmlContent,
       });
+
       console.log(
         `Sending email to ${fullOrder.user.email} for status ${status}`
       );
