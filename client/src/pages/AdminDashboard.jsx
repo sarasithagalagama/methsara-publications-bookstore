@@ -48,8 +48,6 @@ const AdminDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [currentBook, setCurrentBook] = useState(null);
-  const [selectedOrder, setSelectedOrder] = useState(null);
-  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
