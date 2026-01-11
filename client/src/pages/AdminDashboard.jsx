@@ -187,7 +187,9 @@ const AdminDashboard = () => {
     try {
       await api.put(`/users/${id}/role`, { role: newRole });
       setUsers(
-        users.map((user) => (user._id === id ? { ...user, role: newRole } : user))
+        users.map((user) =>
+          user._id === id ? { ...user, role: newRole } : user
+        )
       );
     } catch (error) {
       alert("Failed to update user role.");
@@ -601,7 +603,6 @@ const AdminDashboard = () => {
                   </div>
                 </div>
               )}
-            </div>
             </div>
           )}
 
