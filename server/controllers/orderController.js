@@ -90,17 +90,16 @@ exports.createOrder = async (req, res, next) => {
         `You have received a new order from <strong>${req.user.name}</strong>.`
       );
 
-      // Send to owner/admin email defined in env
-      if (process.env.SMTP_EMAIL) {
-        await sendEmail({
-          email: process.env.SMTP_EMAIL,
-          subject: `New Order #${order._id
-            .toString()
-            .slice(-8)
-            .toUpperCase()} - Methsara Publications`,
-          html: adminHtml,
-        });
-      }
+      // Send to owner
+      const ownerEmail = "sarasithagalagama@gmail.com";
+      await sendEmail({
+        email: ownerEmail,
+        subject: `New Order #${order._id
+          .toString()
+          .slice(-8)
+          .toUpperCase()} - Methsara Publications`,
+        html: adminHtml,
+      });
     } catch (emailError) {
       console.error("Email send failed:", emailError);
       // Don't fail the order if email fails, just log it
