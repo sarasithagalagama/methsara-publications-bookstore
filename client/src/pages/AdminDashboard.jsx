@@ -70,6 +70,7 @@ const AdminDashboard = () => {
 
   const [books, setBooks] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -123,6 +124,15 @@ const AdminDashboard = () => {
           console.error("Error fetching orders:", err);
         }
       }
+
+      if (activeTab === "users") {
+        try {
+          const usersRes = await api.get("/users");
+          setUsers(usersRes.data.users || []);
+        } catch (err) {
+          console.error("Error fetching users:", err);
+        }
+      }
     } catch (error) {
       console.error("Dashboard data fetch error:", error);
     } finally {
@@ -164,6 +174,23 @@ const AdminDashboard = () => {
       );
     } catch (error) {
       alert("Failed to update status.");
+    }
+  };
+
+  const handleUserRoleUpdate = async (id, newRole) => {
+    if (
+      !window.confirm(
+        `Are you sure you want to change this user's role to ${newRole}?`
+      )
+    )
+      return;
+    try {
+      await api.put(`/users/${id}/role`, { role: newRole });
+      setUsers(
+        users.map((user) => (user._id === id ? { ...user, role: newRole } : user))
+      );
+    } catch (error) {
+      alert("Failed to update user role.");
     }
   };
 
@@ -338,6 +365,16 @@ const AdminDashboard = () => {
             }`}
           >
             <ShoppingBag className="w-5 h-5 mr-3" /> Orders
+          </button>
+          <button
+            onClick={() => setActiveTab("users")}
+            className={`flex items-center w-full px-4 py-3 text-sm font-medium rounded-xl transition-colors ${
+              activeTab === "users"
+                ? "bg-primary-50 text-primary-700"
+                : "text-gray-600 hover:bg-gray-50"
+            }`}
+          >
+            <Users className="w-5 h-5 mr-3" /> Users
           </button>
         </nav>
       </aside>
@@ -564,6 +601,85 @@ const AdminDashboard = () => {
                   </div>
                 </div>
               )}
+            </div>
+            </div>
+          )}
+
+          {activeTab === "users" && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-gray-900">Users</h2>
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">
+                          Name
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">
+                          Email
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">
+                          Role
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">
+                          Joined
+                        </th>
+                        <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {users.map((u) => (
+                        <tr key={u._id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {u.name}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {u.email}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`px-2.5 py-1 text-xs font-medium rounded-full ${
+                                u.role === "admin"
+                                  ? "bg-purple-100 text-purple-800"
+                                  : "bg-gray-100 text-gray-800"
+                              }`}
+                            >
+                              {u.role}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {new Date(u.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                            {u.email !== user?.email && (
+                              <button
+                                onClick={() =>
+                                  handleUserRoleUpdate(
+                                    u._id,
+                                    u.role === "admin" ? "customer" : "admin"
+                                  )
+                                }
+                                className={`font-medium ${
+                                  u.role === "admin"
+                                    ? "text-red-600 hover:text-red-900"
+                                    : "text-blue-600 hover:text-blue-900"
+                                }`}
+                              >
+                                {u.role === "admin"
+                                  ? "Revoke Admin"
+                                  : "Make Admin"}
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           )}
 
