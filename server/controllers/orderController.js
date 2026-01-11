@@ -1,5 +1,6 @@
 const Order = require("../models/Order");
 const Book = require("../models/Book");
+const sendEmail = require("../utils/emailService");
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -58,6 +59,42 @@ exports.createOrder = async (req, res, next) => {
       notes,
       receiptImage: req.body.receiptImage,
     });
+
+    // Send confirmation email
+    try {
+      const message = `
+        <h1>Order Confirmation</h1>
+        <p>Thank you for your order!</p>
+        <p><strong>Order ID:</strong> ${order._id}</p>
+        <p><strong>Total Amount:</strong> LKR ${totalAmount.toLocaleString()}</p>
+        
+        <h2>Order Items:</h2>
+        <ul>
+          ${orderItems
+            .map(
+              (item) => `
+            <li>
+              ${item.quantity} x Book (ID: ${item.book}) - LKR ${(
+                item.price * item.quantity
+              ).toLocaleString()}
+            </li>
+          `
+            )
+            .join("")}
+        </ul>
+
+        <p>We will process your order shortly.</p>
+      `;
+
+      await sendEmail({
+        email: req.user.email,
+        subject: "Order Confirmation - Methsara Publications",
+        message,
+      });
+    } catch (emailError) {
+      console.error("Email send failed:", emailError);
+      // Don't fail the order if email fails, just log it
+    }
 
     res.status(201).json({
       success: true,
