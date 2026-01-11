@@ -1,6 +1,15 @@
 const nodemailer = require("nodemailer");
 
 const sendEmail = async (options) => {
+  // Check if env vars are loaded
+  console.log("SMTP Config:", {
+    host: process.env.SMTP_HOST || "UNDEFINED",
+    port: process.env.SMTP_PORT || "UNDEFINED",
+    email: process.env.SMTP_EMAIL || "UNDEFINED",
+    user: process.env.SMTP_EMAIL || "UNDEFINED",
+    pass: process.env.SMTP_PASSWORD ? "****" : "MISSING",
+  });
+
   // Create transporter
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
