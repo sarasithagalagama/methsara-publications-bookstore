@@ -389,91 +389,92 @@ const Checkout = () => {
                       </label>
                     </div>
 
-                  {/* Bank Transfer Details */}
-                  {paymentMethod === "bank" && (
-                    <div className="mt-6 space-y-6">
-                      <div className="bg-blue-50 p-6 rounded-xl border border-blue-100">
-                        <h3 className="font-bold text-blue-900 mb-4">
-                          Bank Details
-                        </h3>
-                        <div className="space-y-2 text-sm text-blue-800">
-                          <p>
-                            <span className="font-semibold w-32 inline-block">
-                              Bank:
-                            </span>{" "}
-                            Commercial Bank
-                          </p>
-                          <p>
-                            <span className="font-semibold w-32 inline-block">
-                              Branch:
-                            </span>{" "}
-                            Colombo Main
-                          </p>
-                          <p>
-                            <span className="font-semibold w-32 inline-block">
-                              Account Name:
-                            </span>{" "}
-                            Methsara Publications
-                          </p>
-                          <p>
-                            <span className="font-semibold w-32 inline-block">
-                              Account No:
-                            </span>{" "}
-                            8000 1234 5678
-                          </p>
-                        </div>
-                        <p className="mt-4 text-xs text-blue-600">
-                          Please transfer the total amount of{" "}
-                          <strong>LKR {total.toLocaleString()}</strong> and
-                          upload the receipt below.
-                        </p>
-                      </div>
-
-                      <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 hover:bg-gray-50 transition-colors text-center">
-                        {!previewUrl ? (
-                          <>
-                            <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                            <h4 className="font-medium text-gray-900 mb-1">
-                              Upload Receipt
-                            </h4>
-                            <p className="text-sm text-gray-500 mb-4">
-                              PNG, JPG up to 5MB
+                    {/* Bank Transfer Details */}
+                    {paymentMethod === "bank" && (
+                      <div className="mt-6 space-y-6">
+                        <div className="bg-blue-50 p-6 rounded-xl border border-blue-100">
+                          <h3 className="font-bold text-blue-900 mb-4">
+                            Bank Details
+                          </h3>
+                          <div className="space-y-2 text-sm text-blue-800">
+                            <p>
+                              <span className="font-semibold w-32 inline-block">
+                                Bank:
+                              </span>{" "}
+                              Commercial Bank
                             </p>
-                            <label className="inline-flex">
-                              <span className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg cursor-pointer text-sm font-medium shadow-sm">
-                                Select File
-                              </span>
-                              <input
-                                type="file"
-                                className="hidden"
-                                accept="image/*"
-                                onChange={handleFileChange}
-                              />
-                            </label>
-                          </>
-                        ) : (
-                          <div className="relative inline-block">
-                            <img
-                              src={previewUrl}
-                              alt="Receipt preview"
-                              className="max-h-64 rounded-lg shadow-md"
-                            />
-                            <button
-                              type="button"
-                              onClick={removeFile}
-                              className="absolute -top-3 -right-3 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-600"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                            <p className="mt-2 text-sm text-green-600 font-medium flex items-center justify-center">
-                              <Check className="w-4 h-4 mr-1" />
-                              Receipt Selected
+                            <p>
+                              <span className="font-semibold w-32 inline-block">
+                                Branch:
+                              </span>{" "}
+                              Colombo Main
+                            </p>
+                            <p>
+                              <span className="font-semibold w-32 inline-block">
+                                Account Name:
+                              </span>{" "}
+                              Methsara Publications
+                            </p>
+                            <p>
+                              <span className="font-semibold w-32 inline-block">
+                                Account No:
+                              </span>{" "}
+                              8000 1234 5678
                             </p>
                           </div>
-                        )}
+                          <p className="mt-4 text-xs text-blue-600">
+                            Please transfer the total amount of{" "}
+                            <strong>LKR {total.toLocaleString()}</strong> and
+                            upload the receipt below.
+                          </p>
+                        </div>
+
+                        <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 hover:bg-gray-50 transition-colors text-center">
+                          {!previewUrl ? (
+                            <>
+                              <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                              <h4 className="font-medium text-gray-900 mb-1">
+                                Upload Receipt
+                              </h4>
+                              <p className="text-sm text-gray-500 mb-4">
+                                PNG, JPG up to 5MB
+                              </p>
+                              <label className="inline-flex">
+                                <span className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg cursor-pointer text-sm font-medium shadow-sm">
+                                  Select File
+                                </span>
+                                <input
+                                  type="file"
+                                  className="hidden"
+                                  accept="image/*"
+                                  onChange={handleFileChange}
+                                />
+                              </label>
+                            </>
+                          ) : (
+                            <div className="relative inline-block">
+                              <img
+                                src={previewUrl}
+                                alt="Receipt preview"
+                                className="max-h-64 rounded-lg shadow-md"
+                              />
+                              <button
+                                type="button"
+                                onClick={removeFile}
+                                className="absolute -top-3 -right-3 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-600"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                              <p className="mt-2 text-sm text-green-600 font-medium flex items-center justify-center">
+                                <Check className="w-4 h-4 mr-1" />
+                                Receipt Selected
+                              </p>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               )}
 
