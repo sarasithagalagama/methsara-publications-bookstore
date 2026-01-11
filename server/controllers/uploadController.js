@@ -4,6 +4,9 @@ const { put } = require("@vercel/blob");
 // @route   POST /api/upload/receipt
 // @access  Private
 exports.uploadReceipt = async (req, res, next) => {
+  console.log("Upload Receipt Controller Hit");
+  console.log("Type of next:", typeof next);
+  console.log("BLOB_TOKEN present:", !!process.env.BLOB_READ_WRITE_TOKEN);
   try {
     if (!req.file) {
       return res.status(400).json({
@@ -42,7 +45,14 @@ exports.uploadReceipt = async (req, res, next) => {
     });
   } catch (error) {
     console.error("Upload error:", error);
-    next(error);
+    // Explicitly handle error to avoid "next is not a function" crash
+    if (res && !res.headersSent) {
+      return res.status(500).json({
+        success: false,
+        message: "Upload failed: " + error.message,
+      });
+    }
+    if (typeof next === "function") next(error);
   }
 };
 
@@ -88,6 +98,12 @@ exports.uploadImage = async (req, res, next) => {
     });
   } catch (error) {
     console.error("Upload error:", error);
-    next(error);
+    if (res && !res.headersSent) {
+      return res.status(500).json({
+        success: false,
+        message: "Upload failed: " + error.message,
+      });
+    }
+    if (typeof next === "function") next(error);
   }
 };
