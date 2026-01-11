@@ -3,7 +3,7 @@ import { MessageCircle, X } from "lucide-react";
 
 const WhatsAppButton = () => {
   const [showTooltip, setShowTooltip] = useState(false);
-  const phoneNumber = "94712175244"; // WhatsApp number without + or spaces
+  const phoneNumber = "94714325383"; // WhatsApp number without + or spaces
   const message = "Hello! I'm interested in your books."; // Default message
 
   const handleWhatsAppClick = () => {
