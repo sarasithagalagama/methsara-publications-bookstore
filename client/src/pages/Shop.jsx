@@ -10,6 +10,7 @@ import {
   Star,
   Heart,
   Grid,
+  X,
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { useCart } from "../context/CartContext";
@@ -28,6 +29,7 @@ const Shop = () => {
   const [activeSubjects, setActiveSubjects] = useState([]);
   const [activePriceRange, setActivePriceRange] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
@@ -102,7 +104,7 @@ const Shop = () => {
   return (
     <div className="min-h-screen bg-white flex font-sans text-secondary-900">
       {/* Sidebar Filter - Desktop */}
-      <aside className="hidden lg:block w-72 bg-white border-r border-secondary-100 p-8 fixed top-16 h-[calc(100vh-4rem)] overflow-y-auto z-40">
+      <aside className="hidden lg:block w-72 bg-white border-r border-secondary-100 p-8 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto">
         <div className="mb-12">
           <h2 className="text-2xl font-serif font-bold text-secondary-900 flex items-center justify-between">
             <span>Filters</span>
@@ -253,8 +255,193 @@ const Shop = () => {
         </div>
       </aside>
 
+      {/* Mobile Filter Panel */}
+      {isMobileFilterOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/50 z-50 lg:hidden"
+            onClick={() => setIsMobileFilterOpen(false)}
+          />
+
+          {/* Filter Panel */}
+          <div className="fixed inset-y-0 left-0 w-80 bg-white z-50 lg:hidden overflow-y-auto shadow-2xl">
+            <div className="p-6">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-2xl font-serif font-bold text-secondary-900">
+                  Filters
+                </h2>
+                <button
+                  onClick={() => setIsMobileFilterOpen(false)}
+                  className="p-2 hover:bg-secondary-100 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Reset All */}
+              <button
+                onClick={() => {
+                  setActiveCategory("All");
+                  setActiveSubjects([]);
+                  setActivePriceRange("All");
+                }}
+                className="text-sm text-primary-600 hover:text-primary-700 font-medium mb-6"
+              >
+                Reset All
+              </button>
+
+              <div className="space-y-8">
+                {/* Grade Filter */}
+                <div>
+                  <h3 className="text-sm font-bold text-secondary-900 uppercase tracking-wider mb-4">
+                    Grade
+                  </h3>
+                  <div className="space-y-3">
+                    {[
+                      "All",
+                      "A/L",
+                      "Grade 6",
+                      "Grade 7",
+                      "Grade 8",
+                      "Grade 9",
+                      "Grade 10",
+                      "Grade 11",
+                    ].map((grade, idx) => (
+                      <label
+                        key={idx}
+                        className="flex items-center group cursor-pointer"
+                      >
+                        <div className="relative flex items-center">
+                          <input
+                            type="radio"
+                            name="grade-mobile"
+                            className="peer h-5 w-5 cursor-pointer appearance-none rounded-full border border-secondary-300 transition-all checked:border-primary-500 checked:bg-primary-500 hover:border-primary-400"
+                            checked={activeCategory === grade}
+                            onChange={() => setActiveCategory(grade)}
+                          />
+                          <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full opacity-0 peer-checked:opacity-100"></div>
+                        </div>
+                        <span
+                          className={`ml-3 text-sm transition-colors ${
+                            activeCategory === grade
+                              ? "text-secondary-900 font-medium"
+                              : "text-secondary-500 group-hover:text-secondary-700"
+                          }`}
+                        >
+                          {grade}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Subject Filter */}
+                <div>
+                  <h3 className="text-sm font-bold text-secondary-900 uppercase tracking-wider mb-4">
+                    Subject
+                  </h3>
+                  <div className="space-y-3">
+                    <label className="flex items-center group cursor-pointer">
+                      <div className="relative flex items-center">
+                        <input
+                          type="checkbox"
+                          className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border border-secondary-300 transition-all checked:border-primary-500 checked:bg-primary-500 hover:border-primary-400"
+                          checked={activeSubjects.length === 0}
+                          onChange={() => setActiveSubjects([])}
+                        />
+                        <Check className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100" />
+                      </div>
+                      <span
+                        className={`ml-3 text-sm transition-colors ${
+                          activeSubjects.length === 0
+                            ? "text-secondary-900 font-medium"
+                            : "text-secondary-500 group-hover:text-secondary-700"
+                        }`}
+                      >
+                        All
+                      </span>
+                    </label>
+
+                    {[...new Set(allBooks.map((b) => b.subject))].map(
+                      (subject, idx) => (
+                        <label
+                          key={idx}
+                          className="flex items-center group cursor-pointer"
+                        >
+                          <div className="relative flex items-center">
+                            <input
+                              type="checkbox"
+                              className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border border-secondary-300 transition-all checked:border-primary-500 checked:bg-primary-500 hover:border-primary-400"
+                              checked={activeSubjects.includes(subject)}
+                              onChange={() => {
+                                if (activeSubjects.includes(subject)) {
+                                  setActiveSubjects(
+                                    activeSubjects.filter((s) => s !== subject)
+                                  );
+                                } else {
+                                  setActiveSubjects([
+                                    ...activeSubjects,
+                                    subject,
+                                  ]);
+                                }
+                              }}
+                            />
+                            <Check className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100" />
+                          </div>
+                          <span
+                            className={`ml-3 text-sm transition-colors ${
+                              activeSubjects.includes(subject)
+                                ? "text-secondary-900 font-medium"
+                                : "text-secondary-500 group-hover:text-secondary-700"
+                            }`}
+                          >
+                            {subject}
+                          </span>
+                        </label>
+                      )
+                    )}
+                  </div>
+                </div>
+
+                {/* Price Range */}
+                <div>
+                  <h3 className="text-sm font-bold text-secondary-900 uppercase tracking-wider mb-4">
+                    Price Range
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {["All", "< 500", "500-1000", "1000+"].map((price, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setActivePriceRange(price)}
+                        className={`px-4 py-2 rounded-full border text-sm transition-all ${
+                          activePriceRange === price
+                            ? "bg-primary-500 border-primary-500 text-white"
+                            : "border-secondary-200 text-secondary-600 hover:border-primary-500 hover:text-primary-600"
+                        }`}
+                      >
+                        {price}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Apply Button */}
+              <button
+                onClick={() => setIsMobileFilterOpen(false)}
+                className="w-full mt-8 bg-primary-500 hover:bg-primary-600 text-white py-3 rounded-full font-medium transition-colors"
+              >
+                Apply Filters
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
       {/* Main Content Area */}
-      <main className="flex-1 lg:ml-72 p-4 lg:p-8">
+      <main className="flex-1 lg:ml-0 p-4 lg:p-8">
         {/* Header Section */}
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
           <div>
@@ -281,8 +468,11 @@ const Shop = () => {
                 className="w-full pl-10 pr-4 py-3 bg-secondary-50 border border-transparent rounded-full text-sm focus:outline-none focus:bg-white focus:border-secondary-200 focus:ring-2 focus:ring-primary-100 transition-all"
               />
             </div>
-            <div className="flex items-center gap-2">
-              <button className="p-3 bg-secondary-50 rounded-full hover:bg-secondary-100 text-secondary-900 transition-colors">
+            <div className="flex items-center gap-2 lg:hidden">
+              <button
+                onClick={() => setIsMobileFilterOpen(true)}
+                className="p-3 bg-secondary-50 rounded-full hover:bg-secondary-100 text-secondary-900 transition-colors"
+              >
                 <SlidersHorizontal className="w-5 h-5" />
               </button>
             </div>

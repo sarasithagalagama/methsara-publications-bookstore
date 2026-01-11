@@ -110,12 +110,26 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-sm text-gray-400">
-              © {new Date().getFullYear()} Methsara Publications. All rights
-              reserved.
-            </p>
-            <div className="flex space-x-6 mt-4 md:mt-0">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
+              <p className="text-sm text-gray-400">
+                © {new Date().getFullYear()} Methsara Publications. All rights
+                reserved.
+              </p>
+              <span className="hidden md:inline text-gray-600">|</span>
+              <p className="text-sm text-gray-400">
+                Designed & Developed by{" "}
+                <a
+                  href="https://sarasitha.me/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary-400 hover:text-primary-300 transition-colors font-medium"
+                >
+                  Sarasitha Galagama
+                </a>
+              </p>
+            </div>
+            <div className="flex space-x-6">
               <Link
                 to="#"
                 className="text-sm text-gray-400 hover:text-white transition-colors"
