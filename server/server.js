@@ -64,6 +64,7 @@ app.use("/api/books", require("./routes/books"));
 app.use("/api/orders", require("./routes/orders"));
 app.use("/api/upload", require("./routes/upload"));
 app.use("/api/users", require("./routes/users"));
+app.use("/api/contact", require("./routes/contactRoutes"));
 
 // Health check route
 app.get("/api/health", (req, res) => {
