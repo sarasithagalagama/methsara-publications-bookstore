@@ -25,6 +25,9 @@ import { useAuth } from "../context/AuthContext";
 const AdminDashboard = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -1016,9 +1019,6 @@ const AdminDashboard = () => {
                           Status
                         </th>
                         <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                          Receipt
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                           Actions
                         </th>
                       </tr>
@@ -1026,7 +1026,7 @@ const AdminDashboard = () => {
                     <tbody className="bg-white divide-y divide-gray-200">
                       {orders.length === 0 ? (
                         <tr>
-                          <td colSpan="7" className="px-6 py-12 text-center">
+                          <td colSpan="6" className="px-6 py-12 text-center">
                             <ShoppingBag className="mx-auto h-12 w-12 text-gray-300 mb-3" />
                             <p className="text-base font-medium text-gray-900">
                               No orders yet
@@ -1107,22 +1107,6 @@ const AdminDashboard = () => {
                               </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              {order.receiptImage ? (
-                                <a
-                                  href={order.receiptImage}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-xs text-primary-600 hover:text-primary-800 font-semibold underline inline-flex items-center"
-                                >
-                                  View
-                                </a>
-                              ) : (
-                                <span className="text-xs text-gray-400">
-                                  N/A
-                                </span>
-                              )}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center space-x-2">
                                 <button
                                   onClick={() => {
@@ -1133,6 +1117,18 @@ const AdminDashboard = () => {
                                 >
                                   Details
                                 </button>
+                                {order.receiptImage && (
+                                  <button
+                                    onClick={() => {
+                                      setSelectedOrder(order);
+                                      setIsReceiptModalOpen(true);
+                                    }}
+                                    className="text-gray-600 hover:text-primary-600 bg-gray-50 hover:bg-primary-50 px-2 py-1 rounded-lg text-sm font-medium transition-colors"
+                                    title="View Receipt"
+                                  >
+                                    <FileText className="w-4 h-4" />
+                                  </button>
+                                )}
                                 <select
                                   className="text-sm border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 px-3 py-1.5"
                                   value={order.status}
@@ -1542,6 +1538,55 @@ const AdminDashboard = () => {
                 </Button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Receipt Modal */}
+      {isReceiptModalOpen && selectedOrder && selectedOrder.receiptImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          onClick={() => setIsReceiptModalOpen(false)}
+        >
+          <div
+            className="bg-white rounded-xl shadow-2xl max-w-4xl max-h-[90vh] overflow-hidden relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="absolute top-4 right-4 z-10">
+              <button
+                onClick={() => setIsReceiptModalOpen(false)}
+                className="bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-2 h-full overflow-auto flex items-center justify-center bg-gray-100/50">
+              <img
+                src={selectedOrder.receiptImage}
+                alt="Payment Receipt"
+                className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-lg"
+              />
+            </div>
+            <div className="bg-white p-4 border-t border-gray-100 flex justify-between items-center">
+              <div>
+                <p className="text-sm font-medium text-gray-900">
+                  Receipt for Order #{selectedOrder._id.slice(-8).toUpperCase()}
+                </p>
+                <p className="text-xs text-gray-500">
+                  Uploaded on{" "}
+                  {new Date(selectedOrder.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+              <a
+                href={selectedOrder.receiptImage}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                Open Original
+              </a>
+            </div>
           </div>
         </div>
       )}
