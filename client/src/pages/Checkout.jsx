@@ -399,15 +399,9 @@ const Checkout = () => {
                           <div className="space-y-2 text-sm text-blue-800">
                             <p>
                               <span className="font-semibold w-32 inline-block">
-                                Bank:
+                                Account Number:
                               </span>{" "}
-                              Sampath Bank
-                            </p>
-                            <p>
-                              <span className="font-semibold w-32 inline-block">
-                                Branch:
-                              </span>{" "}
-                              Kottawa
+                              109257417182
                             </p>
                             <p>
                               <span className="font-semibold w-32 inline-block">
@@ -417,9 +411,15 @@ const Checkout = () => {
                             </p>
                             <p>
                               <span className="font-semibold w-32 inline-block">
-                                Account No:
+                                Bank:
                               </span>{" "}
-                              109257417182
+                              Sampath Bank
+                            </p>
+                            <p>
+                              <span className="font-semibold w-32 inline-block">
+                                Branch:
+                              </span>{" "}
+                              Kottawa
                             </p>
                           </div>
                           <p className="mt-4 text-xs text-blue-600">
