@@ -18,11 +18,13 @@ import {
   Tag,
   TrendingDown,
   FileText,
+  Menu,
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-hot-toast";
+import { generateBulkReceipts } from "../utils/receiptGenerator";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -94,6 +96,12 @@ const AdminDashboard = () => {
   const [isBookListModalOpen, setIsBookListModalOpen] = useState(false);
   const [bookListModalTitle, setBookListModalTitle] = useState("");
   const [bookListModalBooks, setBookListModalBooks] = useState([]);
+
+  // Order Bulk Selection State
+  const [selectedOrders, setSelectedOrders] = useState([]);
+
+  // Mobile Menu State
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Confirmation Modal State
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -453,6 +461,44 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleSelectOrder = (orderId) => {
+    setSelectedOrders((prev) =>
+      prev.includes(orderId)
+        ? prev.filter((id) => id !== orderId)
+        : [...prev, orderId]
+    );
+  };
+
+  const handleSelectAllOrders = () => {
+    if (selectedOrders.length === orders.length) {
+      setSelectedOrders([]);
+    } else {
+      setSelectedOrders(orders.map((order) => order._id));
+    }
+  };
+
+  const handleBulkReceiptGeneration = () => {
+    if (selectedOrders.length === 0) {
+      toast.error("Please select orders to generate receipts");
+      return;
+    }
+
+    const selectedOrderData = orders.filter((order) =>
+      selectedOrders.includes(order._id)
+    );
+
+    try {
+      generateBulkReceipts(selectedOrderData);
+      toast.success(
+        `Generated receipts for ${selectedOrderData.length} orders`
+      );
+      setSelectedOrders([]);
+    } catch (error) {
+      console.error("Receipt generation failed", error);
+      toast.error("Failed to generate receipts");
+    }
+  };
+
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -462,16 +508,59 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans flex h-screen overflow-hidden">
+      {/* Mobile Header */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-40 px-4 py-3 flex items-center justify-between">
+        <h2 className="text-xl font-serif font-bold text-primary-700">Admin</h2>
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+        >
+          {isMobileMenuOpen ? (
+            <X className="w-6 h-6" />
+          ) : (
+            <Menu className="w-6 h-6" />
+          )}
+        </button>
+      </div>
+
+      {/* Sidebar Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-gray-200">
-        <div className="p-6 border-b border-gray-100">
+      <aside
+        className={`fixed lg:static inset-y-0 left-0 w-64 bg-white border-r border-gray-200 z-50 transform transition-transform duration-200 ease-in-out ${
+          isMobileMenuOpen
+            ? "translate-x-0"
+            : "-translate-x-full lg:translate-x-0"
+        }`}
+      >
+        <div className="p-6 border-b border-gray-100 hidden lg:block">
           <h2 className="text-2xl font-serif font-bold text-primary-700">
             Admin
           </h2>
         </div>
+        <div className="p-4 lg:hidden border-b border-gray-100 flex items-center justify-between">
+          <h2 className="text-xl font-serif font-bold text-primary-700">
+            Menu
+          </h2>
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="p-1 text-gray-500 hover:bg-gray-100 rounded-lg"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
         <nav className="flex-1 p-4 space-y-1">
           <button
-            onClick={() => setActiveTab("overview")}
+            onClick={() => {
+              setActiveTab("overview");
+              setIsMobileMenuOpen(false);
+            }}
             className={`flex items-center w-full px-4 py-3 text-sm font-medium rounded-xl transition-colors ${
               activeTab === "overview"
                 ? "bg-primary-50 text-primary-700"
@@ -481,7 +570,10 @@ const AdminDashboard = () => {
             <TrendingUp className="w-5 h-5 mr-3" /> Overview
           </button>
           <button
-            onClick={() => setActiveTab("products")}
+            onClick={() => {
+              setActiveTab("products");
+              setIsMobileMenuOpen(false);
+            }}
             className={`flex items-center w-full px-4 py-3 text-sm font-medium rounded-xl transition-colors ${
               activeTab === "products"
                 ? "bg-primary-50 text-primary-700"
@@ -491,7 +583,10 @@ const AdminDashboard = () => {
             <Package className="w-5 h-5 mr-3" /> Products
           </button>
           <button
-            onClick={() => setActiveTab("orders")}
+            onClick={() => {
+              setActiveTab("orders");
+              setIsMobileMenuOpen(false);
+            }}
             className={`flex items-center w-full px-4 py-3 text-sm font-medium rounded-xl transition-colors ${
               activeTab === "orders"
                 ? "bg-primary-50 text-primary-700"
@@ -501,7 +596,10 @@ const AdminDashboard = () => {
             <ShoppingBag className="w-5 h-5 mr-3" /> Orders
           </button>
           <button
-            onClick={() => setActiveTab("users")}
+            onClick={() => {
+              setActiveTab("users");
+              setIsMobileMenuOpen(false);
+            }}
             className={`flex items-center w-full px-4 py-3 text-sm font-medium rounded-xl transition-colors ${
               activeTab === "users"
                 ? "bg-primary-50 text-primary-700"
@@ -513,9 +611,9 @@ const AdminDashboard = () => {
         </nav>
       </aside>
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-y-auto">
+      <div className="flex-1 flex flex-col overflow-y-auto pt-16 lg:pt-0">
         {/* Dashboard Content */}
-        <main className="p-8">
+        <main className="p-4 sm:p-6 lg:p-8">
           {activeTab === "overview" && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-gray-900">
@@ -1408,11 +1506,46 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
+              {/* Bulk Actions Toolbar for Orders */}
+              {selectedOrders.length > 0 && (
+                <div className="bg-primary-50 border border-primary-200 rounded-xl p-4 flex flex-wrap items-center justify-between gap-4 mb-6">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-medium text-gray-700">
+                      {selectedOrders.length} order(s) selected
+                    </span>
+                    <button
+                      onClick={() => setSelectedOrders([])}
+                      className="text-sm text-gray-500 hover:text-gray-700"
+                    >
+                      Clear selection
+                    </button>
+                  </div>
+                  <Button
+                    onClick={handleBulkReceiptGeneration}
+                    className="flex items-center gap-2"
+                  >
+                    <FileText className="w-4 h-4" />
+                    Generate & Download Receipts
+                  </Button>
+                </div>
+              )}
+
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
+                        <th className="px-6 py-4 text-left">
+                          <input
+                            type="checkbox"
+                            checked={
+                              selectedOrders.length === orders.length &&
+                              orders.length > 0
+                            }
+                            onChange={handleSelectAllOrders}
+                            className="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                          />
+                        </th>
                         <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                           Order ID
                         </th>
@@ -1456,6 +1589,14 @@ const AdminDashboard = () => {
                             key={order._id}
                             className="hover:bg-gray-50 transition-colors"
                           >
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <input
+                                type="checkbox"
+                                checked={selectedOrders.includes(order._id)}
+                                onChange={() => handleSelectOrder(order._id)}
+                                className="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                              />
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm font-bold text-primary-600">
                                 #{order._id.slice(-8).toUpperCase()}

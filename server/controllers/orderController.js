@@ -120,7 +120,7 @@ exports.createOrder = async (req, res, next) => {
 exports.getMyOrders = async (req, res, next) => {
   try {
     const orders = await Order.find({ user: req.user._id })
-      .populate("items.book", "title author coverImage")
+      .populate("items.book", "title author image")
       .sort({ createdAt: -1 });
 
     res.status(200).json({
@@ -139,7 +139,7 @@ exports.getMyOrders = async (req, res, next) => {
 exports.getOrder = async (req, res, next) => {
   try {
     const order = await Order.findById(req.params.id)
-      .populate("items.book", "title author coverImage")
+      .populate("items.book", "title author image")
       .populate("user", "name email phone");
 
     if (!order) {
@@ -234,7 +234,7 @@ exports.getAllOrders = async (req, res, next) => {
 
     const orders = await Order.find(query)
       .populate("user", "name email phone")
-      .populate("items.book", "title author")
+      .populate("items.book", "title author price")
       .sort({ createdAt: -1 });
 
     res.status(200).json({
