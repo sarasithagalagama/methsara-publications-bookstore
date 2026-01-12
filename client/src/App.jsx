@@ -30,6 +30,8 @@ import CustomerDashboard from "./pages/CustomerDashboard";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 import "./index.css";
 
 const LayoutWrapper = () => {
@@ -59,6 +61,8 @@ const LayoutWrapper = () => {
             path="/resetpassword/:resetToken"
             element={<ResetPassword />}
           />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
