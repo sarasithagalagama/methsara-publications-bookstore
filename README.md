@@ -2,8 +2,7 @@
 
 A modern, full-stack e-commerce platform for educational books, built with the MERN stack and deployed on Vercel.
 
-[![Live Demo](https://img.shields.io/badge/demo-live-success?style=for-the-badge)](https://methsarapublications.vercel.app/)
-[![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
+[![Live Demo](https://img.shields.io/badge/demo-live-success?style=for-the-badge)](https://methsarabooks.com/)
 
 ## 📖 About
 
