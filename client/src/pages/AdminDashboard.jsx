@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import api from "../services/api";
 import {
   Users,
@@ -19,6 +20,7 @@ import {
   TrendingDown,
   FileText,
   Menu,
+  Home,
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import Input from "../components/ui/Input";
@@ -566,6 +568,15 @@ const AdminDashboard = () => {
           >
             <Users className="w-5 h-5 mr-3" /> Users
           </button>
+
+          <div className="pt-4 mt-4 border-t border-gray-100">
+            <Link
+              to="/"
+              className="flex items-center w-full px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-xl transition-colors"
+            >
+              <Home className="w-5 h-5 mr-3" /> Back to Home
+            </Link>
+          </div>
         </nav>
       </aside>
       {/* Main Content */}
