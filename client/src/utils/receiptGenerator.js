@@ -144,9 +144,25 @@ export const generateBulkReceipts = (orders) => {
     // Footer
     const finalY = doc.lastAutoTable.finalY || 150;
 
+    // Bank Details
+    doc.setFillColor(240, 253, 244); // Light green background
+    doc.rect(15, finalY + 10, pageWidth - 30, 25, "F");
+
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    doc.setFont("helvetica", "bold");
+    doc.text("Bank Transfer Details:", 20, finalY + 18);
+
+    doc.setFont("helvetica", "normal");
+    doc.text("Name: DMSR Dharmakeerthi", 20, finalY + 24);
+    doc.text("Account No: 109257417182", 20, finalY + 30);
+
+    doc.text("Bank: Sampath Bank", pageWidth / 2, finalY + 24);
+    doc.text("Branch: Kottawa", pageWidth / 2, finalY + 30);
+
     doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);
-    doc.text("Thank you for your business!", pageWidth / 2, finalY + 20, {
+    doc.text("Thank you for your business!", pageWidth / 2, finalY + 50, {
       align: "center",
     });
 
