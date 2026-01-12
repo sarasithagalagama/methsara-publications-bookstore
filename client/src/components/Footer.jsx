@@ -9,16 +9,11 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2 text-center md:text-left">
-            <div className="flex items-center justify-center md:justify-start mb-4">
-              <img
-                src="/footer-logo.png"
-                alt="Methsara Publications"
-                className="h-12 w-auto"
-              />
-              <span className="ml-2 text-lg font-bold text-white">
-                Methsara Publications
-              </span>
-            </div>
+            <img
+              src="/footer-logo.png"
+              alt="Methsara Publications"
+              className="h-12 w-auto"
+            />
             <p className="text-sm text-gray-400 mb-4 max-w-md mx-auto md:mx-0">
               Empowering Sri Lankan students with quality educational materials
               since 2012. Trusted by over 10,000 students nationwide.
