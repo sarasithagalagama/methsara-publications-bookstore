@@ -24,7 +24,6 @@ import { Button } from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-hot-toast";
-import { generateBulkReceipts } from "../utils/receiptGenerator";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -96,9 +95,6 @@ const AdminDashboard = () => {
   const [isBookListModalOpen, setIsBookListModalOpen] = useState(false);
   const [bookListModalTitle, setBookListModalTitle] = useState("");
   const [bookListModalBooks, setBookListModalBooks] = useState([]);
-
-  // Order Bulk Selection State
-  const [selectedOrders, setSelectedOrders] = useState([]);
 
   // Mobile Menu State
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -458,44 +454,6 @@ const AdminDashboard = () => {
         error.message ||
         "Failed to update books. Please try again.";
       toast.error(`Error: ${errorMessage}`);
-    }
-  };
-
-  const handleSelectOrder = (orderId) => {
-    setSelectedOrders((prev) =>
-      prev.includes(orderId)
-        ? prev.filter((id) => id !== orderId)
-        : [...prev, orderId]
-    );
-  };
-
-  const handleSelectAllOrders = () => {
-    if (selectedOrders.length === orders.length) {
-      setSelectedOrders([]);
-    } else {
-      setSelectedOrders(orders.map((order) => order._id));
-    }
-  };
-
-  const handleBulkReceiptGeneration = () => {
-    if (selectedOrders.length === 0) {
-      toast.error("Please select orders to generate receipts");
-      return;
-    }
-
-    const selectedOrderData = orders.filter((order) =>
-      selectedOrders.includes(order._id)
-    );
-
-    try {
-      generateBulkReceipts(selectedOrderData);
-      toast.success(
-        `Generated receipts for ${selectedOrderData.length} orders`
-      );
-      setSelectedOrders([]);
-    } catch (error) {
-      console.error("Receipt generation failed", error);
-      toast.error("Failed to generate receipts");
     }
   };
 
@@ -1506,46 +1464,11 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              {/* Bulk Actions Toolbar for Orders */}
-              {selectedOrders.length > 0 && (
-                <div className="bg-primary-50 border border-primary-200 rounded-xl p-4 flex flex-wrap items-center justify-between gap-4 mb-6">
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-gray-700">
-                      {selectedOrders.length} order(s) selected
-                    </span>
-                    <button
-                      onClick={() => setSelectedOrders([])}
-                      className="text-sm text-gray-500 hover:text-gray-700"
-                    >
-                      Clear selection
-                    </button>
-                  </div>
-                  <Button
-                    onClick={handleBulkReceiptGeneration}
-                    className="flex items-center gap-2"
-                  >
-                    <FileText className="w-4 h-4" />
-                    Generate & Download Receipts
-                  </Button>
-                </div>
-              )}
-
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-4 text-left">
-                          <input
-                            type="checkbox"
-                            checked={
-                              selectedOrders.length === orders.length &&
-                              orders.length > 0
-                            }
-                            onChange={handleSelectAllOrders}
-                            className="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-                          />
-                        </th>
                         <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                           Order ID
                         </th>
@@ -1589,14 +1512,6 @@ const AdminDashboard = () => {
                             key={order._id}
                             className="hover:bg-gray-50 transition-colors"
                           >
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <input
-                                type="checkbox"
-                                checked={selectedOrders.includes(order._id)}
-                                onChange={() => handleSelectOrder(order._id)}
-                                className="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-                              />
-                            </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm font-bold text-primary-600">
                                 #{order._id.slice(-8).toUpperCase()}

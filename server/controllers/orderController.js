@@ -234,7 +234,7 @@ exports.getAllOrders = async (req, res, next) => {
 
     const orders = await Order.find(query)
       .populate("user", "name email phone")
-      .populate("items.book", "title author price")
+      .populate("items.book", "title author")
       .sort({ createdAt: -1 });
 
     res.status(200).json({
