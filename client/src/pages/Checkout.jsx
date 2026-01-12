@@ -401,25 +401,25 @@ const Checkout = () => {
                               <span className="font-semibold w-32 inline-block">
                                 Bank:
                               </span>{" "}
-                              Commercial Bank
+                              Sampath Bank
                             </p>
                             <p>
                               <span className="font-semibold w-32 inline-block">
                                 Branch:
                               </span>{" "}
-                              Colombo Main
+                              Kottawa
                             </p>
                             <p>
                               <span className="font-semibold w-32 inline-block">
                                 Account Name:
                               </span>{" "}
-                              Methsara Publications
+                              DMSR Dharmakeerthi
                             </p>
                             <p>
                               <span className="font-semibold w-32 inline-block">
                                 Account No:
                               </span>{" "}
-                              8000 1234 5678
+                              109257417182
                             </p>
                           </div>
                           <p className="mt-4 text-xs text-blue-600">
