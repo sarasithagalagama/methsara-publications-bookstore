@@ -47,64 +47,6 @@ Methsara Publications Bookstore is a comprehensive e-commerce solution designed 
 - **Vercel** - Serverless deployment platform
 - **MongoDB Atlas** - Cloud database
 
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Node.js (v18 or higher)
-- npm or yarn
-- MongoDB Atlas account
-- Vercel account (for deployment)
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/sarasithagalagama/methsara-publications-bookstore.git
-   cd methsara-publications-bookstore
-   ```
-
-2. **Install dependencies**
-   ```bash
-   # Install server dependencies
-   cd server
-   npm install
-
-   # Install client dependencies
-   cd ../client
-   npm install
-   ```
-
-3. **Environment Setup**
-
-   Create a `.env` file in the `server` directory:
-   ```env
-   MONGODB_URI=your_mongodb_connection_string
-   JWT_SECRET=your_jwt_secret
-   GOOGLE_CLIENT_ID=your_google_client_id
-   BLOB_READ_WRITE_TOKEN=your_vercel_blob_token
-   EMAIL_USER=your_email
-   EMAIL_PASS=your_email_password
-   ```
-
-   Create a `.env` file in the `client` directory:
-   ```env
-   VITE_API_URL=http://localhost:5000
-   VITE_GOOGLE_CLIENT_ID=your_google_client_id
-   ```
-
-4. **Run the application**
-
-   ```bash
-   # Start the server (from server directory)
-   npm run dev
-
-   # Start the client (from client directory)
-   npm run dev
-   ```
-
-   The client will run on `http://localhost:5173` and the server on `http://localhost:5000`.
-
 ## 📁 Project Structure
 
 ```
@@ -148,34 +90,8 @@ methsara-publications-bookstore/
 - Wishlist functionality
 - Responsive checkout process
 
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 👤 Author
 
 **Sarasitha Galagama**
 
 - GitHub: [@sarasithagalagama](https://github.com/sarasithagalagama)
-
-## 🙏 Acknowledgments
-
-- Educational institutions in Sri Lanka for inspiration
-- Open source community for amazing tools and libraries
-
----
-
-<div align="center">
-  Made with ❤️ for education
-</div>
-
