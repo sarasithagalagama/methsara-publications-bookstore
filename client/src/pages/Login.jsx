@@ -5,8 +5,10 @@ import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../context/AuthContext";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
+import SEO from "../components/SEO";
 
 const Login = () => {
+  // ...
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -46,6 +48,10 @@ const Login = () => {
 
   return (
     <div className="min-h-[calc(100vh-64px)] grid grid-cols-1 lg:grid-cols-2 bg-gray-50">
+      <SEO
+        title="Login"
+        description="Sign in to your Methsara Publications account."
+      />
       {/* Left Side - Form */}
       <div className="flex flex-col justify-center px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24 py-12 lg:py-0 bg-white">
         <div className="mx-auto w-full max-w-sm lg:w-96 space-y-8">

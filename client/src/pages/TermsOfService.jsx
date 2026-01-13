@@ -1,8 +1,13 @@
 import React from "react";
+import SEO from "../components/SEO";
 
 const TermsOfService = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <SEO
+        title="Terms of Service"
+        description="Terms of Service for Methsara Publications. Guidelines for using our website and purchasing products."
+      />
       <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm p-8 md:p-12">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">
           Terms of Service

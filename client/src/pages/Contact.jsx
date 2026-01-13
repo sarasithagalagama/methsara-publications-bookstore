@@ -10,6 +10,7 @@ import {
   Twitter,
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
+import SEO from "../components/SEO";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -73,6 +74,10 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+      <SEO
+        title="Contact Us"
+        description="Get in touch with Methsara Publications. Call us or send a message for inquiries about our educational books."
+      />
       {/* Hero Section */}
       <div className="relative py-16 overflow-hidden">
         {/* Background Image */}

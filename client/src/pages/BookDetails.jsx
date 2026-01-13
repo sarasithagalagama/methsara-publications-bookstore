@@ -16,8 +16,10 @@ import { Button } from "../components/ui/Button";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import api from "../services/api";
+import SEO from "../components/SEO";
 
 const BookDetails = () => {
+  // ...
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
@@ -89,6 +91,12 @@ const BookDetails = () => {
 
   return (
     <div className="bg-white min-h-screen font-sans text-secondary-900">
+      <SEO
+        title={book.title}
+        description={`${book.title} by ${book.author}. ${book.subject} book for ${book.grade}. Published by ${book.publisher}.`}
+        keywords={`${book.title}, ${book.author}, ${book.subject}, ${book.grade}, sri lanka education`}
+        image={book.image}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         {/* Breadcrumbs */}
         <nav className="flex items-center text-sm text-secondary-500 mb-8">

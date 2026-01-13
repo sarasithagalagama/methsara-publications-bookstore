@@ -19,8 +19,10 @@ import {
   BookCopy,
 } from "lucide-react";
 import { Card, CardContent } from "../components/ui/Card";
+import SEO from "../components/SEO";
 
 const About = () => {
+  // ... (rest of the component logic hidden)
   const publications = [
     {
       title: "Question & Answer Series",
@@ -109,6 +111,10 @@ const About = () => {
 
   return (
     <div className="min-h-screen bg-white font-sans">
+      <SEO
+        title="About Us"
+        description="Learn about Methsara Publications, our mission to empower Sri Lankan students, and our range of educational books."
+      />
       {/* Hero Header */}
       <section className="relative py-20 lg:py-28 border-b border-gray-100 overflow-hidden">
         {/* Background Image */}

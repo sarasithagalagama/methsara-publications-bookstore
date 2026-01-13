@@ -17,8 +17,10 @@ import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { Link, useSearchParams } from "react-router-dom";
 import api from "../services/api";
+import SEO from "../components/SEO";
 
 const Shop = () => {
+  // ... (rest of the component logic hidden)
   const [books, setBooks] = useState([]);
   const [allBooks, setAllBooks] = useState([]); // For filter options
   const [loading, setLoading] = useState(true);
@@ -103,6 +105,11 @@ const Shop = () => {
 
   return (
     <div className="min-h-screen bg-white flex font-sans text-secondary-900">
+      <SEO
+        title="Shop"
+        description="Browse our extensive collection of educational books, past papers, and revision guides."
+        keywords="book shop, buy books online, educational books, sri lanka"
+      />
       {/* Sidebar Filter - Desktop */}
       <aside className="hidden lg:block w-72 bg-white border-r border-secondary-100 p-8 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto">
         <div className="mb-12">

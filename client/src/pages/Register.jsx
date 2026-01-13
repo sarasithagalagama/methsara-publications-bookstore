@@ -3,8 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { User, Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../context/AuthContext";
+import SEO from "../components/SEO";
 
 const Register = () => {
+  // ...
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -52,6 +54,10 @@ const Register = () => {
 
   return (
     <div className="min-h-[calc(100vh-64px)] grid grid-cols-1 lg:grid-cols-2 bg-gray-50">
+      <SEO
+        title="Create Account"
+        description="Join Methsara Publications to access exclusive educational resources."
+      />
       {/* Left Side - Form */}
       <div className="flex flex-col justify-center px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24 py-12 lg:py-0 bg-white order-2 lg:order-1">
         <div className="mx-auto w-full max-w-sm lg:w-96 space-y-8">

@@ -15,6 +15,7 @@ import {
   Star,
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
+import SEO from "../components/SEO";
 
 const Home = () => {
   const [featuredBooks, setFeaturedBooks] = useState([]);
@@ -94,7 +95,11 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-white font-sans text-secondary-900 selection:bg-primary-200 selection:text-primary-900">
-      {/* Hero Section */}
+      <SEO
+        title="Home"
+        description="Methsara Publications offers quality educational books for Sri Lankan students (Grade 6-13). Find past papers, model papers, and textbooks."
+        keywords="educational books, sri lanka, o/l, a/l, grade 5 scholarship, past papers, model papers, textbooks"
+      />
       {/* Hero Section */}
       <section className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
         {/* Background Image with Overlay */}

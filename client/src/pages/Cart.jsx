@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import Button from "../components/ui/Button";
+import SEO from "../components/SEO";
 
 const Cart = () => {
   const { cartItems, removeFromCart, updateQuantity, getTotalPrice } =
@@ -22,6 +23,7 @@ const Cart = () => {
   if (cartItems.length === 0) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center p-4">
+        <SEO title="Shopping Cart" description="Your shopping cart is empty." />
         <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
           <ShoppingBag className="w-10 h-10 text-gray-400" />
         </div>
@@ -44,6 +46,10 @@ const Cart = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen py-10">
+      <SEO
+        title="Shopping Cart"
+        description="Review your selected books before checkout."
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
 
