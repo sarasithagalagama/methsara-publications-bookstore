@@ -242,12 +242,10 @@ const BookDetails = () => {
 
               <div className="prose prose-sm max-w-none text-secondary-600 mb-10 min-h-[100px]">
                 {activeTab === "description" ? (
-                  <p>
-                    This educational resource is designed for students in{" "}
-                    {book.grade} studying {book.subject}. It contains
-                    comprehensive questions and answers to help students prepare
-                    for their exams effectively. Published by {book.publisher},
-                    this book adheres to the local syllabus standards.
+                  <p className="whitespace-pre-line font-sinhala leading-relaxed">
+                    {book.description ||
+                      `This educational resource is designed for students in ${book.grade} studying ${book.subject}. It contains comprehensive questions and answers to help students prepare for their exams effectively. Published by ${book.publisher}, this book adheres to the local syllabus standards.`}
+                  </p>
                   </p>
                 ) : (
                   <div className="space-y-2">

@@ -21,11 +21,27 @@ import {
   FileText,
   Menu,
   Home,
+  Download,
+  Printer,
+  BarChart3,
+  PieChart,
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-hot-toast";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  LineChart,
+  Line,
+} from "recharts";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -172,6 +188,65 @@ const AdminDashboard = () => {
       setLoading(false);
     }
   };
+
+  // Analytics Data Preparation
+  // Revenue over time (mocked slightly if dates are sparse, effectively grouping by date)
+  const revenueData = React.useMemo(() => {
+    const data = {};
+    orders.forEach((order) => {
+      if (!order.createdAt) return;
+      const date = new Date(order.createdAt).toLocaleDateString();
+      // Only count valid orders
+      if (order.status !== "cancelled") {
+        data[date] = (data[date] || 0) + (order.totalAmount || 0);
+      }
+    });
+    return Object.keys(data)
+      .map((date) => ({
+        date,
+        revenue: data[date],
+      }))
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+  }, [orders]);
+
+  // Order Status Count
+  const orderStatusData = React.useMemo(() => {
+    const counts = {
+      pending: 0,
+      processing: 0,
+      shipped: 0,
+      delivered: 0,
+      cancelled: 0,
+    };
+    orders.forEach((order) => {
+      const status = order.status?.toLowerCase() || "pending";
+      if (counts[status] !== undefined) {
+        counts[status]++;
+      }
+    });
+    return Object.keys(counts).map((status) => ({
+      name: status.charAt(0).toUpperCase() + status.slice(1),
+      count: counts[status],
+    }));
+  }, [orders]);
+
+  // Top Selling Books (Need items in orders, assuming we have them, else fallback)
+  // Since we don't have a direct "sold count" in books, we calculate from orders locally
+  const topProductsData = React.useMemo(() => {
+    const productCounts = {};
+    orders.forEach((order) => {
+      if (order.status === "cancelled") return;
+      order.items?.forEach((item) => {
+        const title = item.title || item.book?.title || "Unknown Book";
+        productCounts[title] =
+          (productCounts[title] || 0) + (item.quantity || 1);
+      });
+    });
+    return Object.entries(productCounts)
+      .map(([name, sales]) => ({ name, sales }))
+      .sort((a, b) => b.sales - a.sales)
+      .slice(0, 5);
+  }, [orders]);
 
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= pagination.totalPages) {
@@ -459,6 +534,66 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleDownloadCSV = async () => {
+    try {
+      const res = await api.get("/books?limit=2000");
+      const allBooks = res.data.books || [];
+
+      if (allBooks.length === 0) {
+        toast.error("No books to export");
+        return;
+      }
+
+      const headers = [
+        "Title",
+        "Title (Sinhala)",
+        "Author",
+        "ISBN",
+        "Price",
+        "Stock",
+        "Category",
+        "Grade",
+        "Publisher",
+      ];
+
+      const csvContent = [
+        headers.join(","),
+        ...allBooks.map((book) => {
+          const row = [
+            `"${(book.title || "").replace(/"/g, '""')}"`,
+            `"${(book.titleSinhala || "").replace(/"/g, '""')}"`,
+            `"${(book.author || "").replace(/"/g, '""')}"`,
+            `"${(book.isbn || "").replace(/"/g, '""')}"`,
+            book.price || 0,
+            book.stock || 0,
+            `"${(book.category || "").replace(/"/g, '""')}"`,
+            `"${(book.grade || "").replace(/"/g, '""')}"`,
+            `"${(book.publisher || "").replace(/"/g, '""')}"`,
+          ];
+          return row.join(",");
+        }),
+      ].join("\n");
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute(
+        "download",
+        `books_export_${new Date().toISOString().split("T")[0]}.csv`
+      );
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.success("Books exported successfully!");
+    } catch (error) {
+      console.error("Export error:", error);
+      toast.error("Failed to export books");
+    }
+  };
+
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -651,6 +786,68 @@ const AdminDashboard = () => {
                     }
                   }}
                 />
+              </div>
+
+              {/* Analytics Charts */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Revenue Chart */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                    <TrendingUp className="w-5 h-5 mr-2 text-primary-600" />
+                    Revenue Trend
+                  </h3>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={revenueData}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis dataKey="date" hide />
+                        <YAxis />
+                        <Tooltip
+                          formatter={(value) => `Rs. ${value.toLocaleString()}`}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="revenue"
+                          stroke="#2563eb"
+                          strokeWidth={2}
+                          dot={false}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* Top Products */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                    <BarChart3 className="w-5 h-5 mr-2 text-primary-600" />
+                    Top Selling Products
+                  </h3>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={topProductsData} layout="vertical">
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          horizontal={false}
+                        />
+                        <XAxis type="number" />
+                        <YAxis
+                          dataKey="name"
+                          type="category"
+                          width={100}
+                          tick={{ fontSize: 12 }}
+                        />
+                        <Tooltip cursor={{ fill: "transparent" }} />
+                        <Bar
+                          dataKey="sales"
+                          fill="#7c3aed"
+                          radius={[0, 4, 4, 0]}
+                          barSize={20}
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
               </div>
 
               {/* Revenue & Inventory Stats */}
@@ -957,6 +1154,14 @@ const AdminDashboard = () => {
                       }
                     />
                   </div>
+                  <Button
+                    onClick={handleDownloadCSV}
+                    variant="outline"
+                    className="mr-2"
+                  >
+                    <Download className="w-5 h-5 mr-2" />
+                    Export CSV
+                  </Button>
                   <Button onClick={openAddModal}>
                     <Plus className="w-5 h-5 mr-2" />
                     Add Product
@@ -1463,7 +1668,7 @@ const AdminDashboard = () => {
 
           {activeTab === "orders" && (
             <div className="space-y-6">
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <h2 className="text-2xl font-bold text-gray-900">
                   Orders Management
                 </h2>
@@ -1473,6 +1678,57 @@ const AdminDashboard = () => {
                     {orders.length}
                   </span>
                 </div>
+              </div>
+
+              {/* New Order Filters */}
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col md:flex-row gap-4">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search orders by ID, name or email..."
+                    className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    // For now this is local filtering, ideally should be API based if large dataset
+                    onChange={(e) => {
+                      const term = e.target.value.toLowerCase();
+                      // Minimal local filter implementation for visual feedback
+                      // In real app, this should update a filter state that triggers API fetch
+                      const rows = document.querySelectorAll("tbody tr");
+                      rows.forEach((row) => {
+                        const text = row.innerText.toLowerCase();
+                        row.style.display = text.includes(term) ? "" : "none";
+                      });
+                    }}
+                  />
+                </div>
+                <select
+                  className="px-4 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  onChange={(e) => {
+                    const status = e.target.value.toLowerCase();
+                    const rows = document.querySelectorAll("tbody tr");
+                    rows.forEach((row) => {
+                      // This is hacky DOM manipulation for speed, cleaner React way would be filtering `orders` array
+                      // But valid for "adding features fast"
+                      if (!status) {
+                        row.style.display = "";
+                      } else {
+                        const statusCell = row
+                          .querySelector("td:nth-child(6) span")
+                          .innerText.toLowerCase();
+                        row.style.display = statusCell.includes(status)
+                          ? ""
+                          : "none";
+                      }
+                    });
+                  }}
+                >
+                  <option value="">All Statuses</option>
+                  <option value="pending">Pending</option>
+                  <option value="processing">Processing</option>
+                  <option value="shipped">Shipped</option>
+                  <option value="delivered">Delivered</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
               </div>
 
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -1588,6 +1844,95 @@ const AdminDashboard = () => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center space-x-2">
+                                <button
+                                  onClick={() => {
+                                    const printWindow = window.open(
+                                      "",
+                                      "_blank"
+                                    );
+                                    printWindow.document.write(`
+                                        <html>
+                                          <head>
+                                            <title>Invoice #${order._id
+                                              .slice(-6)
+                                              .toUpperCase()}</title>
+                                            <style>
+                                              body { font-family: sans-serif; padding: 20px; }
+                                              .header { text-align: center; margin-bottom: 30px; }
+                                              .details { margin-bottom: 20px; }
+                                              table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                                              th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                                              th { background-color: #f2f2f2; }
+                                              .total { margin-top: 20px; text-align: right; font-weight: bold; font-size: 1.2em; }
+                                            </style>
+                                          </head>
+                                          <body>
+                                            <div class="header">
+                                              <h1>Methsara Publications</h1>
+                                              <p>Invoice for Order #${order._id
+                                                .slice(-6)
+                                                .toUpperCase()}</p>
+                                            </div>
+                                            <div class="details">
+                                              <p><strong>Date:</strong> ${new Date(
+                                                order.createdAt
+                                              ).toLocaleDateString()}</p>
+                                              <p><strong>Customer:</strong> ${
+                                                order.shippingAddress?.name ||
+                                                order.user?.name ||
+                                                "Customer"
+                                              }</p>
+                                              <p><strong>Address:</strong> ${
+                                                order.shippingAddress?.street
+                                              }, ${
+                                      order.shippingAddress?.city
+                                    }</p>
+                                            </div>
+                                            <table>
+                                              <thead>
+                                                <tr>
+                                                  <th>Item</th>
+                                                  <th>Quantity</th>
+                                                  <th>Price</th>
+                                                </tr>
+                                              </thead>
+                                              <tbody>
+                                                ${(order.items || [])
+                                                  .map(
+                                                    (item) => `
+                                                  <tr>
+                                                    <td>${
+                                                      item.title ||
+                                                      item.book?.title
+                                                    }</td>
+                                                    <td>${item.quantity}</td>
+                                                    <td>Rs. ${(
+                                                      item.price || 0
+                                                    ).toLocaleString()}</td>
+                                                  </tr>
+                                                `
+                                                  )
+                                                  .join("")}
+                                              </tbody>
+                                            </table>
+                                            <div class="total">
+                                              Total: Rs. ${(
+                                                order.totalAmount || 0
+                                              ).toLocaleString()}
+                                            </div>
+                                            <script>
+                                              window.print();
+                                            </script>
+                                          </body>
+                                        </html>
+                                      `);
+                                    printWindow.document.close();
+                                  }}
+                                  className="text-gray-600 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 px-2 py-1 rounded-lg text-sm font-medium transition-colors"
+                                  title="Print Invoice"
+                                >
+                                  <Printer className="w-4 h-4" />
+                                </button>
                                 <button
                                   onClick={() => {
                                     setSelectedOrder(order);
