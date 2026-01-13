@@ -246,7 +246,6 @@ const BookDetails = () => {
                     {book.description ||
                       `This educational resource is designed for students in ${book.grade} studying ${book.subject}. It contains comprehensive questions and answers to help students prepare for their exams effectively. Published by ${book.publisher}, this book adheres to the local syllabus standards.`}
                   </p>
-                  </p>
                 ) : (
                   <div className="space-y-2">
                     <p className="flex items-center gap-2">
