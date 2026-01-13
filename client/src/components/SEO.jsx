@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet-async";
+import { useEffect } from "react";
 
 const SEO = ({ title, description, keywords, image, url }) => {
   const siteTitle = "Methsara Publications";
@@ -7,8 +7,6 @@ const SEO = ({ title, description, keywords, image, url }) => {
   const defaultKeywords =
     "books, education, sri lanka, o/l, a/l, methsara publications, methsara books, past papers, model papers";
 
-  // Use a default image if none is provided. Ensure it's an absolute URL for social sharing if possible,
-  // but for now relative path is better than nothing, or use window.location.origin
   const siteUrl = window.location.origin;
   const defaultImage = `${siteUrl}/site-icon.png`;
 
@@ -26,29 +24,53 @@ const SEO = ({ title, description, keywords, image, url }) => {
       : `${siteUrl}${url}`
     : window.location.href;
 
-  return (
-    <Helmet>
-      {/* Basic */}
-      <title>{finalTitle}</title>
-      <meta name="description" content={finalDescription} />
-      <meta name="keywords" content={finalKeywords} />
-      <link rel="canonical" href={finalUrl} />
+  useEffect(() => {
+    // Update Title
+    document.title = finalTitle;
 
-      {/* Open Graph / Facebook */}
-      <meta property="og:type" content="website" />
-      <meta property="og:url" content={finalUrl} />
-      <meta property="og:title" content={finalTitle} />
-      <meta property="og:description" content={finalDescription} />
-      <meta property="og:image" content={finalImage} />
+    // Helper to update or create meta tags
+    const setMetaTag = (attr, attrValue, content) => {
+      let element = document.querySelector(`meta[${attr}="${attrValue}"]`);
+      if (!element) {
+        element = document.createElement("meta");
+        element.setAttribute(attr, attrValue);
+        document.head.appendChild(element);
+      }
+      element.setAttribute("content", content);
+    };
 
-      {/* Twitter */}
-      <meta property="twitter:card" content="summary_large_image" />
-      <meta property="twitter:url" content={finalUrl} />
-      <meta property="twitter:title" content={finalTitle} />
-      <meta property="twitter:description" content={finalDescription} />
-      <meta property="twitter:image" content={finalImage} />
-    </Helmet>
-  );
+    // Helper to set Link tags (canonical)
+    const setLinkTag = (rel, href) => {
+      let element = document.querySelector(`link[rel="${rel}"]`);
+      if (!element) {
+        element = document.createElement("link");
+        element.setAttribute("rel", rel);
+        document.head.appendChild(element);
+      }
+      element.setAttribute("href", href);
+    };
+
+    // Standard Meta Tags
+    setMetaTag("name", "description", finalDescription);
+    setMetaTag("name", "keywords", finalKeywords);
+    setLinkTag("canonical", finalUrl);
+
+    // Open Graph
+    setMetaTag("property", "og:type", "website");
+    setMetaTag("property", "og:url", finalUrl);
+    setMetaTag("property", "og:title", finalTitle);
+    setMetaTag("property", "og:description", finalDescription);
+    setMetaTag("property", "og:image", finalImage);
+
+    // Twitter
+    setMetaTag("property", "twitter:card", "summary_large_image");
+    setMetaTag("property", "twitter:url", finalUrl);
+    setMetaTag("property", "twitter:title", finalTitle);
+    setMetaTag("property", "twitter:description", finalDescription);
+    setMetaTag("property", "twitter:image", finalImage);
+  }, [finalTitle, finalDescription, finalKeywords, finalImage, finalUrl]);
+
+  return null;
 };
 
 export default SEO;
