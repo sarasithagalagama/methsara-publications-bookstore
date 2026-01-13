@@ -834,8 +834,13 @@ const AdminDashboard = () => {
                         <YAxis
                           dataKey="name"
                           type="category"
-                          width={100}
+                          width={150}
                           tick={{ fontSize: 12 }}
+                          tickFormatter={(value) =>
+                            value.length > 20
+                              ? `${value.substring(0, 20)}...`
+                              : value
+                          }
                         />
                         <Tooltip cursor={{ fill: "transparent" }} />
                         <Bar
