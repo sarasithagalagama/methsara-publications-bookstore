@@ -72,9 +72,16 @@ const LayoutWrapper = () => {
     );
   }
 
-  // Show maintenance page if maintenance mode is enabled and user is not admin
+  /* // Show maintenance page if maintenance mode is enabled and user is not admin
   if (maintenanceMode && user?.role !== "admin") {
     return <Maintenance message={maintenanceMessage} />;
+  } */
+
+  // Show maintenance page for non-admin users (HARDCODED)
+  if (!isAdmin && user?.role !== "admin") {
+    return (
+      <Maintenance message="We are currently performing scheduled maintenance. We'll be back soon!" />
+    );
   }
 
   return (
