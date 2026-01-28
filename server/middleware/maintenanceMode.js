@@ -1,4 +1,6 @@
 const Settings = require("../models/Settings");
+const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
 // Middleware to check if maintenance mode is enabled
 const checkMaintenanceMode = async (req, res, next) => {
@@ -22,9 +24,29 @@ const checkMaintenanceMode = async (req, res, next) => {
 
     // If maintenance mode is enabled
     if (settings.maintenanceMode) {
-      // Check if user is authenticated and is an admin
-      if (req.user && req.user.role === "admin") {
-        // Allow admin users to bypass maintenance mode
+      // Try to extract user from JWT token to check if they're an admin
+      let isAdmin = false;
+
+      if (
+        req.headers.authorization &&
+        req.headers.authorization.startsWith("Bearer")
+      ) {
+        try {
+          const token = req.headers.authorization.split(" ")[1];
+          const decoded = jwt.verify(token, process.env.JWT_SECRET);
+          const user = await User.findById(decoded.id);
+
+          if (user && user.role === "admin") {
+            isAdmin = true;
+          }
+        } catch (error) {
+          // Token verification failed, user is not authenticated
+          isAdmin = false;
+        }
+      }
+
+      // Allow admin users to bypass maintenance mode
+      if (isAdmin) {
         return next();
       }
 
