@@ -40,41 +40,12 @@ const LayoutWrapper = () => {
   const location = useLocation();
   const { user } = useAuth();
   const isAdmin = location.pathname.startsWith("/admin");
-  const [maintenanceMode, setMaintenanceMode] = useState(false);
-  const [maintenanceMessage, setMaintenanceMessage] = useState("");
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const checkMaintenanceMode = async () => {
-      try {
-        const res = await api.get("/settings");
-        setMaintenanceMode(res.data.settings?.maintenanceMode || false);
-        setMaintenanceMessage(
-          res.data.settings?.maintenanceMessage ||
-            "We are currently performing scheduled maintenance. We'll be back soon!",
-        );
-      } catch (error) {
-        console.error("Failed to fetch maintenance settings:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkMaintenanceMode();
-  }, []);
-
-  // Show loading state while checking maintenance mode
-  if (loading) {
+  // Always show maintenance page for non-admin users
+  if (!isAdmin && user?.role !== "admin") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-      </div>
+      <Maintenance message="We are currently performing scheduled maintenance. We'll be back soon!" />
     );
-  }
-
-  // Show maintenance page if maintenance mode is enabled and user is not admin
-  if (maintenanceMode && user?.role !== "admin") {
-    return <Maintenance message={maintenanceMessage} />;
   }
 
   return (
