@@ -5,6 +5,7 @@ const connectDB = require("./config/db");
 const mongoose = require("mongoose");
 const { errorHandler } = require("./middleware/errorHandler");
 const ensureDbConnection = require("./middleware/dbConnection");
+const checkMaintenanceMode = require("./middleware/maintenanceMode");
 
 // Load env vars from .env file only in development
 // In production (Vercel), environment variables are set in the dashboard
@@ -42,7 +43,7 @@ app.use(
       callback(null, true); // Fallback to allow all for debugging if needed, but keeping strict for now
     },
     credentials: true,
-  })
+  }),
 );
 
 // Debug Route
@@ -58,6 +59,9 @@ app.get("/api/debug", (req, res) => {
   });
 });
 
+// Apply maintenance mode check to all API routes (except exempt ones)
+app.use("/api", checkMaintenanceMode);
+
 // Mount routers
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/books", require("./routes/books"));
@@ -65,6 +69,7 @@ app.use("/api/orders", require("./routes/orders"));
 app.use("/api/upload", require("./routes/upload"));
 app.use("/api/users", require("./routes/users"));
 app.use("/api/contact", require("./routes/contactRoutes"));
+app.use("/api/settings", require("./routes/settings"));
 
 // Health check route
 app.get("/api/health", (req, res) => {
@@ -84,7 +89,7 @@ if (require.main === module) {
     console.log(
       `Server running in ${
         process.env.NODE_ENV || "development"
-      } mode on port ${PORT}`
+      } mode on port ${PORT}`,
     );
   });
 }

@@ -25,6 +25,8 @@ import {
   Printer,
   BarChart3,
   PieChart,
+  Settings,
+  Wrench,
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import Input from "../components/ui/Input";
@@ -122,6 +124,14 @@ const AdminDashboard = () => {
   const [confirmMessage, setConfirmMessage] = useState("");
   const [confirmAction, setConfirmAction] = useState(null);
 
+  // Settings State
+  const [settings, setSettings] = useState({
+    maintenanceMode: false,
+    maintenanceMessage:
+      "We are currently performing scheduled maintenance. We'll be back soon!",
+  });
+  const [settingsLoading, setSettingsLoading] = useState(false);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(filters.search);
@@ -180,6 +190,21 @@ const AdminDashboard = () => {
           setUsers(usersRes.data.users || []);
         } catch (err) {
           console.error("Error fetching users:", err);
+        }
+      }
+
+      if (activeTab === "settings") {
+        try {
+          const settingsRes = await api.get("/settings");
+          setSettings(
+            settingsRes.data.settings || {
+              maintenanceMode: false,
+              maintenanceMessage:
+                "We are currently performing scheduled maintenance. We'll be back soon!",
+            },
+          );
+        } catch (err) {
+          console.error("Error fetching settings:", err);
         }
       }
     } catch (error) {
@@ -278,7 +303,9 @@ const AdminDashboard = () => {
     try {
       await api.put(`/orders/${id}/status`, { status });
       setOrders(
-        orders.map((order) => (order._id === id ? { ...order, status } : order))
+        orders.map((order) =>
+          order._id === id ? { ...order, status } : order,
+        ),
       );
     } catch (error) {
       alert("Failed to update status.");
@@ -288,7 +315,7 @@ const AdminDashboard = () => {
   const handleUserRoleUpdate = async (id, newRole) => {
     if (
       !window.confirm(
-        `Are you sure you want to change this user's role to ${newRole}?`
+        `Are you sure you want to change this user's role to ${newRole}?`,
       )
     )
       return;
@@ -296,8 +323,8 @@ const AdminDashboard = () => {
       await api.put(`/users/${id}/role`, { role: newRole });
       setUsers(
         users.map((user) =>
-          user._id === id ? { ...user, role: newRole } : user
-        )
+          user._id === id ? { ...user, role: newRole } : user,
+        ),
       );
     } catch (error) {
       alert("Failed to update user role.");
@@ -413,7 +440,7 @@ const AdminDashboard = () => {
 
       // Remove undefined fields
       Object.keys(payload).forEach(
-        (key) => payload[key] === undefined && delete payload[key]
+        (key) => payload[key] === undefined && delete payload[key],
       );
 
       if (editMode && currentBook) {
@@ -434,7 +461,7 @@ const AdminDashboard = () => {
     setSelectedBooks((prev) =>
       prev.includes(bookId)
         ? prev.filter((id) => id !== bookId)
-        : [...prev, bookId]
+        : [...prev, bookId],
     );
   };
 
@@ -580,7 +607,7 @@ const AdminDashboard = () => {
       link.setAttribute("href", url);
       link.setAttribute(
         "download",
-        `books_export_${new Date().toISOString().split("T")[0]}.csv`
+        `books_export_${new Date().toISOString().split("T")[0]}.csv`,
       );
       link.style.visibility = "hidden";
       document.body.appendChild(link);
@@ -591,6 +618,22 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error("Export error:", error);
       toast.error("Failed to export books");
+    }
+  };
+
+  // Settings Handlers
+  const handleUpdateSettings = async (e) => {
+    e.preventDefault();
+    setSettingsLoading(true);
+    try {
+      const res = await api.put("/settings", settings);
+      setSettings(res.data.settings);
+      toast.success("Settings updated successfully!");
+    } catch (error) {
+      console.error("Update settings error:", error);
+      toast.error("Failed to update settings");
+    } finally {
+      setSettingsLoading(false);
     }
   };
 
@@ -703,6 +746,19 @@ const AdminDashboard = () => {
           >
             <Users className="w-5 h-5 mr-3" /> Users
           </button>
+          <button
+            onClick={() => {
+              setActiveTab("settings");
+              setIsMobileMenuOpen(false);
+            }}
+            className={`flex items-center w-full px-4 py-3 text-sm font-medium rounded-xl transition-colors ${
+              activeTab === "settings"
+                ? "bg-primary-50 text-primary-700"
+                : "text-gray-600 hover:bg-gray-50"
+            }`}
+          >
+            <Settings className="w-5 h-5 mr-3" /> Settings
+          </button>
 
           <div className="pt-4 mt-4 border-t border-gray-100">
             <Link
@@ -750,11 +806,11 @@ const AdminDashboard = () => {
                   color="text-orange-600"
                   onClick={() => {
                     const lowStockBooks = books.filter(
-                      (b) => b.stock <= 10 && b.stock > 0
+                      (b) => b.stock <= 10 && b.stock > 0,
                     );
                     if (lowStockBooks.length > 0) {
                       setBookListModalTitle(
-                        `Low Stock Items (${lowStockBooks.length})`
+                        `Low Stock Items (${lowStockBooks.length})`,
                       );
                       setBookListModalBooks(lowStockBooks);
                       setIsBookListModalOpen(true);
@@ -773,11 +829,11 @@ const AdminDashboard = () => {
                   color="text-green-600"
                   onClick={() => {
                     const activeSalesBooks = books.filter(
-                      (b) => b.salePrice || b.isFlashSale
+                      (b) => b.salePrice || b.isFlashSale,
                     );
                     if (activeSalesBooks.length > 0) {
                       setBookListModalTitle(
-                        `Active Sales (${activeSalesBooks.length})`
+                        `Active Sales (${activeSalesBooks.length})`,
                       );
                       setBookListModalBooks(activeSalesBooks);
                       setIsBookListModalOpen(true);
@@ -1013,10 +1069,10 @@ const AdminDashboard = () => {
                                   order.status === "delivered"
                                     ? "bg-green-100 text-green-800"
                                     : order.status === "shipped"
-                                    ? "bg-blue-100 text-blue-800"
-                                    : order.status === "processing"
-                                    ? "bg-yellow-100 text-yellow-800"
-                                    : "bg-gray-100 text-gray-800"
+                                      ? "bg-blue-100 text-blue-800"
+                                      : order.status === "processing"
+                                        ? "bg-yellow-100 text-yellow-800"
+                                        : "bg-gray-100 text-gray-800"
                                 }`}
                               >
                                 {order.status}
@@ -1089,7 +1145,7 @@ const AdminDashboard = () => {
                                 onClick={() =>
                                   handleUserRoleUpdate(
                                     u._id,
-                                    u.role === "admin" ? "customer" : "admin"
+                                    u.role === "admin" ? "customer" : "admin",
                                   )
                                 }
                                 className={`font-medium ${
@@ -1227,7 +1283,7 @@ const AdminDashboard = () => {
 
                         // Show custom confirmation modal
                         setConfirmMessage(
-                          `Clear all sales from ${selectedBooks.length} selected book(s)?`
+                          `Clear all sales from ${selectedBooks.length} selected book(s)?`,
                         );
                         setConfirmAction(() => async () => {
                           try {
@@ -1237,7 +1293,7 @@ const AdminDashboard = () => {
                               data: {},
                             });
                             toast.success(
-                              `Successfully cleared sales from ${selectedBooks.length} book(s)`
+                              `Successfully cleared sales from ${selectedBooks.length} book(s)`,
                             );
                             setSelectedBooks([]);
                             fetchDashboardData();
@@ -1245,7 +1301,7 @@ const AdminDashboard = () => {
                             console.error("Bulk update error:", error);
                             console.error(
                               "Error response:",
-                              error.response?.data
+                              error.response?.data,
                             );
                             const errorMessage =
                               error.response?.data?.message ||
@@ -1384,8 +1440,8 @@ const AdminDashboard = () => {
                                 book.stock > 10
                                   ? "bg-green-100 text-green-800"
                                   : book.stock > 0
-                                  ? "bg-yellow-100 text-yellow-800"
-                                  : "bg-red-100 text-red-800"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : "bg-red-100 text-red-800"
                               }`}
                             >
                               {book.stock} in stock
@@ -1449,7 +1505,7 @@ const AdminDashboard = () => {
                       <span className="font-medium">
                         {Math.min(
                           pagination.page * pagination.limit,
-                          pagination.totalBooks
+                          pagination.totalBooks,
                         )}
                       </span>{" "}
                       of{" "}
@@ -1504,7 +1560,7 @@ const AdminDashboard = () => {
                                 {pageNum}
                               </button>
                             );
-                          }
+                          },
                         )}
                       </div>
                       <Button
@@ -1818,14 +1874,14 @@ const AdminDashboard = () => {
                               <div className="text-sm text-gray-900">
                                 {order.createdAt
                                   ? new Date(
-                                      order.createdAt
+                                      order.createdAt,
                                     ).toLocaleDateString()
                                   : "N/A"}
                               </div>
                               <div className="text-xs text-gray-500">
                                 {order.createdAt
                                   ? new Date(
-                                      order.createdAt
+                                      order.createdAt,
                                     ).toLocaleTimeString()
                                   : ""}
                               </div>
@@ -1836,12 +1892,12 @@ const AdminDashboard = () => {
                                   order.status === "delivered"
                                     ? "bg-green-100 text-green-800"
                                     : order.status === "shipped"
-                                    ? "bg-blue-100 text-blue-800"
-                                    : order.status === "processing"
-                                    ? "bg-yellow-100 text-yellow-800"
-                                    : order.status === "cancelled"
-                                    ? "bg-red-100 text-red-800"
-                                    : "bg-gray-100 text-gray-800"
+                                      ? "bg-blue-100 text-blue-800"
+                                      : order.status === "processing"
+                                        ? "bg-yellow-100 text-yellow-800"
+                                        : order.status === "cancelled"
+                                          ? "bg-red-100 text-red-800"
+                                          : "bg-gray-100 text-gray-800"
                                 }`}
                               >
                                 {order.status || "pending"}
@@ -1853,7 +1909,7 @@ const AdminDashboard = () => {
                                   onClick={() => {
                                     const printWindow = window.open(
                                       "",
-                                      "_blank"
+                                      "_blank",
                                     );
                                     printWindow.document.write(`
                                         <html>
@@ -1880,7 +1936,7 @@ const AdminDashboard = () => {
                                             </div>
                                             <div class="details">
                                               <p><strong>Date:</strong> ${new Date(
-                                                order.createdAt
+                                                order.createdAt,
                                               ).toLocaleDateString()}</p>
                                               <p><strong>Customer:</strong> ${
                                                 order.shippingAddress?.name ||
@@ -1890,8 +1946,8 @@ const AdminDashboard = () => {
                                               <p><strong>Address:</strong> ${
                                                 order.shippingAddress?.street
                                               }, ${
-                                      order.shippingAddress?.city
-                                    }</p>
+                                                order.shippingAddress?.city
+                                              }</p>
                                             </div>
                                             <table>
                                               <thead>
@@ -1915,7 +1971,7 @@ const AdminDashboard = () => {
                                                       item.price || 0
                                                     ).toLocaleString()}</td>
                                                   </tr>
-                                                `
+                                                `,
                                                   )
                                                   .join("")}
                                               </tbody>
@@ -1980,6 +2036,119 @@ const AdminDashboard = () => {
                     </tbody>
                   </table>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* Settings Tab */}
+          {activeTab === "settings" && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-gray-900">Settings</h2>
+              </div>
+
+              {/* Maintenance Mode Section */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                <div className="flex items-start gap-4 mb-6">
+                  <div className="p-3 bg-orange-50 rounded-xl">
+                    <Wrench className="w-6 h-6 text-orange-600" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-gray-900 mb-1">
+                      Maintenance Mode
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Enable maintenance mode to temporarily disable public
+                      access to the site. Admin users will still have full
+                      access.
+                    </p>
+                  </div>
+                </div>
+
+                <form onSubmit={handleUpdateSettings} className="space-y-6">
+                  {/* Toggle Switch */}
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                    <div>
+                      <label className="text-sm font-semibold text-gray-900">
+                        Enable Maintenance Mode
+                      </label>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {settings.maintenanceMode
+                          ? "Site is currently in maintenance mode"
+                          : "Site is currently accessible to all users"}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          maintenanceMode: !prev.maintenanceMode,
+                        }))
+                      }
+                      className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${
+                        settings.maintenanceMode
+                          ? "bg-orange-600"
+                          : "bg-gray-300"
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                          settings.maintenanceMode
+                            ? "translate-x-7"
+                            : "translate-x-1"
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Maintenance Message */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">
+                      Maintenance Message
+                    </label>
+                    <textarea
+                      value={settings.maintenanceMessage}
+                      onChange={(e) =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          maintenanceMessage: e.target.value,
+                        }))
+                      }
+                      rows={4}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                      placeholder="Enter the message to display to users during maintenance..."
+                    />
+                    <p className="text-xs text-gray-500 mt-2">
+                      This message will be displayed to users when maintenance
+                      mode is enabled.
+                    </p>
+                  </div>
+
+                  {/* Save Button */}
+                  <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
+                    <Button
+                      type="submit"
+                      disabled={settingsLoading}
+                      className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2.5 rounded-xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      {settingsLoading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        "Save Settings"
+                      )}
+                    </Button>
+                    {settings.maintenanceMode && (
+                      <div className="flex items-center gap-2 text-orange-600 text-sm font-medium">
+                        <AlertTriangle className="w-4 h-4" />
+                        Maintenance mode is active
+                      </div>
+                    )}
+                  </div>
+                </form>
               </div>
             </div>
           )}
@@ -2452,12 +2621,12 @@ const AdminDashboard = () => {
                       selectedOrder.status === "delivered"
                         ? "bg-green-100 text-green-800"
                         : selectedOrder.status === "shipped"
-                        ? "bg-blue-100 text-blue-800"
-                        : selectedOrder.status === "processing"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : selectedOrder.status === "cancelled"
-                        ? "bg-red-100 text-red-800"
-                        : "bg-gray-100 text-gray-800"
+                          ? "bg-blue-100 text-blue-800"
+                          : selectedOrder.status === "processing"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : selectedOrder.status === "cancelled"
+                              ? "bg-red-100 text-red-800"
+                              : "bg-gray-100 text-gray-800"
                     }`}
                   >
                     {selectedOrder.status.charAt(0).toUpperCase() +
@@ -2688,8 +2857,8 @@ const AdminDashboard = () => {
                                   book.stock <= 5
                                     ? "text-red-600"
                                     : book.stock <= 10
-                                    ? "text-orange-600"
-                                    : "text-green-600"
+                                      ? "text-orange-600"
+                                      : "text-green-600"
                                 }`}
                               >
                                 {book.stock}

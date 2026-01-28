@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -8,9 +8,10 @@ import {
 import { Toaster } from "react-hot-toast";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { WishlistProvider } from "./context/WishlistContext";
+import api from "./services/api";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import WhatsAppButton from "./components/WhatsAppButton";
@@ -32,11 +33,49 @@ import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import Maintenance from "./pages/Maintenance";
 import "./index.css";
 
 const LayoutWrapper = () => {
   const location = useLocation();
+  const { user } = useAuth();
   const isAdmin = location.pathname.startsWith("/admin");
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [maintenanceMessage, setMaintenanceMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkMaintenanceMode = async () => {
+      try {
+        const res = await api.get("/settings");
+        setMaintenanceMode(res.data.settings?.maintenanceMode || false);
+        setMaintenanceMessage(
+          res.data.settings?.maintenanceMessage ||
+            "We are currently performing scheduled maintenance. We'll be back soon!",
+        );
+      } catch (error) {
+        console.error("Failed to fetch maintenance settings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkMaintenanceMode();
+  }, []);
+
+  // Show loading state while checking maintenance mode
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      </div>
+    );
+  }
+
+  // Show maintenance page if maintenance mode is enabled and user is not admin
+  if (maintenanceMode && user?.role !== "admin") {
+    return <Maintenance message={maintenanceMessage} />;
+  }
 
   return (
     <div className={isAdmin ? "" : "flex flex-col min-h-screen"}>
