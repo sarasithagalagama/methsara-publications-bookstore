@@ -4,12 +4,12 @@ const {
   getSettings,
   updateSettings,
 } = require("../controllers/settingsController");
-const { protect, admin } = require("../middleware/auth");
+const { protect, authorize } = require("../middleware/auth");
 
 // Public route to get settings
 router.get("/", getSettings);
 
 // Admin-only route to update settings
-router.put("/", protect, admin, updateSettings);
+router.put("/", protect, authorize("admin"), updateSettings);
 
 module.exports = router;
