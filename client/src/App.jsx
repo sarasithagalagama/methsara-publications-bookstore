@@ -64,25 +64,25 @@ const LayoutWrapper = () => {
   }, []);
 
   // Show loading state while checking maintenance mode
-  if (loading) {
+  /* if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
       </div>
     );
-  }
-
-  /*   // Show maintenance page if maintenance mode is enabled and user is not admin
-  if (maintenanceMode && user?.role !== "admin") {
-    return <Maintenance message={maintenanceMessage} />;
   } */
 
+  // Show maintenance page if maintenance mode is enabled and user is not admin
+  if (maintenanceMode && user?.role !== "admin") {
+    return <Maintenance message={maintenanceMessage} />;
+  }
+
   // Show maintenance page for non-admin users (HARDCODED)
-  if (!isAdmin && user?.role !== "admin") {
+  /*  if (!isAdmin && user?.role !== "admin") {
     return (
       <Maintenance message="We are currently performing scheduled maintenance. We'll be back soon!" />
     );
-  }
+  } */
 
   return (
     <div className={isAdmin ? "" : "flex flex-col min-h-screen"}>
