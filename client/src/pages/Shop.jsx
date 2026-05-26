@@ -15,7 +15,7 @@ import {
 import { Button } from "../components/ui/Button";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import api from "../services/api";
 import SEO from "../components/SEO";
 
@@ -32,9 +32,13 @@ const Shop = () => {
   const [searchInput, setSearchInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const [cartPopupOpen, setCartPopupOpen] = useState(false);
+  const [lastAddedBook, setLastAddedBook] = useState(null);
 
   const { addToCart } = useCart();
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  // wishlist actions removed from product card; keep wishlist context usage in components that need it
+  // (no wishlist usage in this file anymore)
+  const navigate = useNavigate();
 
   // Handle URL search params
   useEffect(() => {
@@ -123,6 +127,17 @@ const Shop = () => {
 
     return filteredBooks;
   }, [allBooks, activeCategory, activeSubjects, activePriceRange, searchTerm]);
+
+  const handleBuyNow = (book) => {
+    addToCart(book);
+    navigate("/checkout");
+  };
+
+  const handleAddToCart = (book) => {
+    addToCart(book);
+    setLastAddedBook(book);
+    setCartPopupOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-white flex font-sans text-secondary-900">
@@ -501,6 +516,7 @@ const Shop = () => {
           <img
             src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&q=80&w=2000"
             alt="Library"
+            fetchPriority="high"
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-linear-to-r from-secondary-900/90 via-secondary-900/40 to-transparent flex flex-col justify-center px-8 md:px-16">
@@ -550,6 +566,8 @@ const Shop = () => {
                       <img
                         src={book.image}
                         alt={book.title}
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                     </Link>
@@ -559,37 +577,18 @@ const Shop = () => {
 
                     {/* Badges - Removed as requested */}
 
-                    {/* Quick Actions */}
-                    <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-3 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                    {/* Quick Actions - visible only on hover */}
+                    <div className="absolute bottom-4 left-0 right-0 flex justify-center translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
                       <button
                         onClick={(e) => {
                           e.preventDefault();
-                          addToCart(book);
+                          handleAddToCart(book);
                         }}
-                        className="w-10 h-10 bg-white text-secondary-900 rounded-full flex items-center justify-center hover:bg-primary-500 hover:text-white transition-colors shadow-lg"
+                        aria-label={`Add ${book.title || "book"} to cart`}
+                        className="h-10 px-6 bg-white text-secondary-900 rounded-full flex items-center justify-center gap-2 hover:bg-primary-500 hover:text-white transition-colors shadow-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary-100"
                       >
-                        <ShoppingCart className="w-5 h-5" />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          if (isInWishlist(book._id)) {
-                            removeFromWishlist(book._id);
-                          } else {
-                            addToWishlist(book);
-                          }
-                        }}
-                        className={`w-10 h-10 bg-white rounded-full flex items-center justify-center transition-colors shadow-lg ${
-                          isInWishlist(book._id)
-                            ? "text-red-500 hover:text-red-600"
-                            : "text-secondary-900 hover:text-red-500"
-                        }`}
-                      >
-                        <Heart
-                          className={`w-5 h-5 ${
-                            isInWishlist(book._id) ? "fill-current" : ""
-                          }`}
-                        />
+                        <ShoppingCart className="w-4 h-4" />
+                        <span>Add to Cart</span>
                       </button>
                     </div>
                   </div>
@@ -617,6 +616,55 @@ const Shop = () => {
           )}
         </div>
       </main>
+
+      {cartPopupOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl border border-secondary-100">
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <div>
+                <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary-50 text-primary-600">
+                  <ShoppingCart className="h-6 w-6" />
+                </div>
+                <h3 className="text-2xl font-bold text-secondary-900">
+                  Added to cart
+                </h3>
+                <p className="mt-2 text-sm text-secondary-500">
+                  {lastAddedBook?.titleSinhala ||
+                    lastAddedBook?.title ||
+                    "This book"}{" "}
+                  has been added to your cart.
+                </p>
+              </div>
+              <button
+                onClick={() => setCartPopupOpen(false)}
+                className="rounded-full p-2 text-secondary-400 hover:bg-secondary-100 hover:text-secondary-700"
+                aria-label="Close popup"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setCartPopupOpen(false)}
+                className="h-12 rounded-full flex-1"
+              >
+                Continue Shopping
+              </Button>
+              <Button
+                onClick={() => {
+                  setCartPopupOpen(false);
+                  navigate("/checkout");
+                }}
+                className="h-12 rounded-full flex-1"
+              >
+                Go to Checkout
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

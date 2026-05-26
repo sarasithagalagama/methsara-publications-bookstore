@@ -57,10 +57,18 @@ const BookDetails = () => {
 
   const handleAddToCart = () => {
     if (book) {
-      // Add quantity times
       for (let i = 0; i < quantity; i++) {
         addToCart(book);
       }
+    }
+  };
+
+  const handleBuyNow = () => {
+    if (book) {
+      for (let i = 0; i < quantity; i++) {
+        addToCart(book);
+      }
+      navigate("/checkout");
     }
   };
 
@@ -98,7 +106,6 @@ const BookDetails = () => {
         image={book.image}
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-        {/* Breadcrumbs */}
         <nav className="flex items-center text-sm text-secondary-500 mb-8">
           <Link
             to="/"
@@ -122,7 +129,7 @@ const BookDetails = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
           {/* Left Column - Image */}
           <div className="flex flex-col items-center">
-            <div className="relative w-full max-w-md aspect-[3/4] bg-secondary-50 rounded-[2rem] overflow-hidden shadow-2xl shadow-secondary-900/10 mb-8 border border-secondary-100">
+            <div className="relative w-full max-w-md aspect-3/4 bg-secondary-50 rounded-4xl overflow-hidden shadow-2xl shadow-secondary-900/10 mb-8 border border-secondary-100">
               <img
                 src={book.image}
                 alt={book.title}
@@ -134,15 +141,6 @@ const BookDetails = () => {
                 </div>
               )}
             </div>
-
-            {/* Thumbnails (Mock) - Optional */}
-            {/* <div className="flex gap-4 overflow-x-auto pb-2 w-full max-w-md">
-              {[book.image, book.image, book.image].map((img, i) => (
-                <button key={i} className="relative w-24 h-32 rounded-lg overflow-hidden border-2 border-transparent hover:border-primary-500 transition-all flex-shrink-0">
-                  <img src={img} alt="" className="w-full h-full object-cover" />
-                </button>
-              ))}
-            </div> */}
           </div>
 
           {/* Right Column - Details */}
@@ -240,7 +238,7 @@ const BookDetails = () => {
                 </nav>
               </div>
 
-              <div className="prose prose-sm max-w-none text-secondary-600 mb-10 min-h-[100px]">
+              <div className="prose prose-sm max-w-none text-secondary-600 mb-10 min-h-25">
                 {activeTab === "description" ? (
                   <p className="whitespace-pre-line font-sinhala leading-relaxed">
                     {book.description ||
@@ -261,55 +259,72 @@ const BookDetails = () => {
               </div>
 
               {/* Actions */}
-              <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-secondary-100">
-                <div className="flex items-center border border-secondary-200 rounded-full h-12 w-32">
-                  <button
-                    onClick={() => handleQuantityChange("decrease")}
-                    className="flex-1 flex items-center justify-center text-secondary-500 hover:text-primary-600 transition-colors"
-                    disabled={quantity <= 1}
-                  >
-                    <Minus className="w-4 h-4" />
-                  </button>
-                  <span className="text-secondary-900 font-bold w-8 text-center bg-transparent">
-                    {quantity}
-                  </span>
-                  <button
-                    onClick={() => handleQuantityChange("increase")}
-                    className="flex-1 flex items-center justify-center text-secondary-500 hover:text-primary-600 transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </button>
+              <div className="flex flex-col gap-4 pt-6 border-t border-secondary-100">
+                <div>
+                  <div className="grid gap-4 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:items-center">
+                    <div className="flex items-center border border-secondary-200 rounded-full h-12 w-32 bg-white">
+                      <button
+                        onClick={() => handleQuantityChange("decrease")}
+                        className="flex-1 flex items-center justify-center text-secondary-500 hover:text-primary-600 transition-colors"
+                        disabled={quantity <= 1}
+                      >
+                        <Minus className="w-4 h-4" />
+                      </button>
+                      <span className="text-secondary-900 font-bold w-8 text-center bg-transparent">
+                        {quantity}
+                      </span>
+                      <button
+                        onClick={() => handleQuantityChange("increase")}
+                        className="flex-1 flex items-center justify-center text-secondary-500 hover:text-primary-600 transition-colors"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <Button
+                        onClick={handleAddToCart}
+                        className="rounded-full h-12 text-base font-medium shadow-lg bg-primary-500 text-white hover:bg-primary-600"
+                      >
+                        <ShoppingCart className="w-5 h-5 mr-2" />
+                        Add to Cart
+                      </Button>
+                      <Button
+                        onClick={handleBuyNow}
+                        className="rounded-full h-12 text-base font-medium shadow-lg bg-secondary-900 hover:bg-secondary-800"
+                      >
+                        Buy Now
+                      </Button>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        if (isInWishlist(book._id)) {
+                          removeFromWishlist(book._id);
+                        } else {
+                          addToWishlist(book);
+                        }
+                      }}
+                      className={`h-12 w-12 justify-self-start lg:justify-self-end rounded-full border flex items-center justify-center transition-all ${
+                        isInWishlist(book._id)
+                          ? "text-red-500 border-red-200 bg-red-50 hover:bg-red-100"
+                          : "border-secondary-200 text-secondary-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50"
+                      }`}
+                      aria-label={
+                        isInWishlist(book._id)
+                          ? "Remove from wishlist"
+                          : "Add to wishlist"
+                      }
+                    >
+                      <Heart
+                        className="w-5 h-5 stroke-current"
+                        fill={isInWishlist(book._id) ? "currentColor" : "none"}
+                      />
+                    </button>
+                  </div>
                 </div>
 
-                <div className="flex-1 flex gap-4">
-                  <Button
-                    onClick={handleAddToCart}
-                    className="flex-1 rounded-full h-12 text-base font-medium shadow-lg hover:shadow-primary-500/25"
-                  >
-                    <ShoppingCart className="w-5 h-5 mr-2" />
-                    Add to Cart
-                  </Button>
-                  <button
-                    onClick={() => {
-                      if (isInWishlist(book._id)) {
-                        removeFromWishlist(book._id);
-                      } else {
-                        addToWishlist(book);
-                      }
-                    }}
-                    className={`h-12 w-12 rounded-full border flex items-center justify-center transition-all ${
-                      isInWishlist(book._id)
-                        ? "text-red-500 border-red-200 bg-red-50 hover:bg-red-100"
-                        : "border-secondary-200 text-secondary-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50"
-                    }`}
-                  >
-                    <Heart
-                      className={`w-5 h-5 ${
-                        isInWishlist(book._id) ? "fill-current" : ""
-                      }`}
-                    />
-                  </button>
-                </div>
+                {/* mobile sticky actions removed — inline actions used for all sizes */}
               </div>
 
               <div className="mt-8 flex gap-6 text-xs text-secondary-500 font-medium">
